@@ -87,10 +87,42 @@ class AdminUsersScreen extends ConsumerWidget {
                     DataCell(Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.block,
-                              color: AppTheme.dangerRed),
-                          onPressed: () {},
-                          tooltip: 'Block User',
+                          icon: Icon(
+                            user['role'] == 'blocked'
+                                ? Icons.check_circle
+                                : Icons.block,
+                            color: user['role'] == 'blocked'
+                                ? AppTheme.successGreen
+                                : AppTheme.dangerRed,
+                          ),
+                          onPressed: () async {
+                            final newRole =
+                                user['role'] == 'blocked' ? 'user' : 'blocked';
+                            try {
+                              await Supabase.instance.client
+                                  .from('profiles')
+                                  .update({'role': newRole}).eq(
+                                      'id', user['id']);
+
+                              ref.invalidate(adminUsersProvider);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'User ${newRole.toUpperCase()}')),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error: $e')),
+                                );
+                              }
+                            }
+                          },
+                          tooltip: user['role'] == 'blocked'
+                              ? 'Unblock User'
+                              : 'Block User',
                         ),
                       ],
                     )),

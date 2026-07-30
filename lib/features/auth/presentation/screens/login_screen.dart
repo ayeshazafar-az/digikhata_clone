@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +22,12 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text('Please enter a valid mobile number')),
       );
       return;
+    }
+
+    // Request location permission first to simulate original Digikhata flow.
+    final status = await Permission.location.status;
+    if (!status.isGranted) {
+      await Permission.location.request();
     }
 
     setState(() => _isLoading = true);

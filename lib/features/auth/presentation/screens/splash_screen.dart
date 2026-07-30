@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
               } else {
                 // If failed, arguably we might want a retry button.
                 // For simplicity, we fallback to login or retry UI.
-                if (mounted) context.go('/login');
+                if (mounted) context.go('/language');
               }
             } else {
               if (mounted) context.go('/home');
@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
           if (mounted) context.go('/home');
         }
       } else {
-        if (mounted) context.go('/login');
+        if (mounted) context.go('/language');
       }
     });
   }

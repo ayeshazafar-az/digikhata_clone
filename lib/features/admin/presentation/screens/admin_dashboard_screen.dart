@@ -49,8 +49,11 @@ class AdminDashboardScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.notifications),
-              title: const Text('Push Notifications (FCM)'),
-              onTap: () {},
+              title: const Text('Push Notifications & Banners'),
+              onTap: () {
+                context.pop();
+                context.push('/admin_announcements');
+              },
             ),
             const Divider(),
             ListTile(
@@ -107,7 +110,9 @@ class AdminDashboardScreen extends ConsumerWidget {
                   runSpacing: 16,
                   children: [
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.push('/admin_announcements');
+                      },
                       icon: const Icon(Icons.campaign),
                       label: const Text('Send Broadcast Notification'),
                       style: ElevatedButton.styleFrom(

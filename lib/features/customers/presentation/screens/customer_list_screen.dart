@@ -4,16 +4,52 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/parties_provider.dart';
 
-class CustomerListScreen extends ConsumerWidget {
+class CustomerListScreen extends ConsumerStatefulWidget {
   const CustomerListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomerListScreen> createState() => _CustomerListScreenState();
+}
+
+class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
+  String _searchQuery = '';
+  bool _isSearching = false;
+
+  @override
+  Widget build(BuildContext context) {
     final partiesState = ref.watch(partiesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customers & Suppliers'),
+        title: _isSearching
+            ? TextField(
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search customers...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                onChanged: (val) {
+                  setState(() {
+                    _searchQuery = val.toLowerCase();
+                  });
+                },
+              )
+            : const Text('Customers & Suppliers'),
+        actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                if (_isSearching) {
+                  _searchQuery = '';
+                }
+                _isSearching = !_isSearching;
+              });
+            },
+          )
+        ],
       ),
       body: partiesState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -31,19 +67,27 @@ class CustomerListScreen extends ConsumerWidget {
           ),
         ),
         data: (parties) {
-          if (parties.isEmpty) {
-            return const Center(
+          final filteredParties = parties
+              .where((p) =>
+                  p.name.toLowerCase().contains(_searchQuery) ||
+                  (p.phone?.contains(_searchQuery) ?? false))
+              .toList();
+
+          if (filteredParties.isEmpty) {
+            return Center(
               child: Text(
-                'No Customers/Suppliers yet.\nTap Add Customer to add one.',
+                _searchQuery.isNotEmpty
+                    ? 'No results found for "$_searchQuery"'
+                    : 'No Customers/Suppliers yet.\nTap Add Customer to add one.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
             );
           }
           return ListView.builder(
-            itemCount: parties.length,
+            itemCount: filteredParties.length,
             itemBuilder: (context, index) {
-              final party = parties[index];
+              final party = filteredParties[index];
               return ListTile(
                 leading: const CircleAvatar(
                   backgroundColor: AppTheme.secondaryBlue,

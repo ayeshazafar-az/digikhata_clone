@@ -89,4 +89,35 @@ class LedgerEntriesNotifier
       rethrow;
     }
   }
+
+  Future<void> editEntry(
+      String entryId, double amount, String description) async {
+    try {
+      await _supabase.from('ledger_entries').update({
+        'amount': amount,
+        'description': description,
+      }).eq('id', entryId);
+
+      await loadEntries();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteEntry(String entryId) async {
+    try {
+      await _supabase.from('ledger_entries').delete().eq('id', entryId);
+
+      // Ensure we remove it from Isar too for immediate local reflection
+      if (!kIsWeb && LocalDb.isar != null) {
+        await LocalDb.isar!.writeTxn(() async {
+          await LocalDb.isar!.ledgerEntryModels.deleteByRemoteId(entryId);
+        });
+      }
+
+      await loadEntries();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -6,27 +6,64 @@ import '../../../ledger/providers/ledger_entries_provider.dart';
 import 'package:intl/intl.dart';
 import '../../providers/parties_provider.dart';
 import '../../../../core/utils/pdf_service.dart';
+import '../../../../core/utils/excel_service.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
-class CustomerLedgerScreen extends ConsumerWidget {
+class CustomerLedgerScreen extends ConsumerStatefulWidget {
   final String customerId; // Technically remotePartyId
   const CustomerLedgerScreen({super.key, required this.customerId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomerLedgerScreen> createState() =>
+      _CustomerLedgerScreenState();
+}
+
+class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
+  String _searchQuery = '';
+  bool _isSearching = false;
+
+  @override
+  Widget build(BuildContext context) {
     // If customerId is empty because we haven't properly passed the remoteId,
     // handle it safely
-    if (customerId.isEmpty || customerId.startsWith('cust_')) {
+    if (widget.customerId.isEmpty || widget.customerId.startsWith('cust_')) {
       return Scaffold(
         appBar: AppBar(title: const Text('Customer Ledger')),
         body: const Center(child: Text('Invalid customer ID')),
       );
     }
 
-    final entriesState = ref.watch(ledgerEntriesProvider(customerId));
+    final entriesState = ref.watch(ledgerEntriesProvider(widget.customerId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer Ledger'),
+        title: _isSearching
+            ? TextField(
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search transactions...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                onChanged: (val) {
+                  setState(() {
+                    _searchQuery = val.toLowerCase();
+                  });
+                },
+              )
+            : const Text('Customer Ledger'),
+        actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                if (_isSearching) _searchQuery = '';
+                _isSearching = !_isSearching;
+              });
+            },
+          )
+        ],
       ),
       body: entriesState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -35,7 +72,7 @@ class CustomerLedgerScreen extends ConsumerWidget {
           // Find party details securely from state
           final parties = ref.read(partiesProvider).value ?? [];
           final party = parties.firstWhere(
-            (p) => p.remoteId == customerId,
+            (p) => p.remoteId == widget.customerId,
             orElse: () => parties.first,
           );
 
@@ -80,31 +117,113 @@ class CustomerLedgerScreen extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 color: Colors.grey.shade100,
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    if (entries.isEmpty) return;
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      // PDF EXPORT
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          if (entries.isEmpty) return;
+                          final mappedEntries = entries
+                              .map((e) => {
+                                    'created_at': e.entryDate.toIso8601String(),
+                                    'details': e.description,
+                                    'entry_type': e.entryType,
+                                    'amount': e.amount,
+                                  })
+                              .toList();
+                          await PdfService.generateAndPrintLedger(
+                            partyName: party.name,
+                            partyPhone: party.phone ?? 'N/A',
+                            entries: mappedEntries,
+                            totalBalance: totalBalance,
+                          );
+                        },
+                        icon: const Icon(Icons.picture_as_pdf),
+                        label: const Text('PDF'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryBlue,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
 
-                    final mappedEntries = entries
-                        .map((e) => {
-                              'created_at': e.entryDate.toIso8601String(),
-                              'details': e.description,
-                              'entry_type': e.entryType,
-                              'amount': e.amount,
-                            })
-                        .toList();
+                      // EXCEL EXPORT
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          if (entries.isEmpty) return;
+                          final mappedEntries = entries
+                              .map((e) => {
+                                    'created_at': e.entryDate.toIso8601String(),
+                                    'details': e.description,
+                                    'entry_type': e.entryType,
+                                    'amount': e.amount,
+                                  })
+                              .toList();
 
-                    await PdfService.generateAndPrintLedger(
-                      partyName: party.name,
-                      partyPhone: party.phone ?? 'N/A',
-                      entries: mappedEntries,
-                      totalBalance: totalBalance,
-                    );
-                  },
-                  icon: const Icon(Icons.picture_as_pdf),
-                  label: const Text('Export PDF Ledger'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
+                          await ExcelService.generateAndExportExcel(
+                            partyName: party.name,
+                            partyPhone: party.phone ?? 'N/A',
+                            entries: mappedEntries,
+                            totalBalance: totalBalance,
+                          );
+                        },
+                        icon: const Icon(Icons.table_view),
+                        label: const Text('Excel'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade700,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // REMINDER INTENT
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          if (party.phone == null || party.phone!.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'No phone number saved for this customer!')),
+                            );
+                            return;
+                          }
+
+                          // We only remind them if they OWE money (totalBalance < 0)
+                          final message = totalBalance < 0
+                              ? 'Hello ${party.name}, this is a gentle reminder that you have a pending due of Rs. ${totalBalance.abs().toStringAsFixed(0)}. Please clear it at your earliest convenience. Thank you!'
+                              : 'Hello ${party.name}, generating a custom reminder for your ledger.';
+
+                          // First try WhatsApp, fallback to SMS
+                          final encodedMessage = Uri.encodeComponent(message);
+                          final whatsappUrl =
+                              'whatsapp://send?phone=${party.phone}&text=$encodedMessage';
+
+                          try {
+                            if (await canLaunchUrlString(whatsappUrl)) {
+                              await launchUrlString(whatsappUrl);
+                            } else {
+                              final smsUrl =
+                                  'sms:${party.phone}?body=$encodedMessage';
+                              await launchUrlString(smsUrl);
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Could not launch messaging app: $e')),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.notifications_active),
+                        label: const Text('Remind'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.warningOrange,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -114,7 +233,21 @@ class CustomerLedgerScreen extends ConsumerWidget {
                     : ListView.builder(
                         itemCount: entries.length,
                         itemBuilder: (context, index) {
+                          // Filter here
                           final entry = entries[index];
+                          final matchesSearch = entry.description != null &&
+                              entry.description!
+                                  .toLowerCase()
+                                  .contains(_searchQuery);
+                          final amountMatches =
+                              entry.amount.toString().contains(_searchQuery);
+
+                          if (_searchQuery.isNotEmpty &&
+                              !matchesSearch &&
+                              !amountMatches) {
+                            return const SizedBox.shrink();
+                          }
+
                           final isCredit = entry.entryType == 'credit';
                           final dateStr = DateFormat('dd/MM/yyyy hh:mm a')
                               .format(entry.entryDate);
@@ -133,6 +266,47 @@ class CustomerLedgerScreen extends ConsumerWidget {
                                       : AppTheme.dangerRed,
                                   fontWeight: FontWeight.bold),
                             ),
+                            onLongPress: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (ctx) => SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ListTile(
+                                        leading: const Icon(Icons.edit,
+                                            color: AppTheme.primaryBlue),
+                                        title: const Text('Edit Transaction'),
+                                        onTap: () {
+                                          Navigator.pop(ctx);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Editing coming soon...')));
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.delete,
+                                            color: AppTheme.dangerRed),
+                                        title: const Text('Delete Transaction',
+                                            style: TextStyle(
+                                                color: AppTheme.dangerRed)),
+                                        onTap: () async {
+                                          Navigator.pop(ctx);
+                                          if (entry.remoteId != null) {
+                                            await ref
+                                                .read(ledgerEntriesProvider(
+                                                        widget.customerId)
+                                                    .notifier)
+                                                .deleteEntry(entry.remoteId!);
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
@@ -149,8 +323,10 @@ class CustomerLedgerScreen extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    context.push('/cash_entry',
-                        extra: {'customerId': customerId, 'type': 'debit'});
+                    context.push('/cash_entry', extra: {
+                      'customerId': widget.customerId,
+                      'type': 'debit'
+                    });
                   },
                   icon: const Icon(Icons.remove_circle_outline),
                   label: const Text('YOU GAVE'),
@@ -163,8 +339,10 @@ class CustomerLedgerScreen extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    context.push('/cash_entry',
-                        extra: {'customerId': customerId, 'type': 'credit'});
+                    context.push('/cash_entry', extra: {
+                      'customerId': widget.customerId,
+                      'type': 'credit'
+                    });
                   },
                   icon: const Icon(Icons.add_circle_outline),
                   label: const Text('YOU GOT'),

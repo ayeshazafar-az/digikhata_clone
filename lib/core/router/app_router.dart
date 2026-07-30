@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/language_selection_screen.dart';
+import '../../features/auth/presentation/screens/onboarding_carousel_screen.dart';
 import '../../features/auth/presentation/screens/otp_screen.dart';
 import '../../features/ledger/presentation/screens/dashboard_screen.dart';
 import '../../features/customers/presentation/screens/customer_ledger_screen.dart';
@@ -9,6 +11,7 @@ import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/admin_users_screen.dart';
 import '../../features/admin/presentation/screens/admin_businesses_screen.dart';
+import '../../features/admin/presentation/screens/admin_announcements_screen.dart';
 import '../../features/ledger/presentation/screens/business_selection_screen.dart';
 import '../../features/ledger/presentation/screens/create_business_screen.dart';
 import '../../features/ledger/presentation/screens/qr_code_screen.dart';
@@ -25,6 +28,16 @@ class AppRouter {
         path: '/',
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/language',
+        name: 'language',
+        builder: (context, state) => const LanguageSelectionScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingCarouselScreen(),
       ),
       GoRoute(
         path: '/login',
@@ -80,6 +93,11 @@ class AppRouter {
         path: '/admin_users',
         name: 'admin_users',
         builder: (context, state) => const AdminUsersScreen(),
+      ),
+      GoRoute(
+        path: '/admin_announcements',
+        name: 'admin_announcements',
+        builder: (context, state) => const AdminAnnouncementsScreen(),
       ),
       GoRoute(
         path: '/admin_businesses',
