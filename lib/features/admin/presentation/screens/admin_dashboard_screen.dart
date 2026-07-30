@@ -55,6 +55,22 @@ class AdminDashboardScreen extends ConsumerWidget {
                 context.push('/admin_announcements');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.receipt_long),
+              title: const Text('Global Transactions'),
+              onTap: () {
+                context.pop();
+                context.push('/admin_transactions');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Platform Settings'),
+              onTap: () {
+                context.pop();
+                context.push('/admin_settings');
+              },
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: AppTheme.dangerRed),

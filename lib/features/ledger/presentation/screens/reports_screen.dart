@@ -5,11 +5,18 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../providers/dashboard_provider.dart';
 import 'package:intl/intl.dart';
 
-class ReportsScreen extends ConsumerWidget {
+class ReportsScreen extends ConsumerStatefulWidget {
   const ReportsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends ConsumerState<ReportsScreen> {
+  String _filter = 'Daily'; // Daily, Weekly, Monthly
+
+  @override
+  Widget build(BuildContext context) {
     final statsAsync = ref.watch(dashboardStatsProvider);
 
     return Scaffold(
@@ -23,18 +30,64 @@ class ReportsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (stats) {
+          final now = DateTime.now();
+          List<Map<String, dynamic>> filteredEntries =
+              stats.recentEntries.where((e) {
+            final date = DateTime.parse(e['created_at']);
+            if (_filter == 'Daily') {
+              return date.year == now.year &&
+                  date.month == now.month &&
+                  date.day == now.day;
+            } else if (_filter == 'Weekly') {
+              return now.difference(date).inDays <= 7;
+            } else if (_filter == 'Monthly') {
+              return now.difference(date).inDays <= 30;
+            }
+            return true;
+          }).toList();
+
+          double filteredCashIn = 0;
+          double filteredCashOut = 0;
+          for (var e in filteredEntries) {
+            double amt = (e['amount'] as num).toDouble();
+            if (e['entry_type'] == 'credit')
+              filteredCashIn += amt;
+            else
+              filteredCashOut += amt;
+          }
+          double filteredNet = filteredCashIn - filteredCashOut;
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'Daily', label: Text('Daily')),
+                    ButtonSegment(value: 'Weekly', label: Text('Weekly')),
+                    ButtonSegment(value: 'Monthly', label: Text('Monthly')),
+                  ],
+                  selected: {_filter},
+                  onSelectionChanged: (Set<String> newSelection) {
+                    setState(() {
+                      _filter = newSelection.first;
+                    });
+                  },
+                  style: SegmentedButton.styleFrom(
+                    selectedBackgroundColor:
+                        AppTheme.primaryBlue.withOpacity(0.2),
+                    selectedForegroundColor: AppTheme.primaryBlue,
+                  ),
+                ),
+                const SizedBox(height: 24),
                 // Top Summary Cards
                 Row(
                   children: [
                     Expanded(
                       child: _SummaryCard(
                         title: 'Cash In',
-                        amount: stats.totalCashIn,
+                        amount: filteredCashIn,
                         color: AppTheme.successGreen,
                         icon: Icons.arrow_downward,
                       ),
@@ -43,7 +96,7 @@ class ReportsScreen extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         title: 'Cash Out',
-                        amount: stats.totalCashOut,
+                        amount: filteredCashOut,
                         color: AppTheme.dangerRed,
                         icon: Icons.arrow_upward,
                       ),
@@ -53,7 +106,7 @@ class ReportsScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 _SummaryCard(
                   title: 'Net Balance',
-                  amount: stats.netBalance,
+                  amount: filteredNet,
                   color: AppTheme.primaryBlue,
                   icon: Icons.account_balance_wallet,
                   isFullWidth: true,
@@ -78,9 +131,9 @@ class ReportsScreen extends ConsumerWidget {
                           spreadRadius: 2,
                         )
                       ]),
-                  child: stats.recentEntries.isEmpty
+                  child: filteredEntries.isEmpty
                       ? const Center(child: Text('Not enough data to chart'))
-                      : _buildChart(stats.recentEntries),
+                      : _buildChart(filteredEntries),
                 ),
               ],
             ),

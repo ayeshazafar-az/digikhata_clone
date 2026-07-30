@@ -13,6 +13,8 @@ import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/admin_users_screen.dart';
 import '../../features/admin/presentation/screens/admin_businesses_screen.dart';
 import '../../features/admin/presentation/screens/admin_announcements_screen.dart';
+import '../../features/admin/presentation/screens/admin_transactions_screen.dart';
+import '../../features/admin/presentation/screens/admin_settings_screen.dart';
 import '../../features/ledger/presentation/screens/business_selection_screen.dart';
 import '../../features/ledger/presentation/screens/create_business_screen.dart';
 import '../../features/ledger/presentation/screens/qr_code_screen.dart';
@@ -107,6 +109,16 @@ class AppRouter {
         path: '/admin_announcements',
         name: 'admin_announcements',
         builder: (context, state) => const AdminAnnouncementsScreen(),
+      ),
+      GoRoute(
+        path: '/admin_transactions',
+        name: 'admin_transactions',
+        builder: (context, state) => const AdminTransactionsScreen(),
+      ),
+      GoRoute(
+        path: '/admin_settings',
+        name: 'admin_settings',
+        builder: (context, state) => const AdminSettingsScreen(),
       ),
       GoRoute(
         path: '/admin_businesses',

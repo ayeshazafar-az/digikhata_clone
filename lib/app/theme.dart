@@ -35,4 +35,31 @@ class AppTheme {
       useMaterial3: true,
     );
   }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      primaryColor: primaryBlue,
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      colorScheme: const ColorScheme.dark(
+        primary: primaryBlue,
+        secondary: secondaryBlue,
+        surface: Color(0xFF1E1E1E),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF1E1E1E),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryBlue,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      ),
+      useMaterial3: true,
+    );
+  }
 }
