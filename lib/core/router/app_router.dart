@@ -11,6 +11,7 @@ import '../../features/admin/presentation/screens/admin_users_screen.dart';
 import '../../features/admin/presentation/screens/admin_businesses_screen.dart';
 import '../../features/ledger/presentation/screens/business_selection_screen.dart';
 import '../../features/ledger/presentation/screens/create_business_screen.dart';
+import '../../features/ledger/presentation/screens/qr_code_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -42,6 +43,14 @@ class AppRouter {
         path: '/home',
         name: 'home',
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/qr_code',
+        name: 'qr_code',
+        builder: (context, state) => const QrCodeScreen(
+          businessName: 'My DigiKhata Business',
+          phoneNumber: '+923245423290',
+        ),
       ),
       GoRoute(
         path: '/customer_ledger',

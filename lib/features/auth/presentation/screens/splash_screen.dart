@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/utils/biometric_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,7 +28,20 @@ class _SplashScreenState extends State<SplashScreen> {
           if (profile != null && profile['role'] == 'super_admin') {
             if (mounted) context.go('/admin');
           } else {
-            if (mounted) context.go('/home');
+            // Require biometrics for normal users to protect their ledger!
+            final hasBio = await BiometricService.isBiometricAvailable();
+            if (hasBio) {
+              final authSuccess = await BiometricService.authenticate();
+              if (authSuccess) {
+                if (mounted) context.go('/home');
+              } else {
+                // If failed, arguably we might want a retry button.
+                // For simplicity, we fallback to login or retry UI.
+                if (mounted) context.go('/login');
+              }
+            } else {
+              if (mounted) context.go('/home');
+            }
           }
         } catch (e) {
           if (mounted) context.go('/home');
