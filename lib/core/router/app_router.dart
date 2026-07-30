@@ -8,6 +8,7 @@ import '../../features/customers/presentation/screens/customer_ledger_screen.dar
 import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/ledger/presentation/screens/business_selection_screen.dart';
+import '../../features/ledger/presentation/screens/create_business_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -68,6 +69,11 @@ class AppRouter {
         path: '/business',
         name: 'business',
         builder: (context, state) => const BusinessSelectionScreen(),
+      ),
+      GoRoute(
+        path: '/create_business',
+        name: 'create_business',
+        builder: (context, state) => const CreateBusinessScreen(),
       ),
     ],
   );

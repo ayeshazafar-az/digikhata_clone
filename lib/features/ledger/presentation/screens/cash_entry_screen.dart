@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/ledger_entries_provider.dart';
 
-class CashEntryScreen extends StatefulWidget {
-  final String customerId;
+class CashEntryScreen extends ConsumerStatefulWidget {
+  final String customerId; // remotePartyId
   final String entryType; // 'credit' or 'debit'
 
   const CashEntryScreen({
@@ -13,25 +15,54 @@ class CashEntryScreen extends StatefulWidget {
   });
 
   @override
-  State<CashEntryScreen> createState() => _CashEntryScreenState();
+  ConsumerState<CashEntryScreen> createState() => _CashEntryScreenState();
 }
 
-class _CashEntryScreenState extends State<CashEntryScreen> {
+class _CashEntryScreenState extends ConsumerState<CashEntryScreen> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  bool _isLoading = false;
 
   bool get isCredit => widget.entryType == 'credit';
 
-  void _saveEntry() {
-    if (_amountController.text.isEmpty) {
+  Future<void> _saveEntry() async {
+    final amountText = _amountController.text.trim();
+    if (amountText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter an amount')),
       );
       return;
     }
-    // TODO: Save to Isar & sync to Supabase
-    context.pop();
+
+    final amount = double.tryParse(amountText);
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await ref
+          .read(ledgerEntriesProvider(widget.customerId).notifier)
+          .addEntry(
+            amount,
+            widget.entryType,
+            _noteController.text.trim(),
+          );
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving entry: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -90,15 +121,17 @@ class _CashEntryScreenState extends State<CashEntryScreen> {
               },
             ),
             const Spacer(),
-            ElevatedButton(
-              onPressed: _saveEntry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color,
-                minimumSize: const Size(double.infinity, 56),
-              ),
-              child: const Text('Save Entry',
-                  style: TextStyle(fontSize: 18, color: Colors.white)),
-            ),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _saveEntry,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: color,
+                      minimumSize: const Size(double.infinity, 56),
+                    ),
+                    child: const Text('Save Entry',
+                        style: TextStyle(fontSize: 18, color: Colors.white)),
+                  ),
           ],
         ),
       ),

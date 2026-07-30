@@ -15,7 +15,7 @@ extension GetPartyModelCollection on Isar {
 
 const PartyModelSchema = CollectionSchema(
   name: r'PartyModel',
-  id: 5587618030670350195,
+  id: 5587618030670350336,
   properties: {
     r'createdAt': PropertySchema(
       id: 0,
@@ -65,7 +65,7 @@ const PartyModelSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'remoteId': IndexSchema(
-      id: 6301175856541681032,
+      id: 6301175856541680640,
       name: r'remoteId',
       unique: true,
       replace: true,
@@ -78,7 +78,7 @@ const PartyModelSchema = CollectionSchema(
       ],
     ),
     r'remoteBusinessId': IndexSchema(
-      id: -3476473911230526590,
+      id: -3476473911230526464,
       name: r'remoteBusinessId',
       unique: false,
       replace: false,

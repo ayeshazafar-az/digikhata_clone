@@ -1,63 +1,103 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../ledger/providers/ledger_entries_provider.dart';
+import 'package:intl/intl.dart';
 
-class CustomerLedgerScreen extends StatefulWidget {
-  final String customerId;
+class CustomerLedgerScreen extends ConsumerWidget {
+  final String customerId; // Technically remotePartyId
   const CustomerLedgerScreen({super.key, required this.customerId});
 
   @override
-  State<CustomerLedgerScreen> createState() => _CustomerLedgerScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // If customerId is empty because we haven't properly passed the remoteId,
+    // handle it safely
+    if (customerId.isEmpty || customerId.startsWith('cust_')) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Customer Ledger')),
+        body: const Center(child: Text('Invalid customer ID')),
+      );
+    }
 
-class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
-  @override
-  Widget build(BuildContext context) {
+    final entriesState = ref.watch(ledgerEntriesProvider(customerId));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Customer Ledger'),
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Total Balance:',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const Text('Rs. 5,000',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.dangerRed)),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                // Mock entries
-                final isCredit = index % 2 == 0;
-                return ListTile(
-                  title: Text(isCredit ? 'Cash In' : 'Cash Out'),
-                  subtitle: Text('Note $index • 12/08/2026'),
-                  trailing: Text(
-                    isCredit ? 'Rs. 2,000' : 'Rs. 1,000',
-                    style: TextStyle(
-                        color: isCredit
-                            ? AppTheme.successGreen
-                            : AppTheme.dangerRed,
-                        fontWeight: FontWeight.bold),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+      body: entriesState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+        data: (entries) {
+          // Calculate running balance
+          double totalBalance = 0;
+          for (var entry in entries) {
+            if (entry.entryType == 'credit') {
+              totalBalance += entry.amount; // You got money
+            } else {
+              totalBalance -= entry.amount; // You gave money
+            }
+          }
+
+          final formatter =
+              NumberFormat.currency(locale: 'en_IN', symbol: 'Rs. ');
+
+          return Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Total Balance:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      formatter.format(totalBalance.abs()),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: totalBalance >= 0
+                              ? AppTheme.successGreen
+                              : AppTheme.dangerRed),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: entries.isEmpty
+                    ? const Center(child: Text('No transactions yet'))
+                    : ListView.builder(
+                        itemCount: entries.length,
+                        itemBuilder: (context, index) {
+                          final entry = entries[index];
+                          final isCredit = entry.entryType == 'credit';
+                          final dateStr = DateFormat('dd/MM/yyyy hh:mm a')
+                              .format(entry.entryDate);
+
+                          return ListTile(
+                            title: Text(isCredit
+                                ? 'Cash In (You Got)'
+                                : 'Cash Out (You Gave)'),
+                            subtitle: Text(
+                                '${entry.description ?? 'No note'} • $dateStr'),
+                            trailing: Text(
+                              formatter.format(entry.amount),
+                              style: TextStyle(
+                                  color: isCredit
+                                      ? AppTheme.successGreen
+                                      : AppTheme.dangerRed,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -67,10 +107,8 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    context.push('/cash_entry', extra: {
-                      'customerId': widget.customerId,
-                      'type': 'debit'
-                    });
+                    context.push('/cash_entry',
+                        extra: {'customerId': customerId, 'type': 'debit'});
                   },
                   icon: const Icon(Icons.remove_circle_outline),
                   label: const Text('YOU GAVE'),
@@ -83,10 +121,8 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    context.push('/cash_entry', extra: {
-                      'customerId': widget.customerId,
-                      'type': 'credit'
-                    });
+                    context.push('/cash_entry',
+                        extra: {'customerId': customerId, 'type': 'credit'});
                   },
                   icon: const Icon(Icons.add_circle_outline),
                   label: const Text('YOU GOT'),

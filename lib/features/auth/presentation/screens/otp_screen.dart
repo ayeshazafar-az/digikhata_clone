@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -13,16 +14,51 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
+  bool _isLoading = false;
 
-  void _verifyOtp() {
-    if (_otpController.text.length < 6) {
+  Future<void> _verifyOtp() async {
+    final otp = _otpController.text.trim();
+    if (otp.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid OTP')),
+        const SnackBar(content: Text('Please enter a valid 6-digit OTP')),
       );
       return;
     }
-    // Verify OTP via Supabase
-    context.go('/home');
+
+    setState(() => _isLoading = true);
+
+    try {
+      final AuthResponse res = await Supabase.instance.client.auth.verifyOTP(
+        type: OtpType.sms,
+        token: otp,
+        phone: widget.phoneNumber,
+      );
+
+      if (res.user != null) {
+        // Check if user already has a business
+        final List<dynamic> businesses = await Supabase.instance.client
+            .from('businesses')
+            .select()
+            .eq('owner_id', res.user!.id);
+
+        if (mounted) {
+          if (businesses.isEmpty) {
+            context.go('/create_business');
+          } else {
+            // Can add logic to set the active/first business here if needed
+            context.go('/home');
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Verification Failed: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -76,17 +112,19 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _verifyOtp,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('Verify & Proceed',
-                    style: TextStyle(fontSize: 18)),
-              ),
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _verifyOtp,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 56),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Verify & Proceed',
+                          style: TextStyle(fontSize: 18)),
+                    ),
             ],
           ),
         ),

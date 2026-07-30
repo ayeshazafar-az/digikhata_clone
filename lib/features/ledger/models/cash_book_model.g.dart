@@ -15,7 +15,7 @@ extension GetCashBookModelCollection on Isar {
 
 const CashBookModelSchema = CollectionSchema(
   name: r'CashBookModel',
-  id: 9223140523826551263,
+  id: 9223140523826550784,
   properties: {
     r'amount': PropertySchema(
       id: 0,
@@ -70,7 +70,7 @@ const CashBookModelSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'remoteId': IndexSchema(
-      id: 6301175856541681032,
+      id: 6301175856541680640,
       name: r'remoteId',
       unique: true,
       replace: true,
@@ -83,7 +83,7 @@ const CashBookModelSchema = CollectionSchema(
       ],
     ),
     r'remoteBusinessId': IndexSchema(
-      id: -3476473911230526590,
+      id: -3476473911230526464,
       name: r'remoteBusinessId',
       unique: false,
       replace: false,

@@ -1,34 +1,34 @@
-# 📘 Digital Business Ledger & Accounting System (DigiKhata Clone)
+# Zenvyro Labs - DigiKhata Clone Ecosystem
 
-A production-grade, offline-first digital ledger application designed to help businesses manage their daily transactions, customer accounts, and cash flow efficiently. Built with a clean architecture approach, this project replicates the core functionalities of DigiKhata while featuring a custom Blue Theme and robust Super Admin dashboard.
+A production-ready multi-platform Flutter application serving two distinct environments from a single codebase:
+1. **The Mobile Ledger App (Customer Side)**: For shopkeepers to manage their ledgers, customers (parties), and cash book locally (offline-first) and synced to the cloud.
+2. **The Super Admin Panel (Web Side)**: A web-based dashboard for Zenvyro Labs management to monitor businesses, users, and ecosystem health.
 
-## 🚀 Tech Stack
-* **Frontend:** Flutter (Mobile & Web)
-* **Backend & Auth:** Supabase (PostgreSQL, GoTrue Auth)
-* **Local Database:** Isar (For offline-first capabilities & fast caching)
-* **State Management:** Riverpod
-* **Routing:** GoRouter
-* **Push Notifications:** Firebase Cloud Messaging (FCM)
+## Technologies Used
+*   **Flutter** (Multi-platform UI Framework)
+*   **Supabase** (PostgreSQL Database & Authentication)
+*   **GoRouter** (Advanced Routing & Deep Linking)
+*   **Riverpod** (Modern State Management)
+*   **Isar Database** (High-Performance Offline Local Database)
 
-## ✨ Key Features
-### 📱 Mobile Application (User)
-* **Offline-First Architecture:** Add transactions without the internet; auto-syncs when online.
-* **Multi-Business Support:** Manage multiple shops or businesses under a single account.
-* **Customer Ledger:** Track "Cash In" and "Cash Out" (Credit/Debit entries).
-* **Automated Reporting:** Export daily/weekly/monthly reports to PDF and Excel.
-* **Secure Authentication:** OTP login, PIN code setup, and Biometric authentication.
-* **Modern UI/UX:** Responsive Blue Theme design with Zenvyro Labs branding.
+## Setup & Running Guide
+We have created dedicated workflow scripts located in `.agent/workflows/` that you can run to effortlessly configure and launch your app. 
 
-### 👑 Web Panel (Super Admin)
-* **Dashboard Analytics:** View system-wide statistics and activity.
-* **User & Business Management:** Block/unblock users and view business profiles.
-* **Announcement Engine:** Send FCM push notifications and manage app banners.
+### 1. Database & Authentication Setup
+Please refer to [setup.md](.agent/workflows/setup.md) for how to configure a Dummy Phone number inside Supabase to test OTPs without paying for SMS services.
 
-## 🏗 Architecture
-This project follows a **Feature-First Clean Architecture**, ensuring scalability, testability, and separation of concerns. 
+### 2. How to Launch
+Please refer to [running_app.md](.agent/workflows/running_app.md) for precise commands on how to launch the Mobile App vs the Web Admin Panel.
+*   **To run Mobile App (Ledger):** `flutter run -d android`
+*   **To run Web App (Admin Panel):** `flutter run -d chrome`
 
-* **State Management:** Handled via Riverpod for predictable and safe state mutations.
-* **Local Sync Engine:** Utilizes background queues to push local Isar transactions to Supabase to prevent data loss during poor connectivity.
+## Project Architecture
+The project strictly follows a **Feature-First Architecture** grouped under `lib/features/`:
+*   `/auth`: Supabase OTP Authentication Flow and Splash Screen.
+*   `/ledger`: Cash Books, Ledger Entries, and Business Management logic.
+*   `/customers`: Party models and Customer Ledger calculations.
+*   `/admin`: Super Admin dashboards natively disabled on mobile.
+*   `/core/database`: `local_db.dart` (Isar offline sync rules) & `supabase_client.dart` (Global Cloud instance).
 
 ---
-*Powered by Zenvyro Labs*
+*Developed for Zenvyro Labs*
