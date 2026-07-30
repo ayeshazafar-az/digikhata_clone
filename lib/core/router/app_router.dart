@@ -7,6 +7,8 @@ import '../../features/ledger/presentation/screens/dashboard_screen.dart';
 import '../../features/customers/presentation/screens/customer_ledger_screen.dart';
 import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
+import '../../features/admin/presentation/screens/admin_users_screen.dart';
+import '../../features/admin/presentation/screens/admin_businesses_screen.dart';
 import '../../features/ledger/presentation/screens/business_selection_screen.dart';
 import '../../features/ledger/presentation/screens/create_business_screen.dart';
 
@@ -64,6 +66,16 @@ class AppRouter {
         path: '/admin',
         name: 'admin',
         builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/admin_users',
+        name: 'admin_users',
+        builder: (context, state) => const AdminUsersScreen(),
+      ),
+      GoRoute(
+        path: '/admin_businesses',
+        name: 'admin_businesses',
+        builder: (context, state) => const AdminBusinessesScreen(),
       ),
       GoRoute(
         path: '/business',

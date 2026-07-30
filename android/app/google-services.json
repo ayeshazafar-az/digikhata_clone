@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "167690796024",
+    "project_id": "digikhata-clone-bd557",
+    "storage_bucket": "digikhata-clone-bd557.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167690796024:android:ddea3c45fae0d5c6b1340d",
+        "android_client_info": {
+          "package_name": "com.example.digikhata_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0ASx3bdiYWTXuh7e0NZMqwZ_9kjfDHnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/admin_stats_provider.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final statsAsync = ref.watch(adminStatsProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Super Admin Panel'),
+        title: const Text('Zenvyro Super Admin'),
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
       ),
       drawer: Drawer(
         child: ListView(
+          padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.black87),
@@ -23,75 +29,129 @@ class AdminDashboardScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.dashboard),
               title: const Text('Dashboard'),
-              onTap: () {},
+              onTap: () => context.pop(),
             ),
             ListTile(
               leading: const Icon(Icons.people),
               title: const Text('Manage Users'),
-              onTap: () {},
+              onTap: () {
+                context.pop();
+                context.push('/admin_users');
+              },
             ),
             ListTile(
               leading: const Icon(Icons.store),
               title: const Text('Manage Businesses'),
-              onTap: () {},
+              onTap: () {
+                context.pop();
+                context.push('/admin_businesses');
+              },
             ),
             ListTile(
               leading: const Icon(Icons.notifications),
-              title: const Text('Send Notifications'),
+              title: const Text('Push Notifications (FCM)'),
               onTap: () {},
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: AppTheme.dangerRed),
+              title: const Text('Sign Out',
+                  style: TextStyle(color: AppTheme.dangerRed)),
+              onTap: () {
+                // Add sign out logic
+                context.go('/');
+              },
             ),
           ],
         ),
       ),
-      body: Row(
-        children: [
-          // If on web, maybe show permanent drawer, otherwise default mobile drawer
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Platform Overview',
-                      style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      _buildStatCard('Total Users', '1,245', Icons.people),
-                      const SizedBox(width: 16),
-                      _buildStatCard('Total Businesses', '950', Icons.store),
-                    ],
-                  ),
-                ],
-              ),
+      body: statsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error loading stats: $err')),
+        data: (stats) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Platform Overview',
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                        child: _StatCard('Total Users',
+                            stats.totalUsers.toString(), Icons.people_outline)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                        child: _StatCard(
+                            'Active Businesses',
+                            stats.totalBusinesses.toString(),
+                            Icons.store_mall_directory)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                        child: _StatCard(
+                            'Total Entries',
+                            stats.totalLedgerEntries.toString(),
+                            Icons.receipt)),
+                  ],
+                ),
+                const SizedBox(height: 48),
+                const Text('Quick Actions',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.campaign),
+                      label: const Text('Send Broadcast Notification'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.secondaryBlue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 16),
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
-    return Expanded(
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 40, color: AppTheme.primaryBlue),
-              const SizedBox(height: 16),
-              Text(title,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey)),
-              const SizedBox(height: 8),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 32, fontWeight: FontWeight.bold)),
-            ],
-          ),
+class _StatCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+
+  const _StatCard(this.title, this.value, this.icon);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            Icon(icon, size: 48, color: AppTheme.primaryBlue),
+            const SizedBox(height: 16),
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(title, style: const TextStyle(color: Colors.grey)),
+          ],
         ),
       ),
     );
