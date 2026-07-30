@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/language_selection_screen.dart';
 import '../../features/auth/presentation/screens/onboarding_carousel_screen.dart';
 import '../../features/auth/presentation/screens/otp_screen.dart';
+import '../../features/auth/presentation/screens/pin_setup_screen.dart';
 import '../../features/ledger/presentation/screens/dashboard_screen.dart';
 import '../../features/customers/presentation/screens/customer_ledger_screen.dart';
 import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
@@ -50,6 +51,14 @@ class AppRouter {
         builder: (context, state) {
           final phone = state.extra as String? ?? '';
           return OtpScreen(phoneNumber: phone);
+        },
+      ),
+      GoRoute(
+        path: '/pin_setup',
+        name: 'pin_setup',
+        builder: (context, state) {
+          final bool hasBusiness = state.extra as bool? ?? false;
+          return PinSetupScreen(hasBusiness: hasBusiness);
         },
       ),
       GoRoute(

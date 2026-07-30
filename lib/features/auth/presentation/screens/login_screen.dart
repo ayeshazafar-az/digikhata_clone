@@ -3,6 +3,8 @@ import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'dart:io';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +16,39 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPhoneHint();
+  }
+
+  Future<void> _requestPhoneHint() async {
+    // Only works natively on Android
+    if (Platform.isAndroid) {
+      try {
+        final hint = await SmsAutoFill().hint;
+        if (hint != null && hint.isNotEmpty) {
+          // Typically returns full E164 format (+92345678901)
+          // We can populate the controller with it
+          String cleaned = hint;
+          if (cleaned.startsWith('+92')) {
+            cleaned = cleaned
+                .substring(3); // Remove prefix since UI has +92 hardcoded
+          } else if (cleaned.startsWith('0')) {
+            cleaned = cleaned.substring(1);
+          }
+          if (mounted) {
+            setState(() {
+              _phoneController.text = cleaned;
+            });
+          }
+        }
+      } catch (e) {
+        debugPrint('Phone hint error: $e');
+      }
+    }
+  }
 
   Future<void> _sendOtp() async {
     final phone = _phoneController.text.trim();
@@ -56,76 +91,121 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login securely'),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: AppTheme.primaryBlue,
-      ),
+      backgroundColor: Colors.grey.shade50,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Welcome to DigiKhata',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryBlue,
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.menu_book_rounded,
+                        color: AppTheme.primaryBlue, size: 40),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'DigiKhata',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 64),
               const Text(
-                'Enter your phone number to continue',
+                "Let's get started!",
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Please enter your mobile number',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  prefixIcon: const Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppTheme.primaryBlue, width: 2),
-                  ),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 24),
+              Row(
+                children: [
+                  Container(
+                    height: 56,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade400),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('🇵🇰', style: TextStyle(fontSize: 20)),
+                        const SizedBox(width: 8),
+                        const Text('+92',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white,
+                      ),
+                      child: TextField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        style:
+                            const TextStyle(fontSize: 16, letterSpacing: 1.0),
+                        decoration: const InputDecoration(
+                          hintText: 'Mobile Number',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 18),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _sendOtp,
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        foregroundColor: Colors.white,
                         minimumSize: const Size(double.infinity, 56),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                              28), // Fully rounded like screenshot
                         ),
+                        elevation: 0,
                       ),
-                      child: const Text('Send OTP',
-                          style: TextStyle(fontSize: 18)),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Continue',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward),
+                        ],
+                      ),
                     ),
-              const Spacer(),
-              const Center(
-                child: Text(
-                  'Powered by Zenvyro Labs',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
             ],
           ),
         ),

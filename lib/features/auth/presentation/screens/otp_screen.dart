@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -53,11 +54,7 @@ class _OtpScreenState extends State<OtpScreen> {
             .eq('owner_id', res.user!.id);
 
         if (mounted) {
-          if (businesses.isEmpty) {
-            context.go('/create_business');
-          } else {
-            context.go('/home');
-          }
+          context.go('/pin_setup', extra: businesses.isNotEmpty);
         }
       }
     } catch (e) {
@@ -73,68 +70,98 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verify OTP'),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: AppTheme.primaryBlue,
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 60,
+      textStyle: const TextStyle(
+          fontSize: 32,
+          color: AppTheme.primaryBlue,
+          fontWeight: FontWeight.w900),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey, width: 4)),
       ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyWith(
+      decoration: const BoxDecoration(
+        border:
+            Border(bottom: BorderSide(color: AppTheme.primaryBlue, width: 4)),
+      ),
+    );
+
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Enter OTP',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryBlue,
+              IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
+                onPressed: () => context.pop(),
+                padding: EdgeInsets.zero,
+                alignment: Alignment.centerLeft,
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.menu_book_rounded,
+                        color: AppTheme.primaryBlue, size: 40),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'DigiKhata',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 64),
+              const Text(
+                'Enter OTP code',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
               Text(
-                'We have sent a 6-digit code to ${widget.phoneNumber}',
+                "We've sent sms to ${widget.phoneNumber}",
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, letterSpacing: 8),
-                decoration: InputDecoration(
-                  counterText: "",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppTheme.primaryBlue, width: 2),
-                  ),
+              const SizedBox(height: 48),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                Pinput(
+                  controller: _otpController,
+                  length: 6,
+                  defaultPinTheme: defaultPinTheme,
+                  focusedPinTheme: focusedPinTheme,
+                  submittedPinTheme: focusedPinTheme,
+                  showCursor: true,
+                  onCompleted: (pin) => _verifyOtp(),
+                  autofocus: true,
+                ),
+              const Spacer(),
+              const Text(
+                'Resend code in 36 seconds',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 24),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _verifyOtp,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 56),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Verify & Proceed',
-                          style: TextStyle(fontSize: 18)),
-                    ),
             ],
           ),
         ),
