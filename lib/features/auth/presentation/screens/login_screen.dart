@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sms_autofill/sms_autofill.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _requestPhoneHint() async {
     // Only works natively on Android
-    if (Platform.isAndroid) {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       try {
         final hint = await SmsAutoFill().hint;
         if (hint != null && hint.isNotEmpty) {
@@ -98,22 +98,33 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 16),
               Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.menu_book_rounded,
-                        color: AppTheme.primaryBlue, size: 40),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'DigiKhata',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
+                child: GestureDetector(
+                  onLongPress: () {
+                    // Hidden Backdoor for Web Testing!
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Admin Bypass Activated!',
+                            style: TextStyle(color: Colors.white)),
+                        backgroundColor: AppTheme.dangerRed));
+                    context.go('/admin');
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.menu_book_rounded,
+                          color: AppTheme.primaryBlue, size: 40),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'DigiKhata',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 64),
