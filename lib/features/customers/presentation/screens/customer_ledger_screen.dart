@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../ledger/providers/ledger_entries_provider.dart';
 import 'package:intl/intl.dart';
+import '../../providers/parties_provider.dart';
+import '../../../../core/utils/pdf_service.dart';
 
 class CustomerLedgerScreen extends ConsumerWidget {
   final String customerId; // Technically remotePartyId
@@ -30,6 +32,13 @@ class CustomerLedgerScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (entries) {
+          // Find party details securely from state
+          final parties = ref.read(partiesProvider).value ?? [];
+          final party = parties.firstWhere(
+            (p) => p.remoteId == customerId,
+            orElse: () => parties.first,
+          );
+
           // Calculate running balance
           double totalBalance = 0;
           for (var entry in entries) {
@@ -64,6 +73,39 @@ class CustomerLedgerScreen extends ConsumerWidget {
                               : AppTheme.dangerRed),
                     ),
                   ],
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: Colors.grey.shade100,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    if (entries.isEmpty) return;
+
+                    final mappedEntries = entries
+                        .map((e) => {
+                              'created_at': e.entryDate.toIso8601String(),
+                              'details': e.description,
+                              'entry_type': e.entryType,
+                              'amount': e.amount,
+                            })
+                        .toList();
+
+                    await PdfService.generateAndPrintLedger(
+                      partyName: party.name,
+                      partyPhone: party.phone ?? 'N/A',
+                      entries: mappedEntries,
+                      totalBalance: totalBalance,
+                    );
+                  },
+                  icon: const Icon(Icons.picture_as_pdf),
+                  label: const Text('Export PDF Ledger'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ),
               Expanded(

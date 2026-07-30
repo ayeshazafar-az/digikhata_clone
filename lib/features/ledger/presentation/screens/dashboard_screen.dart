@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import '../../../customers/presentation/screens/customer_list_screen.dart';
+import 'reports_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -14,7 +15,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   final List<Widget> _pages = [
     const CustomerListScreen(),
-    const Center(child: Text('Reports Page Coming Soon')),
+    const ReportsScreen(),
     const Center(child: Text('More Settings')),
   ];
 

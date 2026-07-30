@@ -10,19 +10,31 @@ void main() async {
   // Ensure Flutter bindings are initialized before calling native code
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase Cloud Messaging platform
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    // Initialize Firebase Cloud Messaging platform
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
 
-  // Initialize Supabase Backend
-  await Supabase.initialize(
-    url: 'https://eezvzrepirvvfpxekjob.supabase.co',
-    anonKey: 'sb_publishable_nU7ew7U-9DfFAutkJDkavA_kzEK_RwS',
-  );
+  try {
+    // Initialize Supabase Backend
+    await Supabase.initialize(
+      url: 'https://eezvzrepirvvfpxekjob.supabase.co',
+      anonKey: 'sb_publishable_nU7ew7U-9DfFAutkJDkavA_kzEK_RwS',
+    );
+  } catch (e) {
+    debugPrint('Supabase init error: $e');
+  }
 
-  // Initialize Local Isar Database
-  await LocalDb.init();
+  try {
+    // Initialize Local Isar Database
+    await LocalDb.init();
+  } catch (e) {
+    debugPrint('Isar init error: $e');
+  }
 
   // Wrap the app in ProviderScope for Riverpod State Management
   runApp(const ProviderScope(child: MyApp()));

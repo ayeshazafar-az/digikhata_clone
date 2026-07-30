@@ -35,6 +35,17 @@ class _OtpScreenState extends State<OtpScreen> {
       );
 
       if (res.user != null) {
+        final profile = await Supabase.instance.client
+            .from('profiles')
+            .select('role')
+            .eq('id', res.user!.id)
+            .maybeSingle();
+
+        if (profile != null && profile['role'] == 'super_admin') {
+          if (mounted) context.go('/admin');
+          return;
+        }
+
         // Check if user already has a business
         final List<dynamic> businesses = await Supabase.instance.client
             .from('businesses')
@@ -45,7 +56,6 @@ class _OtpScreenState extends State<OtpScreen> {
           if (businesses.isEmpty) {
             context.go('/create_business');
           } else {
-            // Can add logic to set the active/first business here if needed
             context.go('/home');
           }
         }

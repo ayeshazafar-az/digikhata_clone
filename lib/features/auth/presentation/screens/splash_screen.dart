@@ -14,12 +14,26 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
       final session = Supabase.instance.client.auth.currentSession;
       if (session != null) {
-        context.go('/home');
+        try {
+          final profile = await Supabase.instance.client
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .maybeSingle();
+
+          if (profile != null && profile['role'] == 'super_admin') {
+            if (mounted) context.go('/admin');
+          } else {
+            if (mounted) context.go('/home');
+          }
+        } catch (e) {
+          if (mounted) context.go('/home');
+        }
       } else {
-        context.go('/login');
+        if (mounted) context.go('/login');
       }
     });
   }
