@@ -18,6 +18,7 @@ import '../../features/admin/presentation/screens/admin_settings_screen.dart';
 import '../../features/ledger/presentation/screens/business_selection_screen.dart';
 import '../../features/ledger/presentation/screens/create_business_screen.dart';
 import '../../features/ledger/presentation/screens/qr_code_screen.dart';
+import '../../features/staff/presentation/screens/staff_book_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -134,6 +135,11 @@ class AppRouter {
         path: '/create_business',
         name: 'create_business',
         builder: (context, state) => const CreateBusinessScreen(),
+      ),
+      GoRoute(
+        path: '/staff_book',
+        name: 'staff_book',
+        builder: (context, state) => const StaffBookScreen(),
       ),
     ],
   );

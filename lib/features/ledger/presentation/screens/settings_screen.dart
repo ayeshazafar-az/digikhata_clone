@@ -107,6 +107,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 isBusiness: true),
           ),
           const Divider(),
+          ListTile(
+            leading: const Icon(Icons.badge, color: AppTheme.primaryBlue),
+            title: const Text('Staff Book'),
+            subtitle: const Text('Manage employees and attendance'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/staff_book'),
+          ),
+          const Divider(),
           SwitchListTile(
             secondary: Icon(
               isDark ? Icons.dark_mode : Icons.light_mode,
