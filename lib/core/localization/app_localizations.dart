@@ -21,6 +21,11 @@ class AppLocalizations {
       'add_customer': 'Add Customer',
       'add_supplier': 'Add Supplier',
       'party': 'Party',
+      'select_language': 'Select your language',
+      'lets_get_started': 'Let\'s get started!',
+      'enter_mobile': 'Please enter your mobile number',
+      'mobile_number': 'Mobile Number',
+      'continue_btn': 'Continue',
     },
     'ur': {
       'app_title': 'ڈیجی کھاتا کلون',
@@ -37,6 +42,11 @@ class AppLocalizations {
       'add_customer': 'گاہک شامل کریں',
       'add_supplier': 'سپلائر شامل کریں',
       'party': 'پارٹی',
+      'select_language': 'اپنی زبان منتخب کریں',
+      'lets_get_started': 'آئیے شروع کریں!',
+      'enter_mobile': 'براہ کرم اپنا موبائل نمبر درج کریں',
+      'mobile_number': 'موبائل نمبر',
+      'continue_btn': 'جاری رکھیں',
     },
   };
 

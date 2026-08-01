@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
 
-class LanguageSelectionScreen extends StatelessWidget {
+class LanguageSelectionScreen extends ConsumerWidget {
   const LanguageSelectionScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final List<String> languages = [
       'English',
       'Roman Urdu',
@@ -93,11 +95,11 @@ class LanguageSelectionScreen extends StatelessWidget {
                 color: Colors.white,
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24.0),
                       child: Text(
-                        'Select your language',
-                        style: TextStyle(
+                        ref.watch(l10nProvider).translate('select_language'),
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -116,12 +118,31 @@ class LanguageSelectionScreen extends StatelessWidget {
                         ),
                         itemCount: languages.length,
                         itemBuilder: (context, index) {
-                          // The first language gets a special highlighted border to mimic the original app
-                          final isSelected = index == 0;
+                          final currentLocale = ref.watch(localeProvider);
+
+                          // Determine if this box corresponds to the active language
+                          bool isSelected = false;
+                          if (index == 0 && currentLocale == 'en')
+                            isSelected = true;
+                          if (index == 2 && currentLocale == 'ur')
+                            isSelected = true;
 
                           return InkWell(
                             onTap: () {
-                              context.go('/onboarding');
+                              if (index == 0) {
+                                ref
+                                    .read(localeProvider.notifier)
+                                    .setLocale('en');
+                              } else if (index == 2) {
+                                ref
+                                    .read(localeProvider.notifier)
+                                    .setLocale('ur');
+                              }
+                              // Normally context.go('/onboarding') happens here, but we can just wait 300ms so they see the change
+                              Future.delayed(const Duration(milliseconds: 300),
+                                  () {
+                                if (context.mounted) context.go('/onboarding');
+                              });
                             },
                             child: Container(
                               alignment: Alignment.center,

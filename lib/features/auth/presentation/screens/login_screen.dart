@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:flutter/foundation.dart';
+import '../../../../core/localization/app_localizations.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
 
@@ -128,18 +130,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 64),
-              const Text(
-                "Let's get started!",
-                style: TextStyle(
+              Text(
+                ref.watch(l10nProvider).translate('lets_get_started'),
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   color: Colors.black87,
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Please enter your mobile number',
-                style: TextStyle(
+              Text(
+                ref.watch(l10nProvider).translate('enter_mobile'),
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
@@ -180,10 +182,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         keyboardType: TextInputType.phone,
                         style:
                             const TextStyle(fontSize: 16, letterSpacing: 1.0),
-                        decoration: const InputDecoration(
-                          hintText: 'Mobile Number',
+                        decoration: InputDecoration(
+                          hintText: ref
+                              .watch(l10nProvider)
+                              .translate('mobile_number'),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 18),
                         ),
                       ),
@@ -206,14 +210,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Continue',
-                              style: TextStyle(
+                          Text(
+                              ref.watch(l10nProvider).translate('continue_btn'),
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold)),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.arrow_forward),
                         ],
                       ),
                     ),
