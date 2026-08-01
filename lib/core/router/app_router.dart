@@ -11,6 +11,10 @@ import '../../features/customers/presentation/screens/customer_ledger_screen.dar
 import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/admin_users_screen.dart';
+import '../../features/customers/presentation/screens/customer_list_screen.dart';
+import '../../features/cashbook/presentation/screens/cashbook_screen.dart';
+import '../../features/stock/presentation/screens/stock_book_screen.dart';
+import '../../features/billing/presentation/screens/bill_book_screen.dart';
 import '../../features/admin/presentation/screens/admin_businesses_screen.dart';
 import '../../features/admin/presentation/screens/admin_announcements_screen.dart';
 import '../../features/admin/presentation/screens/admin_transactions_screen.dart';
@@ -140,6 +144,26 @@ class AppRouter {
         path: '/staff_book',
         name: 'staff_book',
         builder: (context, state) => const StaffBookScreen(),
+      ),
+      GoRoute(
+        path: '/customer_list',
+        name: 'customer_list',
+        builder: (context, state) => const CustomerListScreen(),
+      ),
+      GoRoute(
+        path: '/cashbook',
+        name: 'cashbook',
+        builder: (context, state) => const CashBookScreen(),
+      ),
+      GoRoute(
+        path: '/stock_book',
+        name: 'stock_book',
+        builder: (context, state) => const StockBookScreen(),
+      ),
+      GoRoute(
+        path: '/bill_book',
+        name: 'bill_book',
+        builder: (context, state) => const BillBookScreen(),
       ),
     ],
   );

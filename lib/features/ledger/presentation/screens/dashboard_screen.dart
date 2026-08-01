@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
-import '../../../customers/presentation/screens/customer_list_screen.dart';
+import 'home_grid_screen.dart';
 import 'settings_screen.dart';
-import '../../../cashbook/presentation/screens/cashbook_screen.dart';
-import '../../../stock/presentation/screens/stock_book_screen.dart';
-import '../../../billing/presentation/screens/bill_book_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -17,43 +14,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const CustomerListScreen(), // Home / Khata
-    const CashBookScreen(), // Cashbook (New)
-    const StockBookScreen(), // Stock (New)
-    const BillBookScreen(), // Bills (New)
-    const SettingsScreen(), // More
+    const HomeGridScreen(),
+    const Center(child: Text('Shopping Coming Soon')),
+    const Center(child: Text('DIGI POS Coming Soon')),
+    const Center(child: Text('DIGI CASH Coming Soon')),
+    const SettingsScreen(), // Used for the empty 5th slot behind FAB
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _currentIndex = 4; // Assuming FAB triggers the More/Settings panel
+          });
+        },
+        backgroundColor: AppTheme.dangerRed,
+        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        currentIndex: _currentIndex > 3
+            ? 0
+            : _currentIndex, // 4 doesn't exist in items list
+        onTap: (index) {
+          if (index == 4) return;
+          setState(() => _currentIndex = index);
+        },
         selectedItemColor: AppTheme.primaryBlue,
         unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed, // Allows more than 3 items
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.menu_book),
+            label: 'Khata',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Cashbook',
+            icon: Icon(Icons.shopping_bag_outlined),
+            label: 'Shop',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.inventory_2),
-            label: 'Stock',
+            icon: Icon(Icons.point_of_sale),
+            label: 'DIGI POS',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
-            label: 'Bills',
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            label: 'DIGI CASH',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: 'More',
+            icon: SizedBox.shrink(),
+            label: '',
           ),
         ],
       ),
