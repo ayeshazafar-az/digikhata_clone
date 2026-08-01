@@ -59,3 +59,17 @@ ALTER TABLE public.bills ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage bills for their businesses" ON public.bills FOR ALL USING (
   business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
 );
+
+-- 5. EXPENSE ENTRIES TABLE (Expense Book)
+CREATE TABLE public.expense_entries (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  business_id uuid NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
+  category text NOT NULL,
+  amount numeric NOT NULL,
+  remark text,
+  created_at timestamp with time zone DEFAULT now()
+);
+ALTER TABLE public.expense_entries ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage expenses for their businesses" ON public.expense_entries FOR ALL USING (
+  business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
+);

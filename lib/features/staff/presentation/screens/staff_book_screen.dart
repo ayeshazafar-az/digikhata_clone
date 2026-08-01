@@ -222,7 +222,7 @@ class StaffBookScreen extends ConsumerWidget {
           bottom: 24,
           right: 24,
           child: ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () => _showAddStaffModal(context, ref),
             icon: const Icon(Icons.person_add, color: Colors.white),
             label: const Text('ADD STAFF',
                 style: TextStyle(
@@ -307,28 +307,6 @@ class StaffBookScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             // Total Salary Metric
-            Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF252525),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Total Salary',
-                      style: TextStyle(color: Colors.white, fontSize: 16)),
-                  Text('Rs 0',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Date Filter Selectors
             Expanded(
               child: staffAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -337,7 +315,65 @@ class StaffBookScreen extends ConsumerWidget {
                         style: const TextStyle(color: Colors.white))),
                 data: (staffList) {
                   if (staffList.isEmpty) return _buildPayrollEmptyState();
-                  return ListView(children: const []);
+
+                  double totalSalary = 0;
+                  for (var s in staffList) {
+                    totalSalary +=
+                        double.tryParse(s['monthly_salary'].toString()) ?? 0;
+                  }
+
+                  return Column(children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF252525),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Total Salary Generated',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16)),
+                          Text('Rs $totalSalary',
+                              style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                        child: ListView.separated(
+                            padding: const EdgeInsets.only(top: 8, bottom: 80),
+                            itemCount: staffList.length,
+                            separatorBuilder: (_, __) =>
+                                Divider(height: 1, color: Colors.grey.shade800),
+                            itemBuilder: (context, index) {
+                              final staff = staffList[index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      Colors.amber.withOpacity(0.2),
+                                  child: const Icon(Icons.assignment_ind,
+                                      color: Colors.amber),
+                                ),
+                                title: Text(staff['name'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white)),
+                                subtitle: const Text('Present: 28 Days',
+                                    style: TextStyle(color: Colors.grey)),
+                                trailing: Text('Rs. ${staff['monthly_salary']}',
+                                    style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                              );
+                            }))
+                  ]);
                 },
               ),
             ),
@@ -378,6 +414,110 @@ class StaffBookScreen extends ConsumerWidget {
           const Text('Add staff properly first to trigger generation.',
               style: TextStyle(color: Colors.grey)),
         ],
+      ),
+    );
+  }
+
+  void _showAddStaffModal(BuildContext context, WidgetRef ref) {
+    final nameController = TextEditingController();
+    final salaryController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF252525),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Add Staff',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+            const SizedBox(height: 24),
+            TextField(
+              controller: nameController,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 20),
+              decoration: const InputDecoration(
+                labelText: 'Staff Name',
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: salaryController,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              decoration: const InputDecoration(
+                prefixText: 'Rs. ',
+                prefixStyle: TextStyle(color: Colors.grey),
+                labelText: 'Monthly Salary',
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () async {
+                if (nameController.text.isEmpty) return;
+                try {
+                  final supabase = Supabase.instance.client;
+                  final pRes = await supabase
+                      .from('profiles')
+                      .select('active_business_id')
+                      .single();
+                  final bId = pRes['active_business_id'];
+                  if (bId != null) {
+                    await supabase.from('staff').insert({
+                      'business_id': bId,
+                      'name': nameController.text,
+                      'monthly_salary':
+                          double.tryParse(salaryController.text) ?? 0,
+                    });
+                    ref.invalidate(staffProvider);
+                    if (context.mounted) Navigator.pop(ctx);
+                  }
+                } catch (e) {
+                  if (context.mounted)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Error adding staff')));
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 54),
+                backgroundColor: const Color(0xFFF05A28),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('SAVE STAFF',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 16)),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }

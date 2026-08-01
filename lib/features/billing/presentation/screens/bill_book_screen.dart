@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
+import '../../../stock/presentation/screens/stock_book_screen.dart'; // import stockProvider
 
 final billsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final supabase = Supabase.instance.client;
@@ -20,6 +21,22 @@ final billsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
 
   return List<Map<String, dynamic>>.from(res);
 });
+
+// Cart State: productId -> quantity
+class CartNotifier extends StateNotifier<Map<String, int>> {
+  CartNotifier() : super({});
+
+  void add(String pid) {
+    state = {...state, pid: (state[pid] ?? 0) + 1};
+  }
+
+  void clear() {
+    state = {};
+  }
+}
+
+final cartProvider = StateNotifierProvider<CartNotifier, Map<String, int>>(
+    (ref) => CartNotifier());
 
 class BillBookScreen extends ConsumerWidget {
   const BillBookScreen({super.key});
@@ -82,7 +99,7 @@ class BillBookScreen extends ConsumerWidget {
               child: TabBarView(
                 children: [
                   _buildBillsTab(context, ref),
-                  _buildCounterSaleTab(context),
+                  _buildCounterSaleTab(context, ref),
                 ],
               ),
             ),
@@ -294,7 +311,10 @@ class BillBookScreen extends ConsumerWidget {
   }
 
   // POS MATRIX COUNTER SALE
-  Widget _buildCounterSaleTab(BuildContext context) {
+  Widget _buildCounterSaleTab(BuildContext context, WidgetRef ref) {
+    final stockAsync = ref.watch(stockProvider);
+    final cart = ref.watch(cartProvider);
+
     return Column(
       children: [
         // Search Bar
@@ -305,11 +325,11 @@ class BillBookScreen extends ConsumerWidget {
             color: const Color(0xFF252525),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: const Row(
             children: [
-              const Icon(Icons.search, color: Colors.grey),
-              const SizedBox(width: 8),
-              const Expanded(
+              Icon(Icons.search, color: Colors.grey),
+              SizedBox(width: 8),
+              Expanded(
                 child: TextField(
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -363,71 +383,179 @@ class BillBookScreen extends ConsumerWidget {
               // Grid View
               Expanded(
                 child: Container(
-                  color: const Color(
-                      0xFF1C1111), // Reddish dark tone from screenshot
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(12),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.7,
-                    ),
-                    itemCount: 6,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.green),
-                            borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xFF252525),
+                  color: const Color(0xFF1C1111), // Reddish dark tone
+                  child: stockAsync.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => const Center(
+                          child: Text('Error',
+                              style: TextStyle(color: Colors.white))),
+                      data: (products) {
+                        return GridView.builder(
+                          padding: const EdgeInsets.all(12),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.7,
                           ),
-                          child: const Center(
-                              child: Icon(Icons.add,
-                                  color: Colors.green, size: 40)),
+                          itemCount: products.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return InkWell(
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Use Stock Book to Add Items')));
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.green),
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: const Color(0xFF252525),
+                                  ),
+                                  child: const Center(
+                                      child: Icon(Icons.add,
+                                          color: Colors.green, size: 40)),
+                                ),
+                              );
+                            }
+                            final p = products[index - 1];
+                            final pid = p['id'].toString();
+                            final qtyInCart = cart[pid] ?? 0;
+
+                            return InkWell(
+                              onTap: () =>
+                                  ref.read(cartProvider.notifier).add(pid),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.white24),
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0xFF252525),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.inventory_2,
+                                              color: Colors.grey, size: 40),
+                                          const SizedBox(height: 12),
+                                          Text(p['item_name'],
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(height: 4),
+                                          Text('Rs. ${p['selling_price']}',
+                                              style: const TextStyle(
+                                                  color: Colors.green)),
+                                        ],
+                                      ),
+                                    ),
+                                    if (qtyInCart > 0)
+                                      Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: CircleAvatar(
+                                            radius: 12,
+                                            backgroundColor:
+                                                AppTheme.secondaryOrange,
+                                            child: Text(qtyInCart.toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ))
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         );
-                      }
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white24),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      );
-                    },
-                  ),
+                      }),
                 ),
               )
             ],
           ),
         ),
         // Cart Bottom Bar
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          color: const Color(0xFF5A3125), // Dark brown cart color
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+        Consumer(builder: (context, ref, child) {
+          final currentCart = ref.watch(cartProvider);
+          final activeProducts = ref.watch(stockProvider).value ?? [];
+
+          int totalItems = 0;
+          double totalPrice = 0;
+
+          currentCart.forEach((pid, qty) {
+            totalItems += qty;
+            final prod = activeProducts
+                .firstWhere((p) => p['id'].toString() == pid, orElse: () => {});
+            if (prod.isNotEmpty) {
+              totalPrice +=
+                  (double.tryParse(prod['selling_price'].toString()) ?? 0) *
+                      qty;
+            }
+          });
+
+          return InkWell(
+            onTap: () async {
+              if (totalItems == 0) return;
+              // Checkout Logic
+              final supabase = Supabase.instance.client;
+              final pRes = await supabase
+                  .from('profiles')
+                  .select('active_business_id')
+                  .single();
+              final bId = pRes['active_business_id'];
+              if (bId != null) {
+                await supabase.from('bills').insert({
+                  'business_id': bId,
+                  'customer_name': 'Walk-in Counter Sale',
+                  'total_amount': totalPrice,
+                  'status': 'paid' // immediate checkout mark as paid
+                });
+                ref.read(cartProvider.notifier).clear();
+                ref.invalidate(billsProvider);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Bill Generated and Stock Checked Out!')));
+                }
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              color: const Color(0xFF5A3125), // Dark brown cart color
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.shopping_cart_checkout,
-                      color: Colors.white, size: 24),
-                  SizedBox(width: 8),
-                  Text('0 Items',
-                      style: TextStyle(
+                  Row(
+                    children: [
+                      const Icon(Icons.shopping_cart_checkout,
+                          color: Colors.white, size: 24),
+                      const SizedBox(width: 8),
+                      Text('$totalItems Items',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  Text('Rs $totalPrice (CHECKOUT)',
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                 ],
               ),
-              Text('Rs 0.00',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold)),
-            ],
-          ),
-        )
+            ),
+          );
+        })
       ],
     );
   }
