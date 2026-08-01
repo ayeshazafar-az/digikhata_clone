@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/utils/pdf_service.dart';
 import '../../../stock/presentation/screens/stock_book_screen.dart'; // import stockProvider
 
 final billsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -506,7 +507,7 @@ class BillBookScreen extends ConsumerWidget {
           return InkWell(
             onTap: () async {
               if (totalItems == 0) return;
-              // Checkout Logic
+              // Real Checkout Logic
               final supabase = Supabase.instance.client;
               final pRes = await supabase
                   .from('profiles')
@@ -514,18 +515,57 @@ class BillBookScreen extends ConsumerWidget {
                   .single();
               final bId = pRes['active_business_id'];
               if (bId != null) {
+                // Generate Invoice Data
+                List<Map<String, dynamic>> invoiceItems = [];
+
+                // 1. Deduct Stock for all cart items!
+                for (var pid in currentCart.keys) {
+                  final qty = currentCart[pid]!;
+                  final prod = activeProducts.firstWhere(
+                      (p) => p['id'].toString() == pid,
+                      orElse: () => {});
+                  if (prod.isNotEmpty) {
+                    final currentStock =
+                        int.tryParse(prod['opening_stock'].toString()) ?? 0;
+                    final price =
+                        double.tryParse(prod['selling_price'].toString()) ??
+                            0.0;
+
+                    // Supabase mutation
+                    await supabase.from('products').update({
+                      'opening_stock': (currentStock - qty).toString(),
+                    }).eq('id', pid);
+
+                    invoiceItems.add({
+                      'name': prod['item_name'],
+                      'qty': qty,
+                      'price': price,
+                    });
+                  }
+                }
+
+                // 2. Generate Real Bill Record
                 await supabase.from('bills').insert({
                   'business_id': bId,
                   'customer_name': 'Walk-in Counter Sale',
                   'total_amount': totalPrice,
                   'status': 'paid' // immediate checkout mark as paid
                 });
+
+                // 3. Clear and Invalidate Providers
                 ref.read(cartProvider.notifier).clear();
                 ref.invalidate(billsProvider);
+                ref.invalidate(stockProvider);
+
+                // 4. Generate And Launch Invoice PDF!
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Bill Generated and Stock Checked Out!')));
+                      content: Text('Sale logged. Generating PDF Invoice...'),
+                      backgroundColor: Colors.green));
                 }
+
+                await PdfService.generateInvoice(
+                    items: invoiceItems, totalAmount: totalPrice);
               }
             },
             child: Container(

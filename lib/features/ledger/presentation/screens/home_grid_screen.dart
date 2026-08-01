@@ -23,8 +23,14 @@ class HomeGridScreen extends StatelessWidget {
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Zenvyro's Ledger",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              const Icon(Icons.shield_moon,
+                  color: AppTheme.primaryBlue, size: 24),
+              const SizedBox(width: 8),
+              const Text("Zenvyro's Ledger",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87)),
               SizedBox(width: 4),
               Icon(Icons.keyboard_arrow_down, size: 20),
             ],

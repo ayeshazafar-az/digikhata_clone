@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
-              Icons.account_balance_wallet,
+              Icons.shield_moon,
               size: 100,
               color: Colors.white,
             ),

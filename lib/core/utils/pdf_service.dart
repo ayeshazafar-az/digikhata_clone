@@ -162,4 +162,102 @@ class PdfService {
       ),
     );
   }
+
+  static Future<void> generateInvoice({
+    required List<Map<String, dynamic>> items,
+    required double totalAmount,
+  }) async {
+    final pdf = pw.Document();
+    final dateStr = DateFormat('dd MMM yyyy - hh:mm a').format(DateTime.now());
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.roll80, // Receipt Format
+        margin: const pw.EdgeInsets.all(12),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(
+                child: pw.Text('Zenvyro POS Invoice',
+                    style: pw.TextStyle(
+                        fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('Date: $dateStr',
+                  style: const pw.TextStyle(fontSize: 10)),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Expanded(
+                      flex: 2,
+                      child: pw.Text('Item',
+                          style: pw.TextStyle(
+                              fontSize: 10, fontWeight: pw.FontWeight.bold))),
+                  pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Qty',
+                          style: pw.TextStyle(
+                              fontSize: 10, fontWeight: pw.FontWeight.bold),
+                          textAlign: pw.TextAlign.center)),
+                  pw.Expanded(
+                      flex: 1,
+                      child: pw.Text('Price',
+                          style: pw.TextStyle(
+                              fontSize: 10, fontWeight: pw.FontWeight.bold),
+                          textAlign: pw.TextAlign.right)),
+                ],
+              ),
+              pw.Divider(),
+              for (var i in items)
+                pw.Padding(
+                  padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Expanded(
+                          flex: 2,
+                          child: pw.Text(i['name'],
+                              style: const pw.TextStyle(fontSize: 10))),
+                      pw.Expanded(
+                          flex: 1,
+                          child: pw.Text(i['qty'].toString(),
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.center)),
+                      pw.Expanded(
+                          flex: 1,
+                          child: pw.Text(i['price'].toString(),
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.right)),
+                    ],
+                  ),
+                ),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('TOTAL:',
+                      style: pw.TextStyle(
+                          fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  pw.Text('Rs. $totalAmount',
+                      style: pw.TextStyle(
+                          fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                ],
+              ),
+              pw.SizedBox(height: 20),
+              pw.Center(
+                  child: pw.Text('Thank you! Powered by Zenvyro Labs',
+                      style: const pw.TextStyle(fontSize: 8))),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
+  }
 }
