@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // Intrinsic
 import '../core/router/app_router.dart';
+import '../core/localization/app_localizations.dart';
 import 'theme.dart';
 import 'theme_provider.dart';
 
@@ -17,6 +19,15 @@ class MyApp extends ConsumerWidget {
       themeMode: themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('ur', ''), // Urdu Support Enabled natively!
+      ],
       routerConfig: AppRouter.router,
     );
   }

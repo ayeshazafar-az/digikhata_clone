@@ -1,7 +1,7 @@
 -- Run this inside your Supabase SQL Editor to prepare the database for Phase 5 Mega Modules
 
 -- 1. PRODUCTS TABLE (Stock Book)
-CREATE TABLE public.products (
+CREATE TABLE IF NOT EXISTS public.products (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   business_id uuid NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
   item_name text NOT NULL,
@@ -13,12 +13,13 @@ CREATE TABLE public.products (
   created_at timestamp with time zone DEFAULT now()
 );
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage products for their businesses" ON public.products;
 CREATE POLICY "Users can manage products for their businesses" ON public.products FOR ALL USING (
   business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
 );
 
 -- 2. CASHBOOK ENTRIES TABLE (Physical Drawer Cash)
-CREATE TABLE public.cashbook_entries (
+CREATE TABLE IF NOT EXISTS public.cashbook_entries (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   business_id uuid NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
   entry_type text NOT NULL CHECK (entry_type IN ('cash_in', 'cash_out')),
@@ -27,12 +28,13 @@ CREATE TABLE public.cashbook_entries (
   created_at timestamp with time zone DEFAULT now()
 );
 ALTER TABLE public.cashbook_entries ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage cashbook for their businesses" ON public.cashbook_entries;
 CREATE POLICY "Users can manage cashbook for their businesses" ON public.cashbook_entries FOR ALL USING (
   business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
 );
 
 -- 3. STAFF TABLE (Staff Book / Attendance)
-CREATE TABLE public.staff (
+CREATE TABLE IF NOT EXISTS public.staff (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   business_id uuid NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
   name text NOT NULL,
@@ -41,12 +43,13 @@ CREATE TABLE public.staff (
   created_at timestamp with time zone DEFAULT now()
 );
 ALTER TABLE public.staff ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage staff for their businesses" ON public.staff;
 CREATE POLICY "Users can manage staff for their businesses" ON public.staff FOR ALL USING (
   business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
 );
 
 -- 4. BILLS TABLE (Bill Book / Invoicing)
-CREATE TABLE public.bills (
+CREATE TABLE IF NOT EXISTS public.bills (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   business_id uuid NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
   customer_name text NOT NULL,
@@ -56,12 +59,13 @@ CREATE TABLE public.bills (
   created_at timestamp with time zone DEFAULT now()
 );
 ALTER TABLE public.bills ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage bills for their businesses" ON public.bills;
 CREATE POLICY "Users can manage bills for their businesses" ON public.bills FOR ALL USING (
   business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
 );
 
 -- 5. EXPENSE ENTRIES TABLE (Expense Book)
-CREATE TABLE public.expense_entries (
+CREATE TABLE IF NOT EXISTS public.expense_entries (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   business_id uuid NOT NULL REFERENCES public.businesses(id) ON DELETE CASCADE,
   category text NOT NULL,
@@ -70,6 +74,7 @@ CREATE TABLE public.expense_entries (
   created_at timestamp with time zone DEFAULT now()
 );
 ALTER TABLE public.expense_entries ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage expenses for their businesses" ON public.expense_entries;
 CREATE POLICY "Users can manage expenses for their businesses" ON public.expense_entries FOR ALL USING (
   business_id IN (SELECT id FROM public.businesses WHERE owner_id = auth.uid())
 );
