@@ -28,123 +28,258 @@ class StockBookScreen extends ConsumerWidget {
     final stockAsync = ref.watch(stockProvider);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF1A1A1A),
       appBar: AppBar(
-        title: const Text('Stock & Inventory',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: AppTheme.primaryBlue,
+        title: const Text('Stock Book',
+            style: TextStyle(color: Colors.white, fontSize: 20)),
+        backgroundColor: const Color(0xFF1A1A1A),
         foregroundColor: Colors.white,
-      ),
-      body: stockAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => _buildEmptyState(context, ref),
-        data: (products) {
-          if (products.isEmpty) return _buildEmptyState(context, ref);
-
-          double totalStockValue = 0;
-          for (var p in products) {
-            totalStockValue += (double.parse(p['current_stock'].toString()) *
-                double.parse(p['purchase_price'].toString()));
-          }
-
-          return Column(
-            children: [
-              _buildHeader(totalStockValue),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: products.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final p = products[index];
-                    return ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
-                            shape: BoxShape.circle),
-                        child: const Icon(Icons.inventory_2,
-                            color: AppTheme.primaryBlue),
-                      ),
-                      title: Text(p['item_name'],
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      subtitle:
-                          Text('Selling Price: Rs. ${p['selling_price']}'),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text('${p['current_stock']} ${p['unit']}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: AppTheme.successGreen)),
-                          const Text('In Stock',
-                              style:
-                                  TextStyle(fontSize: 10, color: Colors.grey)),
-                        ],
-                      ),
-                      onTap: () {
-                        // Action to edit stock, can be added later
-                      },
-                    );
-                  },
-                ),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          Padding(
+            padding:
+                const EdgeInsets.only(right: 16.0, top: 12.0, bottom: 12.0),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.secondaryOrange,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                minimumSize: Size.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
               ),
-            ],
-          );
-        },
+              child: const Text('STOCK VALUE',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold)),
+            ),
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddProductModal(context, ref),
-        backgroundColor: AppTheme.primaryBlue,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add Item',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+      body: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            const TabBar(
+              indicatorColor: Colors.white,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              tabs: [
+                Tab(text: 'All Items'),
+                Tab(text: 'Low Stock'),
+              ],
+            ),
+            Expanded(
+              child: stockAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(
+                    child: Text('Error: $err',
+                        style: const TextStyle(color: Colors.white))),
+                data: (products) {
+                  return TabBarView(
+                    children: [
+                      _buildStockView(context, ref, products, false), // All
+                      _buildStockView(
+                          context,
+                          ref,
+                          products
+                              .where((p) =>
+                                  double.parse(p['current_stock'].toString()) <
+                                  5)
+                              .toList(),
+                          true), // Low
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 24.0, right: 8.0),
+        child: ElevatedButton.icon(
+          onPressed: () => _showAddProductModal(context, ref),
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text('ADD ITEM',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(
+                0xFFF05A28), // Matches the specific orange from screenshot
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            minimumSize: Size.zero,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(double totalValue) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withOpacity(0.05),
-        border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text('Total Stock Value',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Text(
-            'Rs. $totalValue',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              color: AppTheme.primaryBlue,
+  Widget _buildStockView(BuildContext context, WidgetRef ref,
+      List<Map<String, dynamic>> products, bool isLowStock) {
+    return Column(
+      children: [
+        _buildStatsHeader(products.length),
+        if (products.isEmpty)
+          Expanded(child: _buildEmptyState())
+        else
+          Expanded(
+            child: ListView.separated(
+              itemCount: products.length,
+              separatorBuilder: (_, __) =>
+                  Divider(height: 1, color: Colors.grey.shade800),
+              itemBuilder: (context, index) {
+                final p = products[index];
+                return ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  title: Text(p['item_name'],
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white)),
+                  subtitle: Text('Selling Price: Rs. ${p['selling_price']}',
+                      style: const TextStyle(color: Colors.grey)),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('${p['current_stock']} ${p['unit']}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: AppTheme.successGreen)),
+                      const Text('In Stock',
+                          style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
+        const SizedBox(height: 80), // Fab space
+      ],
+    );
+  }
+
+  Widget _buildStatsHeader(int totalItems) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF252525),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Total Items: $totalItems',
+                        style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
+                    const SizedBox(height: 4),
+                    const Text('View Rate List',
+                        style:
+                            TextStyle(color: Colors.redAccent, fontSize: 14)),
+                  ],
+                ),
+                const Icon(Icons.chevron_right, color: Colors.white, size: 28),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF252525),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                      child: Text('Stock IN Report',
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold))),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF252525),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                      child: Text('Stock OUT Report',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold))),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
+  Widget _buildEmptyState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.inventory_2_outlined,
-              size: 80, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text('No Items in Stock',
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text('Add products to track inventory and generate bills.',
-              style: TextStyle(color: Colors.grey.shade500)),
+          Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10, left: 10),
+                child: const Icon(Icons.inventory,
+                    size: 100, color: Color(0xFFE8C17F)),
+              ),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Colors.green),
+                child: const Icon(Icons.lock, color: Colors.white, size: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("1- Add items",
+                    style:
+                        TextStyle(color: Colors.grey, fontSize: 16, height: 2)),
+                Text("2- Add stock in/out entries",
+                    style:
+                        TextStyle(color: Colors.grey, fontSize: 16, height: 2)),
+                Text("3- Manage your stock easily",
+                    style:
+                        TextStyle(color: Colors.grey, fontSize: 16, height: 2)),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -160,6 +295,9 @@ class StockBookScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: const Color(0xFF252525),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(ctx).viewInsets.bottom,
@@ -176,12 +314,19 @@ class StockBookScreen extends ConsumerWidget {
                   style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryBlue)),
+                      color: AppTheme.secondaryOrange)),
               const SizedBox(height: 24),
               TextField(
                 controller: nameController,
+                style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
-                    labelText: 'Item Name', border: OutlineInputBorder()),
+                  labelText: 'Item Name',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                ),
               ),
               const SizedBox(height: 16),
               Row(
@@ -190,17 +335,29 @@ class StockBookScreen extends ConsumerWidget {
                       child: TextField(
                           controller: sellPriceController,
                           keyboardType: TextInputType.number,
+                          style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                              labelText: 'Selling Price (Rs)',
-                              border: OutlineInputBorder()))),
+                            labelText: 'Selling Price (Rs)',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                          ))),
                   const SizedBox(width: 16),
                   Expanded(
                       child: TextField(
                           controller: buyPriceController,
                           keyboardType: TextInputType.number,
+                          style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                              labelText: 'Purchase Price (Rs)',
-                              border: OutlineInputBorder()))),
+                            labelText: 'Purchase Price (Rs)',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                          ))),
                 ],
               ),
               const SizedBox(height: 16),
@@ -210,16 +367,28 @@ class StockBookScreen extends ConsumerWidget {
                       child: TextField(
                           controller: stockController,
                           keyboardType: TextInputType.number,
+                          style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                              labelText: 'Opening Stock',
-                              border: OutlineInputBorder()))),
+                            labelText: 'Opening Stock',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                          ))),
                   const SizedBox(width: 16),
                   Expanded(
                       child: TextField(
                           controller: unitController,
+                          style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                              labelText: 'Unit (pcs, kg, etc)',
-                              border: OutlineInputBorder()))),
+                            labelText: 'Unit (pcs, kg, etc)',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                          ))),
                 ],
               ),
               const SizedBox(height: 24),
@@ -252,19 +421,21 @@ class StockBookScreen extends ConsumerWidget {
                       ref.invalidate(stockProvider);
                       Navigator.pop(ctx);
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content:
-                              Text('Error: Database tables not created yet!')));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Error saving item.')));
                     }
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: AppTheme.primaryBlue,
+                  minimumSize: const Size(double.infinity, 54),
+                  backgroundColor: const Color(0xFFF05A28),
                   foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text('SAVE ITEM',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
               const SizedBox(height: 24),
             ],

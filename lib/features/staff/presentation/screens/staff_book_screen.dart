@@ -26,83 +26,357 @@ class StaffBookScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final staffAsync = ref.watch(staffProvider);
-
     return Scaffold(
+      backgroundColor: const Color(0xFF151515), // Dark Theme
       appBar: AppBar(
         title: const Text('Staff Book',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: AppTheme.primaryBlue,
+            style: TextStyle(color: Colors.white, fontSize: 18)),
+        backgroundColor: const Color(0xFF151515),
         foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: staffAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => _buildEmptyState(context),
-        data: (staffList) {
-          if (staffList.isEmpty) return _buildEmptyState(context);
-
-          return ListView.separated(
-            padding: const EdgeInsets.only(top: 16, bottom: 80),
-            itemCount: staffList.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final staff = staffList[index];
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.2),
-                  child: Text(
-                    (staff['name'] ?? '?').substring(0, 1).toUpperCase(),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryBlue),
-                  ),
-                ),
-                title: Text(staff['name'],
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Monthly: Rs. ${staff['monthly_salary']}'),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Attendance Marked!')));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.successGreen,
-                      foregroundColor: Colors.white),
-                  child: const Text('Mark Present'),
-                ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Action reserved for phase 6!')));
-        },
-        backgroundColor: AppTheme.primaryBlue,
-        icon: const Icon(Icons.person_add, color: Colors.white),
-        label: const Text('Add Staff',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+      body: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            const TabBar(
+              indicatorColor: AppTheme.secondaryOrange,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              tabs: [
+                Tab(text: 'Attendance'),
+                Tab(text: 'Payroll'),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildAttendanceTab(context, ref),
+                  _buildPayrollTab(context, ref),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildAttendanceTab(BuildContext context, WidgetRef ref) {
+    final staffAsync = ref.watch(staffProvider);
+    return Stack(
+      children: [
+        Column(
+          children: [
+            // Date Scroller
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF252525),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.chevron_left, color: Colors.white),
+                  Text('Sat, 01 Aug 26',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16)),
+                  Icon(Icons.chevron_right, color: Colors.white),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Present/Absent Metrics
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF252525),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.2),
+                                shape: BoxShape.circle),
+                            child: const Text(' P ',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text('Rs 0',
+                              style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16)),
+                          const Text('0 Present',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF252525),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.2),
+                                shape: BoxShape.circle),
+                            child: const Text(' A ',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text('Rs 0',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16)),
+                          const Text('0 Absent',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: staffAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(
+                    child: Text('Error: $err',
+                        style: const TextStyle(color: Colors.white))),
+                data: (staffList) {
+                  if (staffList.isEmpty) return _buildAttendanceEmptyState();
+                  return ListView.separated(
+                    padding: const EdgeInsets.only(top: 16, bottom: 80),
+                    itemCount: staffList.length,
+                    separatorBuilder: (_, __) =>
+                        Divider(height: 1, color: Colors.grey.shade800),
+                    itemBuilder: (context, index) {
+                      final staff = staffList[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blue.withOpacity(0.2),
+                          child: Text(
+                              (staff['name'] ?? '?')
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue)),
+                        ),
+                        title: Text(staff['name'],
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white)),
+                        subtitle: Text(
+                            'Monthly: Rs. ${staff['monthly_salary']}',
+                            style: const TextStyle(color: Colors.grey)),
+                        trailing: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8))),
+                          child: const Text('Mark Present',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 24,
+          right: 24,
+          child: ElevatedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.person_add, color: Colors.white),
+            label: const Text('ADD STAFF',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF05A28),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAttendanceEmptyState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.badge_outlined, size: 80, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text('No Staff Added',
+          Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10, left: 10),
+                child: const Icon(Icons.groups,
+                    size: 100, color: Color(0xFFE8C17F)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("1- Add staff",
+                    style:
+                        TextStyle(color: Colors.grey, fontSize: 16, height: 2)),
+                Text("2- Mark attendance daily",
+                    style:
+                        TextStyle(color: Colors.grey, fontSize: 16, height: 2)),
+                Text("3- Automatically manages salary",
+                    style:
+                        TextStyle(color: Colors.grey, fontSize: 16, height: 2)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayrollTab(BuildContext context, WidgetRef ref) {
+    final staffAsync = ref.watch(staffProvider);
+
+    return Stack(
+      children: [
+        Column(
+          children: [
+            // Month Scroller
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF252525),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.chevron_left, color: Colors.white),
+                  Text('August 2026',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16)),
+                  Icon(Icons.chevron_right, color: Colors.white),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Total Salary Metric
+            Container(
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF252525),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Total Salary',
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                  Text('Rs 0',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Date Filter Selectors
+            Expanded(
+              child: staffAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(
+                    child: Text('Error: $err',
+                        style: const TextStyle(color: Colors.white))),
+                data: (staffList) {
+                  if (staffList.isEmpty) return _buildPayrollEmptyState();
+                  return ListView(children: const []);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPayrollEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10, left: 10),
+                child: const Icon(Icons.assignment,
+                    size: 100, color: Color(0xFFE8C17F)),
+              ),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Colors.green),
+                child: const Icon(Icons.lock, color: Colors.white, size: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          const Text('No records for this month',
               style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.bold)),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18)),
           const SizedBox(height: 8),
-          Text('Manage employee attendance and salaries easily.',
-              style: TextStyle(color: Colors.grey.shade500)),
+          const Text('Add staff properly first to trigger generation.',
+              style: TextStyle(color: Colors.grey)),
         ],
       ),
     );

@@ -180,7 +180,8 @@ class HomeGridScreen extends StatelessWidget {
         _buildGridItem(
             Icons.receipt_long, 'Bills', () => context.push('/bill_book')),
         _buildGridItem(Icons.badge, 'Staff', () => context.push('/staff_book')),
-        _buildGridItem(Icons.payments, 'Expense', () {}),
+        _buildGridItem(
+            Icons.payments, 'Expense', () => context.push('/expense')),
       ],
     );
   }

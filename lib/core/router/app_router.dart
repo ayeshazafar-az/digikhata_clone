@@ -12,6 +12,7 @@ import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/admin_users_screen.dart';
 import '../../features/customers/presentation/screens/customer_list_screen.dart';
+import '../../features/customers/presentation/screens/add_party_screen.dart';
 import '../../features/cashbook/presentation/screens/cashbook_screen.dart';
 import '../../features/stock/presentation/screens/stock_book_screen.dart';
 import '../../features/billing/presentation/screens/bill_book_screen.dart';
@@ -23,6 +24,7 @@ import '../../features/ledger/presentation/screens/business_selection_screen.dar
 import '../../features/ledger/presentation/screens/create_business_screen.dart';
 import '../../features/ledger/presentation/screens/qr_code_screen.dart';
 import '../../features/staff/presentation/screens/staff_book_screen.dart';
+import '../../features/expense/presentation/screens/expense_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -151,6 +153,12 @@ class AppRouter {
         builder: (context, state) => const CustomerListScreen(),
       ),
       GoRoute(
+        path: '/add_party',
+        name: 'add_party',
+        builder: (context, state) => AddPartyScreen(
+            partyType: state.uri.queryParameters['type'] ?? 'customer'),
+      ),
+      GoRoute(
         path: '/cashbook',
         name: 'cashbook',
         builder: (context, state) => const CashBookScreen(),
@@ -164,6 +172,11 @@ class AppRouter {
         path: '/bill_book',
         name: 'bill_book',
         builder: (context, state) => const BillBookScreen(),
+      ),
+      GoRoute(
+        path: '/expense',
+        name: 'expense',
+        builder: (context, state) => const ExpenseScreen(),
       ),
     ],
   );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
-import '../../../../app/theme.dart';
 
 final cashbookProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -30,122 +29,207 @@ class CashBookScreen extends ConsumerWidget {
     final cashAsync = ref.watch(cashbookProvider);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF1A1A1A), // Dark mode background
       appBar: AppBar(
-        title: const Text('Cashbook (Cash In Hand)',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: AppTheme.primaryBlue,
+        title: const Text('Cash Book',
+            style: TextStyle(color: Colors.white, fontSize: 20)),
+        backgroundColor: const Color(0xFF1A1A1A),
         foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: cashAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => _buildEmptyState(context, ref),
+        error: (err, stack) => Center(
+            child: Text('Error: $err',
+                style: const TextStyle(color: Colors.white))),
         data: (entries) {
-          if (entries.isEmpty) return _buildEmptyState(context, ref);
-
           double totalCashInHand = 0;
+          double todayBalance = 0;
+          final today = DateTime.now();
+
           for (var e in entries) {
             final amt = double.parse(e['amount'].toString());
-            if (e['entry_type'] == 'cash_in')
+            final isCashIn = e['entry_type'] == 'cash_in';
+            if (isCashIn) {
               totalCashInHand += amt;
-            else
+            } else {
               totalCashInHand -= amt;
+            }
+
+            final entryDate = DateTime.parse(e['created_at']);
+            if (entryDate.year == today.year &&
+                entryDate.month == today.month &&
+                entryDate.day == today.day) {
+              if (isCashIn)
+                todayBalance += amt;
+              else
+                todayBalance -= amt;
+            }
           }
 
-          return Column(
+          return Stack(
             children: [
-              _buildHeader(totalCashInHand),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: entries.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final e = entries[index];
-                    final isCashIn = e['entry_type'] == 'cash_in';
-                    final date = DateFormat('dd MMM yyyy, hh:mm a')
-                        .format(DateTime.parse(e['created_at']));
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: isCashIn
-                            ? AppTheme.successGreen.withOpacity(0.2)
-                            : AppTheme.dangerRed.withOpacity(0.2),
-                        child: Icon(
-                          isCashIn ? Icons.arrow_downward : Icons.arrow_upward,
-                          color: isCashIn
-                              ? AppTheme.successGreen
-                              : AppTheme.dangerRed,
-                        ),
+              Column(
+                children: [
+                  _buildHeader(totalCashInHand, todayBalance),
+                  if (entries.isEmpty)
+                    Expanded(child: _buildEmptyState(context))
+                  else
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: entries.length,
+                        separatorBuilder: (_, __) =>
+                            Divider(height: 1, color: Colors.grey.shade800),
+                        itemBuilder: (context, index) {
+                          final e = entries[index];
+                          final isCashIn = e['entry_type'] == 'cash_in';
+                          final date = DateFormat('dd MMM yyyy, hh:mm a')
+                              .format(DateTime.parse(e['created_at']));
+                          return ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 4),
+                            leading: CircleAvatar(
+                              backgroundColor: isCashIn
+                                  ? Colors.green.withOpacity(0.1)
+                                  : Colors.red.withOpacity(0.1),
+                              child: Icon(
+                                isCashIn
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward,
+                                color: isCashIn ? Colors.green : Colors.red,
+                              ),
+                            ),
+                            title: Text(
+                                e['remark'] ??
+                                    (isCashIn ? 'Cash In' : 'Cash Out'),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white)),
+                            subtitle: Text(date,
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey)),
+                            trailing: Text(
+                              '${isCashIn ? '+' : '-'} Rs. ${e['amount']}',
+                              style: TextStyle(
+                                color: isCashIn ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                      title: Text(
-                          e['remark'] ?? (isCashIn ? 'Cash In' : 'Cash Out'),
-                          style: const TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle:
-                          Text(date, style: const TextStyle(fontSize: 12)),
-                      trailing: Text(
-                        '${isCashIn ? '+' : '-'} Rs. ${e['amount']}',
-                        style: TextStyle(
-                          color: isCashIn
-                              ? AppTheme.successGreen
-                              : AppTheme.dangerRed,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                    ),
+                  const SizedBox(height: 100), // padding for FAB
+                ],
               ),
+              Positioned(
+                bottom: 24,
+                left: 16,
+                right: 16,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Icon(Icons.arrow_downward,
+                        color: Colors.red, size: 28),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () =>
+                              _showAddEntryModal(context, ref, 'cash_out'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade900,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                          ),
+                          child: const Text('CASH OUT',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () =>
+                              _showAddEntryModal(context, ref, 'cash_in'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                          ),
+                          child: const Text('CASH IN',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
             ],
           );
         },
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton.extended(
-              heroTag: 'cash_out_btn',
-              onPressed: () => _showAddEntryModal(context, ref, 'cash_out'),
-              backgroundColor: AppTheme.dangerRed,
-              icon: const Icon(Icons.remove, color: Colors.white),
-              label:
-                  const Text('Cash Out', style: TextStyle(color: Colors.white)),
-            ),
-            const SizedBox(width: 16),
-            FloatingActionButton.extended(
-              heroTag: 'cash_in_btn',
-              onPressed: () => _showAddEntryModal(context, ref, 'cash_in'),
-              backgroundColor: AppTheme.successGreen,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label:
-                  const Text('Cash In', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
-  Widget _buildHeader(double total) {
+  Widget _buildHeader(double total, double todayBal) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: total >= 0
-            ? AppTheme.successGreen.withOpacity(0.1)
-            : AppTheme.dangerRed.withOpacity(0.1),
-        border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+        color: const Color(0xFF252525),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const Text('Total Cash in Hand',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Text(
-            'Rs. $total',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              color: total >= 0 ? AppTheme.successGreen : AppTheme.dangerRed,
+          Expanded(
+            child: Column(
+              children: [
+                Text('Rs $total',
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                const SizedBox(height: 4),
+                const Text('Cash in Hand',
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
+            ),
+          ),
+          Container(width: 1, height: 40, color: Colors.grey.shade800),
+          Expanded(
+            child: Column(
+              children: [
+                Text('Rs $todayBal',
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                const SizedBox(height: 4),
+                const Text('Today Balance',
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
+            ),
+          ),
+          Container(width: 1, height: 40, color: Colors.grey.shade800),
+          const Expanded(
+            child: Column(
+              children: [
+                Icon(Icons.history, color: Colors.white, size: 20),
+                SizedBox(height: 4),
+                Text('History',
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
             ),
           ),
         ],
@@ -153,22 +237,42 @@ class CashBookScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
+  Widget _buildEmptyState(BuildContext context) {
+    final todayStr = DateFormat('E, dd MMM yyyy').format(DateTime.now());
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.account_balance_wallet_outlined,
-              size: 80, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text('No Cashbook Entries Yet',
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.bold)),
+          CircleAvatar(
+            radius: 80,
+            backgroundColor: Colors.brown.withOpacity(0.3),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(Icons.calendar_month, size: 90, color: Colors.white),
+                Positioned(
+                  top: 20,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.green),
+                    child:
+                        const Icon(Icons.lock, color: Colors.white, size: 16),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          Text(todayStr,
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500)),
           const SizedBox(height: 8),
-          Text('Track your physical drawer cash separately from Khata.',
-              style: TextStyle(color: Colors.grey.shade500)),
+          const Text("Lets make today's cash entries",
+              style: TextStyle(color: Colors.grey, fontSize: 16)),
         ],
       ),
     );
@@ -181,6 +285,9 @@ class CashBookScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: const Color(0xFF252525),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(ctx).viewInsets.bottom,
@@ -194,28 +301,39 @@ class CashBookScreen extends ConsumerWidget {
           children: [
             Text(type == 'cash_in' ? 'Add Cash In' : 'Add Cash Out',
                 style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: type == 'cash_in'
-                        ? AppTheme.successGreen
-                        : AppTheme.dangerRed)),
+                    color: type == 'cash_in' ? Colors.green : Colors.red)),
             const SizedBox(height: 24),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
               decoration: const InputDecoration(
                 prefixText: 'Rs. ',
+                prefixStyle: TextStyle(color: Colors.white, fontSize: 24),
                 labelText: 'Amount',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: remarkController,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Remark / Description',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
               ),
             ),
             const SizedBox(height: 24),
@@ -241,21 +359,22 @@ class CashBookScreen extends ConsumerWidget {
                     ref.invalidate(cashbookProvider); // Refresh list
                     Navigator.pop(ctx);
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:
-                            Text('Error: Database tables not created yet!')));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Error: Database error.')));
                   }
                 }
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: type == 'cash_in'
-                    ? AppTheme.successGreen
-                    : AppTheme.dangerRed,
-                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 54),
+                backgroundColor: type == 'cash_in' ? Colors.green : Colors.red,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('SAVE ENTRY',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 16)),
             ),
             const SizedBox(height: 24),
           ],

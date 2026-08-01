@@ -8,6 +8,7 @@ class AppTheme {
   static const Color successGreen = Color(0xFF00DFA2); // For Cash In
   static const Color dangerRed = Color(0xFFFF0060); // For Cash Out
   static const Color warningOrange = Color(0xFFFF9800); // For Admins
+  static const Color secondaryOrange = Color(0xFFFF9900); // Party Tab Orange
 
   static ThemeData get lightTheme {
     return ThemeData(
