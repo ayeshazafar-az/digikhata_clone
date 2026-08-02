@@ -77,7 +77,8 @@ class ExpenseScreen extends ConsumerWidget {
                               .format(DateTime.parse(e['created_at']));
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: Colors.orange.withOpacity(0.2),
+                              backgroundColor:
+                                  Colors.orange.withValues(alpha: 0.2),
                               child: const Icon(Icons.receipt,
                                   color: Colors.orange),
                             ),
@@ -257,7 +258,9 @@ class ExpenseScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () async {
                 if (amountController.text.isEmpty ||
-                    categoryController.text.isEmpty) return;
+                    categoryController.text.isEmpty) {
+                  return;
+                }
                 try {
                   final supabase = Supabase.instance.client;
                   final pRes = await supabase
@@ -276,9 +279,10 @@ class ExpenseScreen extends ConsumerWidget {
                     if (context.mounted) Navigator.pop(ctx);
                   }
                 } catch (e) {
-                  if (context.mounted)
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Error saving expense')));
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(

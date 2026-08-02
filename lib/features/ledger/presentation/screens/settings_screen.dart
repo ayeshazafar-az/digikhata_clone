@@ -123,7 +123,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('Dark Mode'),
             subtitle: const Text('Toggle application theme'),
             value: isDark,
-            activeColor: AppTheme.primaryBlue,
+            activeThumbColor: AppTheme.primaryBlue,
             onChanged: (value) {
               ref.read(themeModeProvider.notifier).toggleTheme();
             },

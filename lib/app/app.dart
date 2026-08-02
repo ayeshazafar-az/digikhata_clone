@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // Intrinsic
 import '../core/router/app_router.dart';
-import '../core/localization/app_localizations.dart';
 import 'theme.dart';
 import 'theme_provider.dart';
 

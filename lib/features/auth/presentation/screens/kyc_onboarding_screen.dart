@@ -73,10 +73,10 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
     }
-    
+
     try {
       final XFile image = await _cameraController!.takePicture();
-      
+
       if (_currentIndex == 1) {
         selfiePath = image.path;
         _nextPage();
@@ -85,16 +85,15 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
         _nextPage();
       } else if (_currentIndex == 3) {
         if (!_mockErrorThrown) {
-           // Simulate the OCR error!
-           ScaffoldMessenger.of(context).showSnackBar(
-             const SnackBar(
-               content: Text('Verification Failed: NADRA Barcode unreadable on the back. Please strictly align your CNIC within the box and retake!'),
-               backgroundColor: AppTheme.dangerRed,
-               duration: Duration(seconds: 4),
-             )
-           );
-           setState(() => _mockErrorThrown = true);
-           return;
+          // Simulate the OCR error!
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'Verification Failed: NADRA Barcode unreadable on the back. Please strictly align your CNIC within the box and retake!'),
+            backgroundColor: AppTheme.dangerRed,
+            duration: Duration(seconds: 4),
+          ));
+          setState(() => _mockErrorThrown = true);
+          return;
         }
         cnicBackPath = image.path;
         _submitKyc();
@@ -106,7 +105,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
 
   Future<void> _submitKyc() async {
     setState(() => _isProcessing = true);
-    
+
     // Simulate complex ML upload processing...
     await Future.delayed(const Duration(seconds: 3));
 
@@ -118,14 +117,14 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
           'full_name': _nameController.text.trim(),
           'kyc_status': 'verified',
         }).eq('id', user.id);
-        
+
         // Push to business creation if business name provided
         if (_businessController.text.trim().isNotEmpty) {
-           await Supabase.instance.client.from('businesses').insert({
-             'owner_id': user.id,
-             'name': _businessController.text.trim(),
-             'type': 'Retail',
-           });
+          await Supabase.instance.client.from('businesses').insert({
+            'owner_id': user.id,
+            'name': _businessController.text.trim(),
+            'type': 'Retail',
+          });
         }
       }
       if (mounted) context.go('/home');
@@ -154,7 +153,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
         // Dark Overlay with Cutout
         ColorFiltered(
           colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.7),
+            Colors.black.withValues(alpha: 0.7),
             BlendMode.srcOut,
           ),
           child: Stack(
@@ -190,7 +189,9 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                 title,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
@@ -216,7 +217,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                   border: Border.all(color: Colors.white, width: 4),
                   color: Colors.white30,
                 ),
-                child: const Icon(Icons.camera_alt, color: Colors.white, size: 40),
+                child:
+                    const Icon(Icons.camera_alt, color: Colors.white, size: 40),
               ),
             ),
           ),
@@ -248,7 +250,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
         ),
       );
     }
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView(
@@ -267,7 +269,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                 const SizedBox(height: 24),
                 const Text('KYC Identity Check',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 const Text(
                     'As per local regulations, DigiKhata requires identity verification for full platform access.',
@@ -278,7 +281,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Full Name (As per CNIC)',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -286,7 +290,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                   controller: _businessController,
                   decoration: InputDecoration(
                     labelText: 'Business Name',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -299,7 +304,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                     backgroundColor: AppTheme.primaryBlue,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Start Camera Verification', style: TextStyle(fontSize: 16)),
+                  child: const Text('Start Camera Verification',
+                      style: TextStyle(fontSize: 16)),
                 )
               ],
             ),

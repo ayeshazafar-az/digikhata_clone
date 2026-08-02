@@ -212,7 +212,7 @@ class BillBookScreen extends ConsumerWidget {
                       final isPaid = b['status'] == 'paid';
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: Colors.amber.withOpacity(0.2),
+                          backgroundColor: Colors.amber.withValues(alpha: 0.2),
                           child: const Icon(Icons.receipt_long,
                               color: Colors.amber),
                         ),

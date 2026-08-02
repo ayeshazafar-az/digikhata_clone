@@ -35,7 +35,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryBlue.withOpacity(0.05),
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.05),
                   border: Border(
                     bottom: BorderSide(
                       color: Colors.grey.shade300,
@@ -53,7 +53,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                             blurRadius: 20,
                             spreadRadius: 5,
                           )
@@ -122,10 +122,12 @@ class LanguageSelectionScreen extends ConsumerWidget {
 
                           // Determine if this box corresponds to the active language
                           bool isSelected = false;
-                          if (index == 0 && currentLocale == 'en')
+                          if (index == 0 && currentLocale == 'en') {
                             isSelected = true;
-                          if (index == 2 && currentLocale == 'ur')
+                          }
+                          if (index == 2 && currentLocale == 'ur') {
                             isSelected = true;
+                          }
 
                           return InkWell(
                             onTap: () {
@@ -159,7 +161,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                                     ? [
                                         BoxShadow(
                                           color: AppTheme.primaryBlue
-                                              .withOpacity(0.1),
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 4),
                                         )

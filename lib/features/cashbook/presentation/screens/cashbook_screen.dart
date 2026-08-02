@@ -64,10 +64,11 @@ class CashBookScreen extends ConsumerWidget {
             if (entryDate.year == today.year &&
                 entryDate.month == today.month &&
                 entryDate.day == today.day) {
-              if (isCashIn)
+              if (isCashIn) {
                 todayBalance += amt;
-              else
+              } else {
                 todayBalance -= amt;
+              }
             }
           }
 
@@ -94,8 +95,8 @@ class CashBookScreen extends ConsumerWidget {
                                 horizontal: 20, vertical: 4),
                             leading: CircleAvatar(
                               backgroundColor: isCashIn
-                                  ? Colors.green.withOpacity(0.1)
-                                  : Colors.red.withOpacity(0.1),
+                                  ? Colors.green.withValues(alpha: 0.1)
+                                  : Colors.red.withValues(alpha: 0.1),
                               child: Icon(
                                 isCashIn
                                     ? Icons.arrow_downward
@@ -245,7 +246,7 @@ class CashBookScreen extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: 80,
-            backgroundColor: Colors.brown.withOpacity(0.3),
+            backgroundColor: Colors.brown.withValues(alpha: 0.3),
             child: Stack(
               alignment: Alignment.center,
               children: [

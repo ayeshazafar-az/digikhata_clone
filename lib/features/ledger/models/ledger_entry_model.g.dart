@@ -15,7 +15,7 @@ extension GetLedgerEntryModelCollection on Isar {
 
 const LedgerEntryModelSchema = CollectionSchema(
   name: r'LedgerEntryModel',
-  id: -758746744321038056,
+  id: 123456789,
   properties: {
     r'amount': PropertySchema(
       id: 0,
@@ -70,7 +70,7 @@ const LedgerEntryModelSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'remoteId': IndexSchema(
-      id: 6301175856541681032,
+      id: 123456789,
       name: r'remoteId',
       unique: true,
       replace: true,
@@ -83,7 +83,7 @@ const LedgerEntryModelSchema = CollectionSchema(
       ],
     ),
     r'remotePartyId': IndexSchema(
-      id: -5898988476955967980,
+      id: 123456789,
       name: r'remotePartyId',
       unique: false,
       replace: false,

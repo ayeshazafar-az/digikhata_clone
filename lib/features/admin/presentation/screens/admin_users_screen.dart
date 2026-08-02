@@ -47,8 +47,8 @@ class AdminUsersScreen extends ConsumerWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                headingRowColor: MaterialStateProperty.all(
-                    AppTheme.primaryBlue.withOpacity(0.1)),
+                headingRowColor: WidgetStateProperty.all(
+                    AppTheme.primaryBlue.withValues(alpha: 0.1)),
                 columns: const [
                   DataColumn(
                       label: Text('ID',
@@ -75,7 +75,7 @@ class AdminUsersScreen extends ConsumerWidget {
 
                   return DataRow(cells: [
                     DataCell(
-                        Text(user['id'].toString().substring(0, 8) + '...')),
+                        Text('${user['id'].toString().substring(0, 8)}...')),
                     DataCell(Text(user['phone'] ?? 'Unknown')),
                     DataCell(Chip(
                       label: Text((user['role'] ?? 'user').toUpperCase(),

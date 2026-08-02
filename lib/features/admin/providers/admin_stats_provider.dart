@@ -14,20 +14,20 @@ class AdminStats {
 }
 
 final adminStatsProvider = FutureProvider<AdminStats>((ref) async {
-  final _supabase = Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
   // Realistically we can use the count() feature in PostgREST
   final businessesRes =
-      await _supabase.from('businesses').select('id').count(CountOption.exact);
-  final usersRes = await _supabase
+      await supabase.from('businesses').select('id').count(CountOption.exact);
+  final usersRes = await supabase
       .from('profiles')
       .select('id')
       .count(CountOption.exact)
       .catchError((_) =>
           // Fallback if profiles table isn't created or inaccessible
-          _supabase.from('businesses').select('id').count(CountOption.exact));
+          supabase.from('businesses').select('id').count(CountOption.exact));
   // Let's just query total entries too
-  final entriesRes = await _supabase
+  final entriesRes = await supabase
       .from('ledger_entries')
       .select('id')
       .count(CountOption.exact);

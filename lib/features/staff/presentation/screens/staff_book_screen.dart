@@ -112,7 +112,7 @@ class StaffBookScreen extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.2),
+                                color: Colors.green.withValues(alpha: 0.2),
                                 shape: BoxShape.circle),
                             child: const Text(' P ',
                                 style: TextStyle(
@@ -145,7 +145,7 @@ class StaffBookScreen extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.2),
+                                color: Colors.red.withValues(alpha: 0.2),
                                 shape: BoxShape.circle),
                             child: const Text(' A ',
                                 style: TextStyle(
@@ -185,7 +185,7 @@ class StaffBookScreen extends ConsumerWidget {
                       final staff = staffList[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: Colors.blue.withOpacity(0.2),
+                          backgroundColor: Colors.blue.withValues(alpha: 0.2),
                           child: Text(
                               (staff['name'] ?? '?')
                                   .substring(0, 1)
@@ -356,7 +356,7 @@ class StaffBookScreen extends ConsumerWidget {
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor:
-                                      Colors.amber.withOpacity(0.2),
+                                      Colors.amber.withValues(alpha: 0.2),
                                   child: const Icon(Icons.assignment_ind,
                                       color: Colors.amber),
                                 ),
@@ -498,9 +498,10 @@ class StaffBookScreen extends ConsumerWidget {
                     if (context.mounted) Navigator.pop(ctx);
                   }
                 } catch (e) {
-                  if (context.mounted)
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Error adding staff')));
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(

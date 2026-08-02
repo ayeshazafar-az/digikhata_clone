@@ -42,8 +42,8 @@ class AdminBusinessesScreen extends ConsumerWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                headingRowColor: MaterialStateProperty.all(
-                    AppTheme.primaryBlue.withOpacity(0.1)),
+                headingRowColor: WidgetStateProperty.all(
+                    AppTheme.primaryBlue.withValues(alpha: 0.1)),
                 columns: const [
                   DataColumn(
                       label: Text('ID',
@@ -72,7 +72,7 @@ class AdminBusinessesScreen extends ConsumerWidget {
 
                   return DataRow(cells: [
                     DataCell(Text(
-                        business['id'].toString().substring(0, 8) + '...')),
+                        '${business['id'].toString().substring(0, 8)}...')),
                     DataCell(Text(business['business_name'] ?? 'Unnamed')),
                     DataCell(Text(phone)),
                     DataCell(Text(dateStr)),

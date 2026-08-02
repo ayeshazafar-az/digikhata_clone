@@ -49,7 +49,7 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
             )
           ],
           bottom: const TabBar(
-            indicatorColor: const Color(0xFFFF9900),
+            indicatorColor: Color(0xFFFF9900),
             labelColor: Colors.white,
             unselectedLabelColor: Colors.grey,
             isScrollable: true,
@@ -239,7 +239,7 @@ class _PartyTab extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: 80,
-            backgroundColor: Colors.brown.withOpacity(0.3),
+            backgroundColor: Colors.brown.withValues(alpha: 0.3),
             child: Stack(
               alignment: Alignment.center,
               children: [

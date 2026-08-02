@@ -90,9 +90,10 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
           .addParty(name, _phoneController.text.trim(), widget.partyType);
       if (mounted) context.pop();
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

@@ -143,7 +143,7 @@ class _OnboardingCarouselState extends State<OnboardingCarouselScreen> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: gradientColors.first.withOpacity(0.3),
+                  color: gradientColors.first.withValues(alpha: 0.3),
                   blurRadius: 20,
                   spreadRadius: 5,
                   offset: const Offset(0, 10),

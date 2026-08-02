@@ -50,10 +50,11 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           double filteredCashOut = 0;
           for (var e in filteredEntries) {
             double amt = (e['amount'] as num).toDouble();
-            if (e['entry_type'] == 'credit')
+            if (e['entry_type'] == 'credit') {
               filteredCashIn += amt;
-            else
+            } else {
               filteredCashOut += amt;
+            }
           }
           double filteredNet = filteredCashIn - filteredCashOut;
 
@@ -76,7 +77,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                   },
                   style: SegmentedButton.styleFrom(
                     selectedBackgroundColor:
-                        AppTheme.primaryBlue.withOpacity(0.2),
+                        AppTheme.primaryBlue.withValues(alpha: 0.2),
                     selectedForegroundColor: AppTheme.primaryBlue,
                   ),
                 ),
@@ -126,7 +127,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withValues(alpha: 0.1),
                           blurRadius: 10,
                           spreadRadius: 2,
                         )
@@ -197,7 +198,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             isStrokeCapRound: true,
             belowBarData: BarAreaData(
               show: true,
-              color: AppTheme.primaryBlue.withOpacity(0.1),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
             ),
           ),
         ],
@@ -226,9 +227,9 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

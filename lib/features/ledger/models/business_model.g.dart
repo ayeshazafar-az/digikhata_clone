@@ -15,7 +15,7 @@ extension GetBusinessModelCollection on Isar {
 
 const BusinessModelSchema = CollectionSchema(
   name: r'BusinessModel',
-  id: -944424770165810754,
+  id: 123456789,
   properties: {
     r'businessName': PropertySchema(
       id: 0,
@@ -55,7 +55,7 @@ const BusinessModelSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'remoteId': IndexSchema(
-      id: 6301175856541681032,
+      id: 123456789,
       name: r'remoteId',
       unique: true,
       replace: true,

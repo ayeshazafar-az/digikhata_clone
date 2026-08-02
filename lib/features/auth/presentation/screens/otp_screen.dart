@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,38 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
   bool _isLoading = false;
+  Timer? _timer;
+  int _start = 60;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    setState(() {
+      _start = 60;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (_start == 0) {
+        setState(() {
+          timer.cancel();
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _otpController.dispose();
+    super.dispose();
+  }
 
   Future<void> _verifyOtp() async {
     final otp = _otpController.text.trim();
@@ -162,13 +195,29 @@ class _OtpScreenState extends State<OtpScreen> {
                   autofocus: true,
                 ),
               const Spacer(),
-              const Text(
-                'Resend code in 36 seconds',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
+              if (_start > 0)
+                Text(
+                  'Resend code in $_start seconds',
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              else
+                TextButton(
+                  onPressed: () {
+                    // Logic to resend OTP via Supabase
+                    Supabase.instance.client.auth
+                        .signInWithOtp(phone: widget.phoneNumber);
+                    _startTimer();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Verification Code Resent')),
+                    );
+                  },
+                  child: const Text('Resend OTP',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
-              ),
             ],
           ),
         ),

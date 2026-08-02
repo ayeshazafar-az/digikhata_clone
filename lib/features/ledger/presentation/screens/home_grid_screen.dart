@@ -23,10 +23,9 @@ class HomeGridScreen extends StatelessWidget {
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.shield_moon,
-                  color: AppTheme.primaryBlue, size: 24),
-              const SizedBox(width: 8),
-              const Text("Zenvyro's Ledger",
+              Icon(Icons.shield_moon, color: AppTheme.primaryBlue, size: 24),
+              SizedBox(width: 8),
+              Text("Zenvyro's Ledger",
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -86,7 +85,7 @@ class HomeGridScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryBlue.withOpacity(0.3),
+            color: AppTheme.primaryBlue.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
