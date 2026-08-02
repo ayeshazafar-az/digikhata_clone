@@ -27,11 +27,11 @@ class StaffBookScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: const Color(0xFF151515), // Dark Theme
+      backgroundColor: Colors.grey.shade50, // Dark Theme
       appBar: AppBar(
         title: const Text('Staff Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
-        backgroundColor: const Color(0xFF151515),
+        backgroundColor: Colors.grey.shade50,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -78,7 +78,7 @@ class StaffBookScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF252525),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Row(
@@ -104,7 +104,7 @@ class StaffBookScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF252525),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -137,7 +137,7 @@ class StaffBookScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF252525),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -289,7 +289,7 @@ class StaffBookScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF252525),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Row(
@@ -327,7 +327,7 @@ class StaffBookScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF252525),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(

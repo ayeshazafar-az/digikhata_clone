@@ -28,11 +28,11 @@ class StockBookScreen extends ConsumerWidget {
     final stockAsync = ref.watch(stockProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Stock Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: Colors.grey.shade50,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -178,7 +178,7 @@ class StockBookScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF252525),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -209,7 +209,7 @@ class StockBookScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF252525),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(
@@ -224,7 +224,7 @@ class StockBookScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF252525),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(

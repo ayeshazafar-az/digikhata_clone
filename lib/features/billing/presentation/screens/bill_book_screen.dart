@@ -45,12 +45,11 @@ class BillBookScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor:
-          const Color(0xFF151515), // Very dark background matching screens
+      backgroundColor: Colors.grey.shade50, // Very dark background matching screens
       appBar: AppBar(
         title: const Text('Bill Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
-        backgroundColor: const Color(0xFF151515),
+        backgroundColor: Colors.grey.shade50,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -60,7 +59,7 @@ class BillBookScreen extends ConsumerWidget {
         actions: [
           const Center(
               child: Text('03245423290',
-                  style: TextStyle(color: Colors.white70, fontSize: 12))),
+                  style: TextStyle(color: Colors.black87, fontSize: 12))),
           Padding(
             padding: const EdgeInsets.only(
                 right: 16.0, top: 12.0, bottom: 12.0, left: 16.0),
@@ -124,7 +123,7 @@ class BillBookScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF252525),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Row(
@@ -148,7 +147,7 @@ class BillBookScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF252525),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -170,7 +169,7 @@ class BillBookScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF252525),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -323,7 +322,7 @@ class BillBookScreen extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFF252525),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Row(
@@ -352,7 +351,7 @@ class BillBookScreen extends ConsumerWidget {
               // Left Nav
               Container(
                 width: 80,
-                color: const Color(0xFF151515),
+                color: Colors.grey.shade50,
                 child: Column(
                   children: [
                     Container(
@@ -415,7 +414,7 @@ class BillBookScreen extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.green),
                                     borderRadius: BorderRadius.circular(8),
-                                    color: const Color(0xFF252525),
+                                    color: Colors.white,
                                   ),
                                   child: const Center(
                                       child: Icon(Icons.add,
@@ -434,7 +433,7 @@ class BillBookScreen extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.white24),
                                   borderRadius: BorderRadius.circular(8),
-                                  color: const Color(0xFF252525),
+                                  color: Colors.white,
                                 ),
                                 child: Stack(
                                   children: [

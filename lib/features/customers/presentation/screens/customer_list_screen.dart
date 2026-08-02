@@ -20,7 +20,7 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
         backgroundColor:
             const Color(0xFF1E1E1E), // Dark Background mimicking image
         appBar: AppBar(
-          backgroundColor: const Color(0xFF181818),
+          backgroundColor: Colors.grey.shade50,
           elevation: 0,
           leading: IconButton(
             icon:
@@ -177,7 +177,7 @@ class _PartyTab extends ConsumerWidget {
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF252525),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -274,7 +274,7 @@ class _PartyTab extends ConsumerWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(text,
-            style: const TextStyle(color: Colors.white70, fontSize: 16)),
+            style: const TextStyle(color: Colors.black87, fontSize: 16)),
       ),
     );
   }
@@ -294,7 +294,7 @@ class _PartyTab extends ConsumerWidget {
             title:
                 Text(party.name, style: const TextStyle(color: Colors.white)),
             subtitle: Text('Tap to view ledger • ${party.phone ?? ''}',
-                style: const TextStyle(color: Colors.white54)),
+                style: const TextStyle(color: Colors.black54)),
             trailing: Text(
               party.type.toUpperCase(),
               style: const TextStyle(

@@ -29,11 +29,11 @@ class ExpenseScreen extends ConsumerWidget {
     final expensesAsync = ref.watch(expensesProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF151515), // Dark mode background
+      backgroundColor: Colors.grey.shade50, // Dark mode background
       appBar: AppBar(
         title: const Text('Expense Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: const Color(0xFF151515),
+        backgroundColor: Colors.grey.shade50,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -124,7 +124,7 @@ class ExpenseScreen extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF252525),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -133,7 +133,7 @@ class ExpenseScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Total Expenses (This Month)',
-                  style: TextStyle(color: Colors.white70, fontSize: 14)),
+                  style: TextStyle(color: Colors.black87, fontSize: 14)),
               Text('Rs $total',
                   style: const TextStyle(
                       color: Colors.white,

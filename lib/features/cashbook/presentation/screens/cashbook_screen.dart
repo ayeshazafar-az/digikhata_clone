@@ -29,11 +29,11 @@ class CashBookScreen extends ConsumerWidget {
     final cashAsync = ref.watch(cashbookProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A), // Dark mode background
+      backgroundColor: Colors.grey.shade50, // Dark mode background
       appBar: AppBar(
         title: const Text('Cash Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: Colors.grey.shade50,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -187,7 +187,7 @@ class CashBookScreen extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF252525),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

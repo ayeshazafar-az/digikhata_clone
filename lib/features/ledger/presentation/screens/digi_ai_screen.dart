@@ -157,12 +157,12 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Deep AppBackground Dark
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: BackButton(
-          color: Colors.white,
+          color: Colors.black87,
           onPressed: () => context.pop(),
         ),
         title: Container(
@@ -190,7 +190,7 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history, color: Colors.white70),
+            icon: const Icon(Icons.history, color: Colors.black54),
             onPressed: () {},
           ),
           IconButton(
@@ -258,9 +258,16 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E), // Dark bubble color
+              color: Colors.white,
               borderRadius:
                   BorderRadius.circular(16).copyWith(topLeft: Radius.zero),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                )
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,7 +275,7 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
                 Text(
                   text,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black87,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,

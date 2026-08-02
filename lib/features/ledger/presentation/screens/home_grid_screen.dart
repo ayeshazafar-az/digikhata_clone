@@ -8,11 +8,11 @@ class HomeGridScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF121212),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         leading: const Icon(Icons.menu),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -133,10 +133,10 @@ class HomeGridScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.white70,
+            color: Colors.grey.shade600,
             letterSpacing: 2,
           ),
         ),
@@ -235,10 +235,10 @@ class HomeGridScreen extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.2), width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -249,7 +249,7 @@ class HomeGridScreen extends StatelessWidget {
                 style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: Colors.white)),
+                    color: Colors.black87)),
           ],
         ),
       ),
