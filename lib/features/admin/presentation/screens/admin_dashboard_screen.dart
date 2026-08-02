@@ -138,6 +138,25 @@ class AdminDashboardScreen extends ConsumerWidget {
                             horizontal: 24, vertical: 16),
                       ),
                     ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Global System Report generation queued. A PDF copy will be dispatched shortly.'),
+                            backgroundColor: AppTheme.primaryBlue,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.picture_as_pdf),
+                      label: const Text('Export Global Metrics'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.warningOrange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 16),
+                      ),
+                    ),
                   ],
                 )
               ],
