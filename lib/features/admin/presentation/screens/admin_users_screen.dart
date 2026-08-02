@@ -63,6 +63,9 @@ class AdminUsersScreen extends ConsumerWidget {
                       label: Text('Join Date',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(
+                      label: Text('KYC Status',
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
                       label: Text('Actions',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                 ],
@@ -84,8 +87,30 @@ class AdminUsersScreen extends ConsumerWidget {
                       padding: EdgeInsets.zero,
                     )),
                     DataCell(Text(dateStr)),
+                    DataCell(Chip(
+                      label: Text(
+                        (user['kyc_status'] ?? 'pending').toUpperCase(),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.white),
+                      ),
+                      backgroundColor: user['kyc_status'] == 'verified'
+                          ? AppTheme.successGreen
+                          : (user['kyc_status'] == 'rejected'
+                              ? AppTheme.dangerRed
+                              : AppTheme.warningOrange),
+                      padding: EdgeInsets.zero,
+                    )),
                     DataCell(Row(
                       children: [
+                        if (user['kyc_status'] == 'pending')
+                          IconButton(
+                            icon: const Icon(Icons.assignment_ind,
+                                color: AppTheme.primaryBlue),
+                            tooltip: 'Review KYC Documents',
+                            onPressed: () {
+                              _showKycReviewDialog(context, ref, user);
+                            },
+                          ),
                         IconButton(
                           icon: Icon(
                             user['role'] == 'blocked'
@@ -133,6 +158,92 @@ class AdminUsersScreen extends ConsumerWidget {
           );
         },
       ),
+    );
+  }
+
+  void _showKycReviewDialog(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> user) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('KYC Review: ${user['phone']}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Live Selfie',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    shape: BoxShape.circle,
+                  ),
+                  child: user['kyc_selfie_url'] != null
+                      ? Image.network(user['kyc_selfie_url'], fit: BoxFit.cover)
+                      : const Icon(Icons.face, size: 50, color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                const Text('CNIC Front',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Container(
+                  height: 120,
+                  width: 220,
+                  color: Colors.grey.shade200,
+                  child: user['kyc_cnic_front_url'] != null
+                      ? Image.network(user['kyc_cnic_front_url'],
+                          fit: BoxFit.cover)
+                      : const Icon(Icons.badge, size: 50, color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                const Text('CNIC Back',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Container(
+                  height: 120,
+                  width: 220,
+                  color: Colors.grey.shade200,
+                  child: user['kyc_cnic_back_url'] != null
+                      ? Image.network(user['kyc_cnic_back_url'],
+                          fit: BoxFit.cover)
+                      : const Icon(Icons.qr_code_2,
+                          size: 50, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await Supabase.instance.client
+                    .from('profiles')
+                    .update({'kyc_status': 'rejected'}).eq('id', user['id']);
+                ref.invalidate(adminUsersProvider);
+                if (context.mounted) Navigator.pop(context);
+              },
+              style: TextButton.styleFrom(foregroundColor: AppTheme.dangerRed),
+              child: const Text('REJECT'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await Supabase.instance.client
+                    .from('profiles')
+                    .update({'kyc_status': 'verified'}).eq('id', user['id']);
+                ref.invalidate(adminUsersProvider);
+                if (context.mounted) Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.successGreen,
+                  foregroundColor: Colors.white),
+              child: const Text('APPROVE'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
