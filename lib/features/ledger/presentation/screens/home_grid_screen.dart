@@ -8,11 +8,11 @@ class HomeGridScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: const Color(0xFF121212),
+        foregroundColor: Colors.white,
         leading: const Icon(Icons.menu),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -77,7 +77,8 @@ class HomeGridScreen extends StatelessWidget {
         onPressed: () {
           context.push('/digi_ai');
         },
-        backgroundColor: Colors.deepOrange,
+        backgroundColor:
+            AppTheme.primaryBlue, // Forced Blue Theme for strict compliance
         shape: const CircleBorder(),
         child: const Icon(Icons.auto_awesome, color: Colors.white, size: 32),
       ),
@@ -89,38 +90,28 @@ class HomeGridScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.primaryBlue,
+        gradient: LinearGradient(
+          colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryBlue.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.inventory_2, color: Colors.white, size: 40),
-              SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  'Keep track of inventory and stock updates.',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
+          const Text('Staff Management',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          const Text('Manage your team & salaries',
+              style: TextStyle(color: Colors.white70, fontSize: 13)),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              context.push('/home'); // Will trigger stock soon
+              context.push('/staff_book');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -128,15 +119,8 @@ class HomeGridScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
             ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Stock Book',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(width: 4),
-                Icon(Icons.arrow_forward, size: 16),
-              ],
-            ),
+            child: const Text('Manage Staff',
+                style: TextStyle(fontWeight: FontWeight.bold)),
           )
         ],
       ),
@@ -149,10 +133,10 @@ class HomeGridScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.grey.shade600,
+            color: Colors.white70,
             letterSpacing: 2,
           ),
         ),
@@ -206,9 +190,9 @@ class HomeGridScreen extends StatelessWidget {
           child: _buildGradientCard(
             Icons.point_of_sale,
             'POS',
-            'Accept card payments on your phone.',
-            AppTheme.primaryBlue,
-            const Color(0xFF003399),
+            'Accept card\npayments on your\nphone.',
+            Colors.indigo.shade400,
+            Colors.indigo.shade700,
           ),
         ),
         const SizedBox(width: 16),
@@ -216,9 +200,9 @@ class HomeGridScreen extends StatelessWidget {
           child: _buildGradientCard(
             Icons.qr_code_2,
             'QR',
-            'Share your qr and get paid',
-            AppTheme.dangerRed,
-            Colors.redAccent.shade400,
+            'Share your qr and get\npaid',
+            AppTheme.primaryBlue,
+            AppTheme.secondaryBlue,
             onTap: () => context.push('/qr_code'),
           ),
         )
@@ -251,15 +235,10 @@ class HomeGridScreen extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF1E1E1E),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
-          ],
+          border: Border.all(
+              color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -267,8 +246,10 @@ class HomeGridScreen extends StatelessWidget {
             Icon(icon, size: 36, color: AppTheme.primaryBlue),
             const SizedBox(height: 12),
             Text(label,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: Colors.white)),
           ],
         ),
       ),
