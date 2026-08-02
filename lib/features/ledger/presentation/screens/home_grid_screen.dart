@@ -25,7 +25,7 @@ class HomeGridScreen extends StatelessWidget {
             children: [
               Icon(Icons.shield_moon, color: AppTheme.primaryBlue, size: 24),
               SizedBox(width: 8),
-              Text("Zenvyro's Ledger",
+              Text("DigiKhata",
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

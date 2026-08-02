@@ -16,7 +16,7 @@ class ExcelService {
     excel.setDefaultSheet('Sheet1');
 
     // 2. Add Header info
-    sheetObject.appendRow([TextCellValue('Zenvyro Labs - DigiKhata Clone')]);
+    sheetObject.appendRow([TextCellValue('DigiKhata Export')]);
     sheetObject.appendRow([TextCellValue('Party Name: $partyName')]);
     sheetObject.appendRow([TextCellValue('Phone: $partyPhone')]);
     sheetObject.appendRow([

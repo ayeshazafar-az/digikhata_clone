@@ -77,7 +77,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Powered by Zenvyro Labs',
+                      '100% Free & Secure',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,

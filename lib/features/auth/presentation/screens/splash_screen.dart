@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
       bottomNavigationBar: const Padding(
         padding: EdgeInsets.all(16.0),
         child: Text(
-          'Powered by Zenvyro Labs',
+          '100% Free, Safe & Secure',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white70,

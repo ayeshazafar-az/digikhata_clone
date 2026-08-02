@@ -13,7 +13,7 @@ class AdminDashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zenvyro Super Admin'),
+        title: const Text('Super Admin'),
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
       ),
@@ -23,7 +23,7 @@ class AdminDashboardScreen extends ConsumerWidget {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.black87),
-              child: Text('Zenvyro Labs',
+              child: Text('Admin Portal',
                   style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
