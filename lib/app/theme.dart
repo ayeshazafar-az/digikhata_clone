@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Authentic DigiKhata Deep Blue
-  static const Color primaryBlue = Color(0xFF0C2E5D);
+  // Authentic DigiKhata Deep Blue (Graceful)
+  static const Color primaryBlue = Color(0xFF0D47A1);
   static const Color secondaryBlue = Color(0xFF088395);
   static const Color background = Color(0xFFF6F8FA);
   static const Color successGreen = Color(0xFF00DFA2); // For Cash In

@@ -26,6 +26,7 @@ import '../../features/ledger/presentation/screens/create_business_screen.dart';
 import '../../features/ledger/presentation/screens/qr_code_screen.dart';
 import '../../features/staff/presentation/screens/staff_book_screen.dart';
 import '../../features/expense/presentation/screens/expense_screen.dart';
+import '../../features/ledger/presentation/screens/digi_ai_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -183,6 +184,11 @@ class AppRouter {
         path: '/expense',
         name: 'expense',
         builder: (context, state) => const ExpenseScreen(),
+      ),
+      GoRoute(
+        path: '/digi_ai',
+        name: 'digi_ai',
+        builder: (context, state) => const DigiAiScreen(),
       ),
     ],
   );

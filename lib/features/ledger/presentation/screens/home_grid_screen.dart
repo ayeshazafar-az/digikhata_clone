@@ -73,6 +73,14 @@ class HomeGridScreen extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.push('/digi_ai');
+        },
+        backgroundColor: Colors.deepOrange,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 32),
+      ),
     );
   }
 
