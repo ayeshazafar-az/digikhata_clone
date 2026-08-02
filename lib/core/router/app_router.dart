@@ -6,6 +6,7 @@ import '../../features/auth/presentation/screens/language_selection_screen.dart'
 import '../../features/auth/presentation/screens/onboarding_carousel_screen.dart';
 import '../../features/auth/presentation/screens/otp_screen.dart';
 import '../../features/auth/presentation/screens/pin_setup_screen.dart';
+import '../../features/auth/presentation/screens/kyc_onboarding_screen.dart';
 import '../../features/ledger/presentation/screens/dashboard_screen.dart';
 import '../../features/customers/presentation/screens/customer_ledger_screen.dart';
 import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
@@ -43,6 +44,11 @@ class AppRouter {
         path: '/language',
         name: 'language',
         builder: (context, state) => const LanguageSelectionScreen(),
+      ),
+      GoRoute(
+        path: '/kyc_onboarding',
+        name: 'kyc_onboarding',
+        builder: (context, state) => const KycOnboardingScreen(),
       ),
       GoRoute(
         path: '/onboarding',

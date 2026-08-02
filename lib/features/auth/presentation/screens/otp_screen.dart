@@ -38,12 +38,19 @@ class _OtpScreenState extends State<OtpScreen> {
       if (res.user != null) {
         final profile = await Supabase.instance.client
             .from('profiles')
-            .select('role')
+            .select('role, kyc_status')
             .eq('id', res.user!.id)
             .maybeSingle();
 
         if (profile != null && profile['role'] == 'super_admin') {
           if (mounted) context.go('/admin');
+          return;
+        }
+
+        // --- KYC ONBOARDING INTERCEPT ---
+        final kycStatus = profile?['kyc_status'];
+        if (kycStatus != 'verified') {
+          if (mounted) context.go('/kyc_onboarding');
           return;
         }
 
