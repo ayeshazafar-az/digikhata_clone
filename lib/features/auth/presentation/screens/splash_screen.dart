@@ -74,7 +74,17 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 4),
+            const Text(
+              'Powered by Zenvyro Labs',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.successGreen,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 20),
             const CircularProgressIndicator(color: AppTheme.successGreen),
           ],
         ),
@@ -82,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
       bottomNavigationBar: const Padding(
         padding: EdgeInsets.all(16.0),
         child: Text(
-          '100% Free, Safe & Secure',
+          '100% Free, Safe & Secure\n© 2026 Zenvyro Labs',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white70,

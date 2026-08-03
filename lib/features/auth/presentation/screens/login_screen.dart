@@ -227,7 +227,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Text(
-                    '100% Safe & Secure',
+                    '100% Safe & Secure\nPowered by Zenvyro Labs',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

@@ -69,6 +69,19 @@ class HomeGridScreen extends StatelessWidget {
             _buildSectionHeader('MORE'),
             const SizedBox(height: 16),
             _buildMoreGrid(context),
+            const SizedBox(height: 40),
+            Center(
+              child: Text(
+                'Powered by Zenvyro Labs',
+                style: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  letterSpacing: 1.1,
+                ),
+              ),
+            ),
             const SizedBox(height: 80), // Padding for FAB/BottomNav
           ],
         ),
@@ -86,43 +99,97 @@ class HomeGridScreen extends StatelessWidget {
   }
 
   Widget _buildHeroBanner(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Staff Management',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          const Text('Manage your team & salaries',
-              style: TextStyle(color: Colors.white70, fontSize: 13)),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              context.push('/staff_book');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primaryBlue,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+    final banners = [
+      {
+        'title': 'Staff Management',
+        'subtitle': 'Manage your team & salaries',
+        'button': 'Manage Staff',
+        'route': '/staff_book',
+        'color1': AppTheme.primaryBlue,
+        'color2': AppTheme.secondaryBlue,
+      },
+      {
+        'title': 'Track Inventory',
+        'subtitle': 'Keep track of all products easily',
+        'button': 'View Stock',
+        'route': '/stock_book',
+        'color1': AppTheme.secondaryOrange,
+        'color2': Colors.orange.shade800,
+      },
+      {
+        'title': 'Digital Cashbook',
+        'subtitle': 'Maintain exact cash drawer balances',
+        'button': 'Cashbook',
+        'route': '/cashbook',
+        'color1': AppTheme.successGreen,
+        'color2': Colors.green.shade800,
+      },
+      {
+        'title': 'Professional Invoices',
+        'subtitle': 'Generate and share fast PDF bills',
+        'button': 'Create Bill',
+        'route': '/bill_book',
+        'color1': Colors.indigo.shade400,
+        'color2': Colors.indigo.shade700,
+      },
+    ];
+
+    return SizedBox(
+      height: 180,
+      child: PageView.builder(
+        itemCount: banners.length,
+        itemBuilder: (context, index) {
+          final banner = banners[index];
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  banner['color1'] as Color,
+                  banner['color2'] as Color,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: const Text('Manage Staff',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          )
-        ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(banner['title'] as String,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(banner['subtitle'] as String,
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 13)),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.push(banner['route'] as String);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: banner['color1'] as Color,
+                      minimumSize: const Size(120, 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                    ),
+                    child: Text(banner['button'] as String,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
