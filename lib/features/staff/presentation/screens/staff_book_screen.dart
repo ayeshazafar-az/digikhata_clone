@@ -31,7 +31,7 @@ class StaffBookScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Staff Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -78,19 +78,19 @@ class StaffBookScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.black87,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.chevron_left, color: Colors.white),
+                  Icon(Icons.chevron_left, color: Colors.black87),
                   Text('Sat, 01 Aug 26',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
-                  Icon(Icons.chevron_right, color: Colors.white),
+                  Icon(Icons.chevron_right, color: Colors.black87),
                 ],
               ),
             ),
@@ -104,7 +104,7 @@ class StaffBookScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.black87,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -137,7 +137,7 @@ class StaffBookScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.black87,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -173,7 +173,7 @@ class StaffBookScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.white))),
+                        style: const TextStyle(color: Colors.black87))),
                 data: (staffList) {
                   if (staffList.isEmpty) return _buildAttendanceEmptyState();
                   return ListView.separated(
@@ -197,7 +197,7 @@ class StaffBookScreen extends ConsumerWidget {
                         title: Text(staff['name'],
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white)),
+                                color: Colors.black87)),
                         subtitle: Text(
                             'Monthly: Rs. ${staff['monthly_salary']}',
                             style: const TextStyle(color: Colors.grey)),
@@ -208,7 +208,7 @@ class StaffBookScreen extends ConsumerWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8))),
                           child: const Text('Mark Present',
-                              style: TextStyle(color: Colors.white)),
+                              style: TextStyle(color: Colors.black87)),
                         ),
                       );
                     },
@@ -223,10 +223,10 @@ class StaffBookScreen extends ConsumerWidget {
           right: 24,
           child: ElevatedButton.icon(
             onPressed: () => _showAddStaffModal(context, ref),
-            icon: const Icon(Icons.person_add, color: Colors.white),
+            icon: const Icon(Icons.person_add, color: Colors.black87),
             label: const Text('ADD STAFF',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white)),
+                    fontWeight: FontWeight.bold, color: Colors.black87)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFF05A28),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -289,19 +289,19 @@ class StaffBookScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.black87,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.chevron_left, color: Colors.white),
+                  Icon(Icons.chevron_left, color: Colors.black87),
                   Text('August 2026',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
-                  Icon(Icons.chevron_right, color: Colors.white),
+                  Icon(Icons.chevron_right, color: Colors.black87),
                 ],
               ),
             ),
@@ -312,7 +312,7 @@ class StaffBookScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.white))),
+                        style: const TextStyle(color: Colors.black87))),
                 data: (staffList) {
                   if (staffList.isEmpty) return _buildPayrollEmptyState();
 
@@ -327,7 +327,7 @@ class StaffBookScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.black87,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -335,7 +335,7 @@ class StaffBookScreen extends ConsumerWidget {
                         children: [
                           const Text('Total Salary Generated',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
+                                  TextStyle(color: Colors.black87, fontSize: 16)),
                           Text('Rs $totalSalary',
                               style: const TextStyle(
                                   color: Colors.blue,
@@ -363,7 +363,7 @@ class StaffBookScreen extends ConsumerWidget {
                                 title: Text(staff['name'],
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                                        color: Colors.black87)),
                                 subtitle: const Text('Present: 28 Days',
                                     style: TextStyle(color: Colors.grey)),
                                 trailing: Text('Rs. ${staff['monthly_salary']}',
@@ -400,14 +400,14 @@ class StaffBookScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(
                     shape: BoxShape.circle, color: Colors.green),
-                child: const Icon(Icons.lock, color: Colors.white, size: 18),
+                child: const Icon(Icons.lock, color: Colors.black87, size: 18),
               ),
             ],
           ),
           const SizedBox(height: 32),
           const Text('No records for this month',
               style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black87,
                   fontWeight: FontWeight.bold,
                   fontSize: 18)),
           const SizedBox(height: 8),
@@ -443,13 +443,13 @@ class StaffBookScreen extends ConsumerWidget {
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white)),
+                    color: Colors.black87)),
             const SizedBox(height: 24),
             TextField(
               controller: nameController,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black87,
                   fontSize: 20),
               decoration: const InputDecoration(
                 labelText: 'Staff Name',
@@ -457,14 +457,14 @@ class StaffBookScreen extends ConsumerWidget {
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: salaryController,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+              style: const TextStyle(color: Colors.black87, fontSize: 18),
               decoration: const InputDecoration(
                 prefixText: 'Rs. ',
                 prefixStyle: TextStyle(color: Colors.grey),
@@ -473,7 +473,7 @@ class StaffBookScreen extends ConsumerWidget {
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 24),
@@ -513,7 +513,7 @@ class StaffBookScreen extends ConsumerWidget {
               child: const Text('SAVE STAFF',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black87,
                       fontSize: 16)),
             ),
             const SizedBox(height: 24),

@@ -33,7 +33,7 @@ class CashBookScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Cash Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -45,7 +45,7 @@ class CashBookScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(
             child: Text('Error: $err',
-                style: const TextStyle(color: Colors.white))),
+                style: const TextStyle(color: Colors.black87))),
         data: (entries) {
           double totalCashInHand = 0;
           double todayBalance = 0;
@@ -109,7 +109,7 @@ class CashBookScreen extends ConsumerWidget {
                                     (isCashIn ? 'Cash In' : 'Cash Out'),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.white)),
+                                    color: Colors.black87)),
                             subtitle: Text(date,
                                 style: const TextStyle(
                                     fontSize: 12, color: Colors.grey)),
@@ -151,7 +151,7 @@ class CashBookScreen extends ConsumerWidget {
                           ),
                           child: const Text('CASH OUT',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontWeight: FontWeight.bold)),
                         ),
                         const SizedBox(width: 12),
@@ -167,7 +167,7 @@ class CashBookScreen extends ConsumerWidget {
                           ),
                           child: const Text('CASH IN',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontWeight: FontWeight.bold)),
                         ),
                       ],
@@ -187,7 +187,7 @@ class CashBookScreen extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.black87,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -200,7 +200,7 @@ class CashBookScreen extends ConsumerWidget {
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white)),
+                        color: Colors.black87)),
                 const SizedBox(height: 4),
                 const Text('Cash in Hand',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -215,7 +215,7 @@ class CashBookScreen extends ConsumerWidget {
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white)),
+                        color: Colors.black87)),
                 const SizedBox(height: 4),
                 const Text('Today Balance',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -226,7 +226,7 @@ class CashBookScreen extends ConsumerWidget {
           const Expanded(
             child: Column(
               children: [
-                Icon(Icons.history, color: Colors.white, size: 20),
+                Icon(Icons.history, color: Colors.black87, size: 20),
                 SizedBox(height: 4),
                 Text('History',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -250,7 +250,7 @@ class CashBookScreen extends ConsumerWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                const Icon(Icons.calendar_month, size: 90, color: Colors.white),
+                const Icon(Icons.calendar_month, size: 90, color: Colors.black87),
                 Positioned(
                   top: 20,
                   left: 0,
@@ -259,7 +259,7 @@ class CashBookScreen extends ConsumerWidget {
                     decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: Colors.green),
                     child:
-                        const Icon(Icons.lock, color: Colors.white, size: 16),
+                        const Icon(Icons.lock, color: Colors.black87, size: 16),
                   ),
                 ),
               ],
@@ -269,7 +269,7 @@ class CashBookScreen extends ConsumerWidget {
           Text(todayStr,
               style: const TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
+                  color: Colors.black87,
                   fontWeight: FontWeight.w500)),
           const SizedBox(height: 8),
           const Text("Lets make today's cash entries",
@@ -312,29 +312,29 @@ class CashBookScreen extends ConsumerWidget {
               style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                  color: Colors.black87),
               decoration: const InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: TextStyle(color: Colors.white, fontSize: 24),
+                prefixStyle: TextStyle(color: Colors.black87, fontSize: 24),
                 labelText: 'Amount',
                 labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: remarkController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.black87),
               decoration: const InputDecoration(
                 labelText: 'Remark / Description',
                 labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 24),
@@ -374,7 +374,7 @@ class CashBookScreen extends ConsumerWidget {
               child: const Text('SAVE ENTRY',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black87,
                       fontSize: 16)),
             ),
             const SizedBox(height: 24),

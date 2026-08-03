@@ -49,7 +49,7 @@ class BillBookScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Bill Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -123,7 +123,7 @@ class BillBookScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.black87,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Row(
@@ -131,7 +131,7 @@ class BillBookScreen extends ConsumerWidget {
                       children: [
                         Text('Total sale for August',
                             style:
-                                TextStyle(color: Colors.white, fontSize: 16)),
+                                TextStyle(color: Colors.black87, fontSize: 16)),
                         Text('Rs 0',
                             style: TextStyle(
                                 color: Colors.red,
@@ -147,7 +147,7 @@ class BillBookScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Colors.black87,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -158,7 +158,7 @@ class BillBookScreen extends ConsumerWidget {
                               SizedBox(width: 8),
                               Text('Start Date',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.black87,
                                       fontWeight: FontWeight.bold)),
                             ],
                           ),
@@ -169,7 +169,7 @@ class BillBookScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Colors.black87,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -180,7 +180,7 @@ class BillBookScreen extends ConsumerWidget {
                               SizedBox(width: 8),
                               Text('End Date',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.black87,
                                       fontWeight: FontWeight.bold)),
                             ],
                           ),
@@ -196,7 +196,7 @@ class BillBookScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.white))),
+                        style: const TextStyle(color: Colors.black87))),
                 data: (bills) {
                   if (bills.isEmpty) return _buildBillsEmptyState();
                   return ListView.separated(
@@ -218,7 +218,7 @@ class BillBookScreen extends ConsumerWidget {
                         title: Text(b['customer_name'] ?? 'Walk-in Customer',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white)),
+                                color: Colors.black87)),
                         subtitle: Text('Date: $date',
                             style: const TextStyle(color: Colors.grey)),
                         trailing: Column(
@@ -229,7 +229,7 @@ class BillBookScreen extends ConsumerWidget {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.white)),
+                                    color: Colors.black87)),
                             Text(isPaid ? 'PAID' : 'UNPAID',
                                 style: TextStyle(
                                     fontSize: 10,
@@ -250,10 +250,10 @@ class BillBookScreen extends ConsumerWidget {
           right: 24,
           child: ElevatedButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add, color: Colors.black87),
             label: const Text('CREATE NEW BILL',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white)),
+                    fontWeight: FontWeight.bold, color: Colors.black87)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFF05A28),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -283,7 +283,7 @@ class BillBookScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(
                     shape: BoxShape.circle, color: Colors.green),
-                child: const Icon(Icons.lock, color: Colors.white, size: 18),
+                child: const Icon(Icons.lock, color: Colors.black87, size: 18),
               ),
             ],
           ),
@@ -322,7 +322,7 @@ class BillBookScreen extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.black87,
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Row(
@@ -331,7 +331,7 @@ class BillBookScreen extends ConsumerWidget {
               SizedBox(width: 8),
               Expanded(
                 child: TextField(
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black87),
                   decoration: InputDecoration(
                     hintText: 'Search',
                     hintStyle: TextStyle(color: Colors.grey),
@@ -366,7 +366,7 @@ class BillBookScreen extends ConsumerWidget {
                       child: const Center(
                           child: Text('All',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontWeight: FontWeight.bold))),
                     ),
                     Container(
@@ -389,7 +389,7 @@ class BillBookScreen extends ConsumerWidget {
                           const Center(child: CircularProgressIndicator()),
                       error: (err, stack) => const Center(
                           child: Text('Error',
-                              style: TextStyle(color: Colors.white))),
+                              style: TextStyle(color: Colors.black87))),
                       data: (products) {
                         return GridView.builder(
                           padding: const EdgeInsets.all(12),
@@ -414,7 +414,7 @@ class BillBookScreen extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.green),
                                     borderRadius: BorderRadius.circular(8),
-                                    color: Colors.white,
+                                    color: Colors.black87,
                                   ),
                                   child: const Center(
                                       child: Icon(Icons.add,
@@ -433,7 +433,7 @@ class BillBookScreen extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.white24),
                                   borderRadius: BorderRadius.circular(8),
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                 ),
                                 child: Stack(
                                   children: [
@@ -448,7 +448,7 @@ class BillBookScreen extends ConsumerWidget {
                                           Text(p['item_name'],
                                               textAlign: TextAlign.center,
                                               style: const TextStyle(
-                                                  color: Colors.white,
+                                                  color: Colors.black87,
                                                   fontWeight: FontWeight.bold)),
                                           const SizedBox(height: 4),
                                           Text('Rs. ${p['selling_price']}',
@@ -467,7 +467,7 @@ class BillBookScreen extends ConsumerWidget {
                                                 AppTheme.secondaryOrange,
                                             child: Text(qtyInCart.toString(),
                                                 style: const TextStyle(
-                                                    color: Colors.white,
+                                                    color: Colors.black87,
                                                     fontSize: 12,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -576,18 +576,18 @@ class BillBookScreen extends ConsumerWidget {
                   Row(
                     children: [
                       const Icon(Icons.shopping_cart_checkout,
-                          color: Colors.white, size: 24),
+                          color: Colors.black87, size: 24),
                       const SizedBox(width: 8),
                       Text('$totalItems Items',
                           style: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black87,
                               fontSize: 18,
                               fontWeight: FontWeight.bold)),
                     ],
                   ),
                   Text('Rs $totalPrice (CHECKOUT)',
                       style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                 ],

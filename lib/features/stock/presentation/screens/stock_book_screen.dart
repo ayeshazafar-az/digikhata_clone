@@ -32,7 +32,7 @@ class StockBookScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Stock Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -79,7 +79,7 @@ class StockBookScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.white))),
+                        style: const TextStyle(color: Colors.black87))),
                 data: (products) {
                   return TabBarView(
                     children: [
@@ -106,10 +106,10 @@ class StockBookScreen extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 24.0, right: 8.0),
         child: ElevatedButton.icon(
           onPressed: () => _showAddProductModal(context, ref),
-          icon: const Icon(Icons.add, color: Colors.white),
+          icon: const Icon(Icons.add, color: Colors.black87),
           label: const Text('ADD ITEM',
               style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(
                 0xFFF05A28), // Matches the specific orange from screenshot
@@ -145,7 +145,7 @@ class StockBookScreen extends ConsumerWidget {
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.white)),
+                          color: Colors.black87)),
                   subtitle: Text('Selling Price: Rs. ${p['selling_price']}',
                       style: const TextStyle(color: Colors.grey)),
                   trailing: Column(
@@ -178,7 +178,7 @@ class StockBookScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.black87,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -191,14 +191,14 @@ class StockBookScreen extends ConsumerWidget {
                         style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white)),
+                            color: Colors.black87)),
                     const SizedBox(height: 4),
                     const Text('View Rate List',
                         style:
                             TextStyle(color: Colors.redAccent, fontSize: 14)),
                   ],
                 ),
-                const Icon(Icons.chevron_right, color: Colors.white, size: 28),
+                const Icon(Icons.chevron_right, color: Colors.black87, size: 28),
               ],
             ),
           ),
@@ -209,7 +209,7 @@ class StockBookScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.black87,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(
@@ -224,13 +224,13 @@ class StockBookScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.black87,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(
                       child: Text('Stock OUT Report',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black87,
                               fontWeight: FontWeight.bold))),
                 ),
               ),
@@ -258,7 +258,7 @@ class StockBookScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(
                     shape: BoxShape.circle, color: Colors.green),
-                child: const Icon(Icons.lock, color: Colors.white, size: 18),
+                child: const Icon(Icons.lock, color: Colors.black87, size: 18),
               ),
             ],
           ),
@@ -318,14 +318,14 @@ class StockBookScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               TextField(
                 controller: nameController,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black87),
                 decoration: const InputDecoration(
                   labelText: 'Item Name',
                   labelStyle: TextStyle(color: Colors.grey),
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey)),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white)),
+                      borderSide: BorderSide(color: Colors.black87)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -335,28 +335,28 @@ class StockBookScreen extends ConsumerWidget {
                       child: TextField(
                           controller: sellPriceController,
                           keyboardType: TextInputType.number,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Selling Price (Rs)',
                             labelStyle: TextStyle(color: Colors.grey),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white)),
+                                borderSide: BorderSide(color: Colors.black87)),
                           ))),
                   const SizedBox(width: 16),
                   Expanded(
                       child: TextField(
                           controller: buyPriceController,
                           keyboardType: TextInputType.number,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Purchase Price (Rs)',
                             labelStyle: TextStyle(color: Colors.grey),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white)),
+                                borderSide: BorderSide(color: Colors.black87)),
                           ))),
                 ],
               ),
@@ -367,27 +367,27 @@ class StockBookScreen extends ConsumerWidget {
                       child: TextField(
                           controller: stockController,
                           keyboardType: TextInputType.number,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Opening Stock',
                             labelStyle: TextStyle(color: Colors.grey),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white)),
+                                borderSide: BorderSide(color: Colors.black87)),
                           ))),
                   const SizedBox(width: 16),
                   Expanded(
                       child: TextField(
                           controller: unitController,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Unit (pcs, kg, etc)',
                             labelStyle: TextStyle(color: Colors.grey),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white)),
+                                borderSide: BorderSide(color: Colors.black87)),
                           ))),
                 ],
               ),

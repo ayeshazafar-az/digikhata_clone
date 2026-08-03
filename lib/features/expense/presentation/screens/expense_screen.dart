@@ -33,7 +33,7 @@ class ExpenseScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Expense Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -45,7 +45,7 @@ class ExpenseScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(
             child: Text('Error: $err',
-                style: const TextStyle(color: Colors.white))),
+                style: const TextStyle(color: Colors.black87))),
         data: (entries) {
           double totalMonthExpense = 0;
           final today = DateTime.now();
@@ -85,7 +85,7 @@ class ExpenseScreen extends ConsumerWidget {
                             title: Text(e['category'],
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white)),
+                                    color: Colors.black87)),
                             subtitle: Text(
                                 '${e['remark'] ?? 'No remark'} \n$date',
                                 style: const TextStyle(
@@ -112,9 +112,9 @@ class ExpenseScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddExpenseModal(context, ref),
         backgroundColor: const Color(0xFFF05A28), // Orange
-        icon: const Icon(Icons.add, color: Colors.white),
+        icon: const Icon(Icons.add, color: Colors.black87),
         label: const Text('ADD EXPENSE',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
       ),
     );
   }
@@ -124,7 +124,7 @@ class ExpenseScreen extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.black87,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -136,7 +136,7 @@ class ExpenseScreen extends ConsumerWidget {
                   style: TextStyle(color: Colors.black87, fontSize: 14)),
               Text('Rs $total',
                   style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.black87,
                       fontSize: 20,
                       fontWeight: FontWeight.bold)),
             ],
@@ -172,7 +172,7 @@ class ExpenseScreen extends ConsumerWidget {
           const Text('No Expenses Yet',
               style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white,
+                  color: Colors.black87,
                   fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           const Text('Tap + to log your daily business expenses.',
@@ -208,7 +208,7 @@ class ExpenseScreen extends ConsumerWidget {
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white)),
+                    color: Colors.black87)),
             const SizedBox(height: 24),
             TextField(
               controller: amountController,
@@ -216,42 +216,42 @@ class ExpenseScreen extends ConsumerWidget {
               style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                  color: Colors.black87),
               decoration: const InputDecoration(
                 prefixText: 'Rs. ',
-                prefixStyle: TextStyle(color: Colors.white, fontSize: 24),
+                prefixStyle: TextStyle(color: Colors.black87, fontSize: 24),
                 labelText: 'Amount',
                 labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: categoryController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.black87),
               decoration: const InputDecoration(
                 labelText: 'Category (e.g. Fuel, Rent)',
                 labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: remarkController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.black87),
               decoration: const InputDecoration(
                 labelText: 'Remarks',
                 labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
+                    borderSide: BorderSide(color: Colors.black87)),
               ),
             ),
             const SizedBox(height: 24),
@@ -294,7 +294,7 @@ class ExpenseScreen extends ConsumerWidget {
               child: const Text('SAVE EXPENSE',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black87,
                       fontSize: 16)),
             ),
             const SizedBox(height: 24),
