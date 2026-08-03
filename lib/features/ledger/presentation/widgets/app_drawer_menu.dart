@@ -25,13 +25,15 @@ class AppDrawerMenu extends StatelessWidget {
       BuildContext context, IconData icon, String title, VoidCallback onTap,
       {Color? textColor}) {
     return ListTile(
-      leading: Icon(icon, color: AppTheme.secondaryOrange),
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      leading: Icon(icon, color: AppTheme.primaryBlue, size: 24),
       title: Text(
         title,
         style: TextStyle(
           color: textColor ?? Colors.black87,
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
       ),
       onTap: () {
@@ -44,7 +46,7 @@ class AppDrawerMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.white,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -57,12 +59,20 @@ class AppDrawerMenu extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.book, size: 40, color: Colors.white),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.menu_book,
+                          size: 36, color: Colors.white),
+                    ),
                     const SizedBox(width: 12),
                     const Text('DigiKhata',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -88,7 +98,10 @@ class AppDrawerMenu extends StatelessWidget {
               () => context.push('/expense')),
           _buildDrawerItem(context, Icons.cloud_upload, 'Backup',
               () => context.push('/admin_settings')),
-          const Divider(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Divider(color: Colors.black12, thickness: 1),
+          ),
 
           _buildSectionHeader('P A Y M E N T S'),
           _buildDrawerItem(context, Icons.point_of_sale, 'POS',
@@ -97,7 +110,10 @@ class AppDrawerMenu extends StatelessWidget {
               context, Icons.qr_code_2, 'QR', () => context.push('/qr_code')),
           _buildDrawerItem(
               context, Icons.verified_user, 'KYC', () => context.push('/kyc')),
-          const Divider(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Divider(color: Colors.black12, thickness: 1),
+          ),
 
           _buildSectionHeader('M O R E'),
           _buildDrawerItem(context, Icons.devices, 'Multi Devices',
@@ -106,14 +122,17 @@ class AppDrawerMenu extends StatelessWidget {
               () => context.push('/business_card')),
           _buildDrawerItem(context, Icons.calculate, 'Calculator',
               () => context.push('/calculator')),
-          _buildDrawerItem(context, Icons.verified_user, 'Tasdeeq',
+          _buildDrawerItem(context, Icons.security, 'Tasdeeq',
               () => context.push('/tasdeeq')),
           _buildDrawerItem(context, Icons.local_shipping, 'Distributor',
               () => context.push('/distributor')),
           _buildDrawerItem(context, Icons.delete, 'Recycle Bin',
               () => context.push('/recycle_bin')),
 
-          const Divider(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Divider(color: Colors.black12, thickness: 1),
+          ),
           _buildDrawerItem(
             context,
             Icons.logout,
@@ -122,7 +141,7 @@ class AppDrawerMenu extends StatelessWidget {
               await Supabase.instance.client.auth.signOut();
               context.go('/login');
             },
-            textColor: Colors.red.shade600,
+            textColor: const Color(0xFFE57373),
           ),
           const SizedBox(height: 32),
         ],

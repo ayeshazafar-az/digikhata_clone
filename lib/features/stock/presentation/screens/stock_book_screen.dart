@@ -46,7 +46,7 @@ class StockBookScreen extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.secondaryOrange,
+                backgroundColor: AppTheme.primaryBlue,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 minimumSize: Size.zero,
                 shape: RoundedRectangleBorder(
@@ -314,7 +314,7 @@ class StockBookScreen extends ConsumerWidget {
                   style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.secondaryOrange)),
+                      color: AppTheme.primaryBlue)),
               const SizedBox(height: 24),
               TextField(
                 controller: nameController,

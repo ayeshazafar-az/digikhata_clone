@@ -44,7 +44,7 @@ class StaffBookScreen extends ConsumerWidget {
         child: Column(
           children: [
             const TabBar(
-              indicatorColor: AppTheme.secondaryOrange,
+              indicatorColor: AppTheme.primaryBlue,
               labelColor: Colors.white,
               unselectedLabelColor: Colors.grey,
               tabs: [

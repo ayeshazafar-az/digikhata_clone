@@ -22,7 +22,7 @@ class DistributorScreen extends StatelessWidget {
             const SizedBox(height: 32),
             ElevatedButton(
                onPressed: () {},
-               style: ElevatedButton.styleFrom(backgroundColor: AppTheme.secondaryOrange, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
+               style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
                child: const Text('Contact Sales Team'),
             )
           ],

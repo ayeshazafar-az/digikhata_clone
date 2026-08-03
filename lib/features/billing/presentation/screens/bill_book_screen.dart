@@ -66,7 +66,7 @@ class BillBookScreen extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.secondaryOrange,
+                backgroundColor: AppTheme.primaryBlue,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 minimumSize: Size.zero,
                 shape: RoundedRectangleBorder(
@@ -86,7 +86,7 @@ class BillBookScreen extends ConsumerWidget {
         child: Column(
           children: [
             const TabBar(
-              indicatorColor: AppTheme.secondaryOrange,
+              indicatorColor: AppTheme.primaryBlue,
               labelColor: Colors.white,
               unselectedLabelColor: Colors.grey,
               tabs: [
@@ -339,7 +339,7 @@ class BillBookScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              Icon(Icons.qr_code_scanner, color: AppTheme.secondaryOrange),
+              Icon(Icons.qr_code_scanner, color: AppTheme.primaryBlue),
             ],
           ),
         ),
@@ -361,7 +361,7 @@ class BillBookScreen extends ConsumerWidget {
                         color: Color(0xFF252525),
                         border: Border(
                             left: BorderSide(
-                                color: AppTheme.secondaryOrange, width: 4)),
+                                color: AppTheme.primaryBlue, width: 4)),
                       ),
                       child: const Center(
                           child: Text('All',
@@ -464,7 +464,7 @@ class BillBookScreen extends ConsumerWidget {
                                           child: CircleAvatar(
                                             radius: 12,
                                             backgroundColor:
-                                                AppTheme.secondaryOrange,
+                                                AppTheme.primaryBlue,
                                             child: Text(qtyInCart.toString(),
                                                 style: const TextStyle(
                                                     color: Colors.black87,

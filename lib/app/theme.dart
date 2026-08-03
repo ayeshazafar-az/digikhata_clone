@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Authentic DigiKhata Deep Blue (Graceful)
-  static const Color primaryBlue = Color(0xFF0D47A1);
-  static const Color secondaryBlue = Color(0xFF088395);
+  // Authentic DigiKhata Deep Blue (Graceful) -> Upgraded to Ultra-Vibrant Tech Blue
+  static const Color primaryBlue = Color(0xFF1E3A8A); // Gorgeous Midnight Blue
+  static const Color secondaryBlue = Color(0xFF60A5FA); // Light Blue Combo
   static const Color background = Color(0xFFF6F8FA);
   static const Color successGreen = Color(0xFF00DFA2); // For Cash In
   static const Color dangerRed = Color(0xFFFF0060); // For Cash Out
   static const Color warningOrange = Color(0xFFFF9800); // For Admins
-  static const Color secondaryOrange = Color(0xFFFF9900); // Party Tab Orange
+  static const Color secondaryOrange =
+      Color(0xFFFF5722); // True Deep Orange (removes mustard hue)
 
   static ThemeData get lightTheme {
     return ThemeData(

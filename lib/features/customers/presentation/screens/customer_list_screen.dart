@@ -35,7 +35,7 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      AppTheme.secondaryOrange, // Using matching tone
+                      AppTheme.primaryBlue, // Using matching tone
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                 ),
@@ -104,7 +104,7 @@ class _PartyTab extends ConsumerWidget {
     final isBank = type == 'bank';
     final btnColor = isBank
         ? AppTheme.dangerRed
-        : (isSupplier ? Colors.green : AppTheme.secondaryOrange);
+        : (isSupplier ? Colors.green : AppTheme.primaryBlue);
 
     return Stack(
       children: [
@@ -185,7 +185,7 @@ class _PartyTab extends ConsumerWidget {
         children: [
           const Text('Hide Balance',
               style: TextStyle(
-                  color: AppTheme.secondaryOrange,
+                  color: AppTheme.primaryBlue,
                   fontSize: 10,
                   fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),

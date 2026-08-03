@@ -120,7 +120,7 @@ class HomeGridScreen extends StatelessWidget {
         'subtitle': 'Keep track of all products easily',
         'button': 'View Stock',
         'route': '/stock_book',
-        'color1': AppTheme.secondaryOrange,
+        'color1': AppTheme.primaryBlue,
         'color2': Colors.orange.shade800,
       },
       {
