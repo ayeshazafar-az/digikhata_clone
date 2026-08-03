@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
+import '../widgets/app_drawer_menu.dart';
 
 class HomeGridScreen extends StatelessWidget {
   const HomeGridScreen({super.key});
@@ -9,11 +10,17 @@ class HomeGridScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
+      drawer: const AppDrawerMenu(),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        leading: const Icon(Icons.menu),
+        leading: Builder(
+          builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
+        ),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -286,12 +293,18 @@ class HomeGridScreen extends StatelessWidget {
       mainAxisSpacing: 12,
       childAspectRatio: 0.9,
       children: [
-        _buildGridItem(Icons.devices, 'Multi Devices', () => context.push('/multi_devices')),
-        _buildGridItem(Icons.badge_outlined, 'Business Card', () => context.push('/business_card')),
-        _buildGridItem(Icons.calculate, 'Calculator', () => context.push('/calculator')),
-        _buildGridItem(Icons.verified_user, 'Tasdeeq', () => context.push('/tasdeeq')),
-        _buildGridItem(Icons.delete, 'Recycle Bin', () => context.push('/recycle_bin')),
-        _buildGridItem(Icons.local_shipping, 'Distributor', () => context.push('/distributor')),
+        _buildGridItem(Icons.devices, 'Multi Devices',
+            () => context.push('/multi_devices')),
+        _buildGridItem(Icons.badge_outlined, 'Business Card',
+            () => context.push('/business_card')),
+        _buildGridItem(
+            Icons.calculate, 'Calculator', () => context.push('/calculator')),
+        _buildGridItem(
+            Icons.verified_user, 'Tasdeeq', () => context.push('/tasdeeq')),
+        _buildGridItem(
+            Icons.delete, 'Recycle Bin', () => context.push('/recycle_bin')),
+        _buildGridItem(Icons.local_shipping, 'Distributor',
+            () => context.push('/distributor')),
       ],
     );
   }
