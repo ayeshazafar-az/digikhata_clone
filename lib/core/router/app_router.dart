@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/utilities/presentation/screens/calculator_screen.dart';
+import '../../features/utilities/presentation/screens/business_card_screen.dart';
+import '../../features/utilities/presentation/screens/tasdeeq_screen.dart';
+import '../../features/utilities/presentation/screens/recycle_bin_screen.dart';
+import '../../features/utilities/presentation/screens/multi_devices_screen.dart';
+import '../../features/utilities/presentation/screens/distributor_screen.dart';
+
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/language_selection_screen.dart';
@@ -36,6 +43,23 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     routes: [
+      GoRoute(
+          path: '/calculator',
+          builder: (context, state) => const CalculatorScreen()),
+      GoRoute(
+          path: '/business_card',
+          builder: (context, state) => const BusinessCardScreen()),
+      GoRoute(
+          path: '/tasdeeq', builder: (context, state) => const TasdeeqScreen()),
+      GoRoute(
+          path: '/recycle_bin',
+          builder: (context, state) => const RecycleBinScreen()),
+      GoRoute(
+          path: '/multi_devices',
+          builder: (context, state) => const MultiDevicesScreen()),
+      GoRoute(
+          path: '/distributor',
+          builder: (context, state) => const DistributorScreen()),
       GoRoute(
         path: '/',
         name: 'splash',

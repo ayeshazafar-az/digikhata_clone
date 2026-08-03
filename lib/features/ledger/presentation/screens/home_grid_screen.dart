@@ -286,12 +286,12 @@ class HomeGridScreen extends StatelessWidget {
       mainAxisSpacing: 12,
       childAspectRatio: 0.9,
       children: [
-        _buildGridItem(Icons.devices, 'Multi Devices', () {}),
-        _buildGridItem(Icons.badge_outlined, 'Business Card', () {}),
-        _buildGridItem(Icons.calculate, 'Calculator', () {}),
-        _buildGridItem(Icons.verified_user, 'Tasdeeq', () {}),
-        _buildGridItem(Icons.delete, 'Recycle Bin', () {}),
-        _buildGridItem(Icons.local_shipping, 'Distributor', () {}),
+        _buildGridItem(Icons.devices, 'Multi Devices', () => context.push('/multi_devices')),
+        _buildGridItem(Icons.badge_outlined, 'Business Card', () => context.push('/business_card')),
+        _buildGridItem(Icons.calculate, 'Calculator', () => context.push('/calculator')),
+        _buildGridItem(Icons.verified_user, 'Tasdeeq', () => context.push('/tasdeeq')),
+        _buildGridItem(Icons.delete, 'Recycle Bin', () => context.push('/recycle_bin')),
+        _buildGridItem(Icons.local_shipping, 'Distributor', () => context.push('/distributor')),
       ],
     );
   }
