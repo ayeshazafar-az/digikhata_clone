@@ -17,10 +17,9 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor:
-            const Color(0xFF1E1E1E), // Dark Background mimicking image
+        backgroundColor: Colors.grey.shade100, // Reverted Dark Theme
         appBar: AppBar(
-          backgroundColor: Colors.grey.shade50,
+          backgroundColor: AppTheme.primaryBlue, // STRICTLY requested feature
           elevation: 0,
           leading: IconButton(
             icon:
@@ -34,8 +33,8 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      AppTheme.primaryBlue, // Using matching tone
+                  backgroundColor: const Color(
+                      0xFFFFB300), // Matching the yellow collection button in ref screenshot
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                 ),
@@ -50,8 +49,10 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
           ],
           bottom: const TabBar(
             indicatorColor: Color(0xFFFF9900),
+            indicatorWeight: 4,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
+            unselectedLabelColor:
+                Colors.white54, // Fixed invisible contrast bug
             isScrollable: true,
             labelPadding: EdgeInsets.symmetric(horizontal: 20),
             tabs: [
@@ -102,21 +103,18 @@ class _PartyTab extends ConsumerWidget {
     // Determine dynamic properties based on strictly scoped type
     final isSupplier = type == 'supplier';
     final isBank = type == 'bank';
-    final btnColor = isBank
-        ? AppTheme.dangerRed
-        : (isSupplier ? Colors.green : AppTheme.primaryBlue);
 
     return Stack(
       children: [
         Column(
           children: [
-            _buildStatsHeader(isSupplier, isBank),
+            _buildStatsHeader(isSupplier, isBank, type, context),
             Expanded(
               child: partiesState.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.white))),
+                        style: const TextStyle(color: Colors.black))),
                 data: (parties) {
                   final filtered = type == 'all'
                       ? parties
@@ -132,41 +130,55 @@ class _PartyTab extends ConsumerWidget {
         ),
         Positioned(
           bottom: 16,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Icon(Icons.arrow_forward_outlined,
-                    color: AppTheme.dangerRed, size: 28),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: btnColor,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: () => context.push(
-                      '/add_party?type=${type == "all" ? "customer" : type}'),
-                  icon: const Icon(Icons.person_add_alt_1,
-                      color: Colors.white, size: 20),
-                  label: Text(
-                      'ADD ${type == 'all' ? 'CUSTOMER' : type.toUpperCase()}',
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+          right: 16,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (type == 'customer')
+                const Padding(
+                  padding: EdgeInsets.only(right: 16.0),
+                  child: Icon(Icons.arrow_forward,
+                      color: Color(0xFFD63C1B), size: 28),
                 ),
-              ],
-            ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(
+                      0xFFE94326), // Solid DigiKhata orange mapping the screenshot perfectly
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24)),
+                  elevation: 4,
+                ),
+                onPressed: () {
+                  if (isBank) {
+                    context.push('/select_bank');
+                  } else if (isSupplier) {
+                    context.push('/add_supplier_route');
+                  } else {
+                    context.push('/add_customer_route');
+                  }
+                },
+                icon: Icon(
+                    isBank ? Icons.account_balance : Icons.person_add_alt_1,
+                    color: Colors.white,
+                    size: 20),
+                label: Text(
+                    isBank
+                        ? 'ADD BANK'
+                        : 'ADD ${type == 'all' ? 'CUSTOMER' : type.toUpperCase()}',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
           ),
         )
       ],
     );
   }
 
-  Widget _buildStatsHeader(bool isSupplier, bool isBank) {
+  Widget _buildStatsHeader(
+      bool isSupplier, bool isBank, String type, BuildContext context) {
     String leftLabel = isSupplier
         ? 'Total purchase for Aug'
         : (isBank ? 'Total in for Aug' : 'You will give');
@@ -220,7 +232,17 @@ class _PartyTab extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.white),
+              InkWell(
+                onTap: () {
+                  context.push('/all_transactions_route?type=$type');
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: const Icon(Icons.arrow_forward_ios,
+                      color: AppTheme.dangerRed, size: 20),
+                ),
+              ),
             ],
           )
         ],
@@ -237,28 +259,33 @@ class _PartyTab extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 80,
-            backgroundColor: Colors.brown.withValues(alpha: 0.3),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(visualIcon, size: 90, color: Colors.white),
-                Positioned(
-                  top: 20,
-                  left: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.green),
-                    child:
-                        const Icon(Icons.lock, color: Colors.white, size: 16),
-                  ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: AppTheme.successGreen,
+                  shape: BoxShape.circle,
                 ),
-              ],
-            ),
+                child: const Icon(Icons.lock, color: Colors.white, size: 24),
+              ),
+              const SizedBox(width: -10),
+              Container(
+                width: 140,
+                height: 140,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFBE4D8), // Light skin UI circle blob
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(visualIcon,
+                      size: 80, color: const Color(0xFF1F5F99)),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 32),
           _buildStepRow('1- $t1'),
           _buildStepRow('2- Add entries & maintain khata'),
           _buildStepRow('3- $t3'),

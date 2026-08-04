@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/utilities/presentation/screens/calculator_screen.dart';
 import '../../features/utilities/presentation/screens/business_card_screen.dart';
 import '../../features/utilities/presentation/screens/tasdeeq_screen.dart';
-import '../../features/utilities/presentation/screens/recycle_bin_screen.dart';
-import '../../features/utilities/presentation/screens/multi_devices_screen.dart';
 import '../../features/utilities/presentation/screens/distributor_screen.dart';
 
 import '../../features/auth/presentation/screens/splash_screen.dart';
@@ -39,6 +37,14 @@ import '../../features/admin/presentation/screens/kyc_status_screen.dart';
 import '../../features/auth/presentation/screens/change_pin_screen.dart';
 import '../../features/ledger/presentation/screens/currency_selection_screen.dart';
 import '../../features/ledger/presentation/screens/faqs_screen.dart';
+import '../../features/ledger/presentation/screens/multi_devices_screen.dart';
+import '../../features/ledger/presentation/screens/recycle_bin_screen.dart';
+
+// Customer specific sub-routes
+import '../../features/customers/presentation/screens/add_contact_screen.dart';
+import '../../features/customers/presentation/screens/select_bank_screen.dart';
+import '../../features/customers/presentation/screens/add_new_bank_screen.dart';
+import '../../features/customers/presentation/screens/all_transactions_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -243,6 +249,48 @@ class AppRouter {
         path: '/faqs',
         name: 'faqs',
         builder: (context, state) => const FaqsScreen(),
+      ),
+      GoRoute(
+        path: '/multi_devices',
+        name: 'multi_devices',
+        builder: (context, state) => const MultiDevicesScreen(),
+      ),
+      GoRoute(
+        path: '/recycle_bin',
+        name: 'recycle_bin',
+        builder: (context, state) => const RecycleBinScreen(),
+      ),
+      GoRoute(
+        path: '/add_customer_route',
+        builder: (context, state) => const AddContactScreen(type: 'Customer'),
+      ),
+      GoRoute(
+        path: '/add_supplier_route',
+        builder: (context, state) => const AddContactScreen(type: 'Supplier'),
+      ),
+      GoRoute(
+        path: '/select_bank',
+        builder: (context, state) => const SelectBankScreen(),
+      ),
+      GoRoute(
+        path: '/add_new_bank',
+        builder: (context, state) {
+          final uri = Uri.parse(state.uri.toString());
+          final bankName = uri.queryParameters['bankName'];
+          return AddNewBankScreen(bankName: bankName);
+        },
+      ),
+      GoRoute(
+        path: '/all_transactions_route',
+        builder: (context, state) {
+          final uri = Uri.parse(state.uri.toString());
+          final type = uri.queryParameters['type'] ?? 'Customer';
+          // Capitalize first letter
+          final typeFormatted = type.isNotEmpty
+              ? '${type[0].toUpperCase()}${type.substring(1)}'
+              : 'Customer';
+          return AllTransactionsScreen(type: typeFormatted);
+        },
       ),
     ],
   );

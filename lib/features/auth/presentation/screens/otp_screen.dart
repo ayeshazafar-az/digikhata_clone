@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
@@ -80,6 +81,26 @@ class _OtpScreenState extends State<OtpScreen> {
         if (profile != null && profile['role'] == 'super_admin') {
           if (mounted) context.go('/admin');
           return;
+        }
+
+        // --- SUBSCRIPTION CHECK FOR DESKTOP / WEB BLOCKING ---
+        if (kIsWeb && MediaQuery.of(context).size.width > 600) {
+          final isSubscribed = profile?['is_subscribed'] == true;
+          if (!isSubscribed) {
+            await Supabase.instance.client.auth.signOut();
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      'Desktop login requires an active DigiKhata subscription. Please subscribe on your mobile device.'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 5),
+                ),
+              );
+              setState(() => _isLoading = false);
+            }
+            return;
+          }
         }
 
         // --- KYC ONBOARDING INTERCEPT ---
