@@ -126,31 +126,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               const SizedBox(height: 16),
               Center(
-                child: GestureDetector(
-                  onLongPress: () {
-                    // Hidden Backdoor for Web Testing!
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Admin Bypass Activated!',
-                            style: TextStyle(color: Colors.white)),
-                        backgroundColor: AppTheme.dangerRed));
-                    context.go('/admin');
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.menu_book_rounded,
-                          color: AppTheme.primaryBlue, size: 40),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'DigiKhata',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -0.5,
-                        ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.menu_book_rounded,
+                        color: AppTheme.primaryBlue, size: 40),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'DigiKhata',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 64),

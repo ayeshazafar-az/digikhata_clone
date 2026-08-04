@@ -71,13 +71,6 @@ class _OtpScreenState extends State<OtpScreen> {
       );
 
       if (res.user != null) {
-        // --- HARDCODED ADMIN BYPASS ---
-        if (widget.phoneNumber.contains('3245423290') ||
-            widget.phoneNumber == 'admin') {
-          if (mounted) context.go('/admin');
-          return;
-        }
-
         final profile = await Supabase.instance.client
             .from('profiles')
             .select('role, kyc_status')
