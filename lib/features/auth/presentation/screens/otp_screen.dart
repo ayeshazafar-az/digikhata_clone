@@ -62,10 +62,12 @@ class _OtpScreenState extends State<OtpScreen> {
     setState(() => _isLoading = true);
 
     try {
+      final isEmail = widget.phoneNumber.contains('@');
       final AuthResponse res = await Supabase.instance.client.auth.verifyOTP(
-        type: OtpType.sms,
+        type: isEmail ? OtpType.email : OtpType.sms,
         token: otp,
-        phone: widget.phoneNumber,
+        email: isEmail ? widget.phoneNumber : null,
+        phone: isEmail ? null : widget.phoneNumber,
       );
 
       if (res.user != null) {
