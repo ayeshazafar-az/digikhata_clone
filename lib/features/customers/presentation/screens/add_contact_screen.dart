@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AddContactScreen extends StatefulWidget {
   final String type; // 'Customer' or 'Supplier'
@@ -10,12 +13,34 @@ class AddContactScreen extends StatefulWidget {
 }
 
 class _AddContactScreenState extends State<AddContactScreen> {
-  final List<String> dummyContacts = [
-    '+923355563280',
-    '+923430009010',
-    '0331 5888567',
-    '0332 5449024',
-  ];
+  List<Contact>? _contacts;
+  bool _permissionDenied = false;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContacts();
+  }
+
+  Future<void> _fetchContacts() async {
+    if (kIsWeb) {
+      setState(() => _contacts = []);
+      return;
+    }
+
+    try {
+      final status = await Permission.contacts.request();
+      if (status.isGranted) {
+        final contacts = await FlutterContacts.getAll();
+        setState(() => _contacts = contacts);
+      } else {
+        setState(() => _permissionDenied = true);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _contacts = []);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +71,6 @@ class _AddContactScreenState extends State<AddContactScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -62,8 +86,13 @@ class _AddContactScreenState extends State<AddContactScreen> {
                       offset: const Offset(0, 2)),
                 ],
               ),
-              child: const TextField(
-                decoration: InputDecoration(
+              child: TextField(
+                onChanged: (val) {
+                  setState(() {
+                    _searchQuery = val.toLowerCase();
+                  });
+                },
+                decoration: const InputDecoration(
                   hintText: 'Type Customer Name',
                   hintStyle: TextStyle(color: Colors.black38),
                   border: InputBorder.none,
@@ -72,49 +101,75 @@ class _AddContactScreenState extends State<AddContactScreen> {
               ),
             ),
           ),
-
           Expanded(
-            child: ListView(
-              children: [
-                ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  leading: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade50,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.person_add_alt_1,
-                        color: Color(0xFFE94326), size: 20),
-                  ),
-                  title: Text('Add New ${widget.type}',
-                      style: const TextStyle(
-                          color: Color(0xFFE94326),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16)),
-                  trailing:
-                      const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
-                  onTap: () {
-                    // Route directly to native AddParty screen to persist via Supabase
-                    context
-                        .push('/add_party?type=${widget.type.toLowerCase()}');
-                  },
-                ),
-                Divider(color: Colors.grey.shade200, height: 1),
-                ...dummyContacts
-                    .map((contact) => _buildContactTile(contact))
-                    .toList(),
-              ],
-            ),
+            child: _buildContactsList(),
           )
         ],
       ),
     );
   }
 
-  Widget _buildContactTile(String contact) {
-    bool isPlus = contact.startsWith('+');
+  Widget _buildContactsList() {
+    if (_permissionDenied) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: Text(
+              'Contact permissions strictly required to sync your address book. Please enable them in OS settings.',
+              textAlign: TextAlign.center),
+        ),
+      );
+    }
+
+    if (_contacts == null) {
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFFE94326)));
+    }
+
+    final filteredContacts = _searchQuery.isEmpty
+        ? _contacts!
+        : _contacts!
+            .where((c) =>
+                (c.displayName ?? '').toLowerCase().contains(_searchQuery))
+            .toList();
+
+    return ListView(
+      children: [
+        ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.person_add_alt_1,
+                color: Color(0xFFE94326), size: 20),
+          ),
+          title: Text('Add New ${widget.type}',
+              style: const TextStyle(
+                  color: Color(0xFFE94326),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16)),
+          trailing: const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
+          onTap: () {
+            context.push('/add_party?type=${widget.type.toLowerCase()}');
+          },
+        ),
+        Divider(color: Colors.grey.shade200, height: 1),
+        ...filteredContacts.map((contact) {
+          final phone =
+              contact.phones.isNotEmpty ? contact.phones.first.number : '';
+          if (phone.isEmpty) return const SizedBox.shrink();
+          return _buildContactTile((contact.displayName ?? 'Unknown'), phone);
+        }),
+      ],
+    );
+  }
+
+  Widget _buildContactTile(String name, String phone) {
+    bool isPlus = phone.startsWith('+');
     return Column(
       children: [
         ListTile(
@@ -132,16 +187,16 @@ class _AddContactScreenState extends State<AddContactScreen> {
                     fontWeight: FontWeight.bold,
                     fontSize: 16)),
           ),
-          title: Text(contact,
+          title: Text(name,
               style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
                   color: Colors.black87)),
-          subtitle: Text(contact,
+          subtitle: Text(phone,
               style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
           onTap: () {
             context.push(
-                '/add_party?type=${widget.type.toLowerCase()}&phone=$contact');
+                '/add_party?type=${widget.type.toLowerCase()}&phone=$phone');
           },
         ),
         Divider(color: Colors.grey.shade100, height: 1, indent: 80),
