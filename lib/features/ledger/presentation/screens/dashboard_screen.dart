@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'home_grid_screen.dart';
 import 'settings_screen.dart';
+import '../../../digicash/presentation/screens/digicash_secure_wrapper.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -17,7 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     const HomeGridScreen(),
     const Center(child: Text('Shopping Coming Soon')),
     const Center(child: Text('DIGI POS Coming Soon')),
-    const Center(child: Text('DIGI CASH Coming Soon')),
+    const DigiCashSecureWrapper(),
     const SettingsScreen(), // Used for the empty 5th slot behind FAB
   ];
 
