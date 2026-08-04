@@ -35,6 +35,10 @@ import '../../features/staff/presentation/screens/staff_book_screen.dart';
 import '../../features/expense/presentation/screens/expense_screen.dart';
 import '../../features/ledger/presentation/screens/digi_ai_screen.dart';
 import '../../features/ledger/presentation/screens/settings_screen.dart';
+import '../../features/admin/presentation/screens/kyc_status_screen.dart';
+import '../../features/auth/presentation/screens/change_pin_screen.dart';
+import '../../features/ledger/presentation/screens/currency_selection_screen.dart';
+import '../../features/ledger/presentation/screens/faqs_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -219,6 +223,26 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/change_pin',
+        name: 'change_pin',
+        builder: (context, state) => const ChangePinScreen(),
+      ),
+      GoRoute(
+        path: '/kyc_status',
+        name: 'kyc_status',
+        builder: (context, state) => const KycStatusScreen(),
+      ),
+      GoRoute(
+        path: '/currency_selection',
+        name: 'currency_selection',
+        builder: (context, state) => const CurrencySelectionScreen(),
+      ),
+      GoRoute(
+        path: '/faqs',
+        name: 'faqs',
+        builder: (context, state) => const FaqsScreen(),
       ),
     ],
   );

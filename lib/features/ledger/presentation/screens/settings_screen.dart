@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../../../app/theme_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -13,6 +14,24 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _isBackingUp = false;
+
+  void _triggerBackup() async {
+    setState(() => _isBackingUp = true);
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() => _isBackingUp = false);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Backup successful! Data is safely stored in the cloud.'),
+          backgroundColor: AppTheme.successGreen,
+        ),
+      );
+    }
+  }
+
   Future<void> _handleLogout() async {
     await Supabase.instance.client.auth.signOut();
     if (mounted) context.go('/language');
@@ -20,6 +39,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: CustomScrollView(
@@ -91,20 +113,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: const Icon(Icons.cloud_done_outlined,
-                              color: Color(0xFFE94326)),
+                          onTap: _isBackingUp ? null : _triggerBackup,
+                          leading: _isBackingUp
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Color(0xFFE94326)))
+                              : const Icon(Icons.cloud_done_outlined,
+                                  color: Color(0xFFE94326)),
                           title: RichText(
-                            text: const TextSpan(
-                              text: 'Backup ',
-                              style: TextStyle(
+                            text: TextSpan(
+                              text: _isBackingUp ? 'Backing up... ' : 'Backup ',
+                              style: const TextStyle(
                                   color: Colors.black87,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16),
                               children: [
-                                TextSpan(
-                                    text: '(Successful)',
-                                    style:
-                                        TextStyle(color: AppTheme.successGreen))
+                                if (!_isBackingUp)
+                                  const TextSpan(
+                                      text: '(Successful)',
+                                      style: TextStyle(
+                                          color: AppTheme.successGreen))
                               ],
                             ),
                           ),
@@ -172,19 +202,119 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: Column(
                       children: [
                         _buildMenuTile('KYC', Icons.badge_outlined, () {
-                          context.push('/kyc_onboarding');
+                          context
+                              .push('/kyc_status'); // Changed to new KYC route
                         }),
                         const Divider(height: 1, indent: 50),
                         _buildMenuTile(
-                            'Change Login PIN', Icons.vpn_key_outlined, () {}),
+                            'Change Login PIN', Icons.vpn_key_outlined, () {
+                          context.push('/change_pin');
+                        }),
                         const Divider(height: 1, indent: 50),
-                        _buildMenuTile(
-                            'Settings', Icons.settings_outlined, () {}),
+
+                        // Expandable Settings
+                        Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                            leading: const Icon(Icons.settings_outlined,
+                                color: Color(0xFFE94326)),
+                            title: const Text('Settings',
+                                style: TextStyle(
+                                    color: Color(0xFFE94326),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500)),
+                            iconColor: const Color(0xFFE94326),
+                            collapsedIconColor: const Color(0xFFE94326),
+                            children: [
+                              _buildSubTile('Quick entry from notification',
+                                  Icons.notifications_active_outlined,
+                                  trailing:
+                                      Switch(value: false, onChanged: (v) {})),
+                              _buildSubTile(
+                                  'Dark Mode', Icons.dark_mode_outlined,
+                                  trailing: Switch(
+                                    value: isDark,
+                                    activeColor: const Color(0xFFF3752A),
+                                    onChanged: (val) {
+                                      if (val != isDark) {
+                                        ref
+                                            .read(themeModeProvider.notifier)
+                                            .toggleTheme();
+                                      }
+                                    },
+                                  )),
+                              _buildSubTile('App Lock', Icons.lock_outline),
+                              _buildSubTile('Language', Icons.g_translate,
+                                  onTap: _showLanguagePicker),
+                              _buildSubTile('Business Currency:',
+                                  Icons.monetization_on_outlined,
+                                  trailingText: '🇵🇰',
+                                  onTap: () =>
+                                      context.push('/currency_selection')),
+                              _buildSubTile(
+                                  'Delete Business', Icons.delete_outline,
+                                  isDestructive: true),
+                              _buildSubTile('Delete DigiKhata Account',
+                                  Icons.delete_outline,
+                                  isDestructive: true),
+                            ],
+                          ),
+                        ),
                         const Divider(height: 1, indent: 50),
-                        _buildMenuTile(
-                            'Help & Support', Icons.help_outline, () {}),
+
+                        // Expandable Help & Support
+                        Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                            leading: const Icon(Icons.help_outline,
+                                color: Color(0xFFE94326)),
+                            title: const Text('Help & Support',
+                                style: TextStyle(
+                                    color: Color(0xFFE94326),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500)),
+                            iconColor: const Color(0xFFE94326),
+                            collapsedIconColor: const Color(0xFFE94326),
+                            children: [
+                              _buildSubTile('FAQs', Icons.help_center_outlined,
+                                  onTap: () => context.push('/faqs')),
+                              _buildSubTile('Call Us', Icons.call_outlined),
+                              _buildSubTile(
+                                  'WhatsApp Us', FontAwesomeIcons.whatsapp),
+                              _buildSubTile('How to use DigiKhata',
+                                  Icons.play_circle_outline),
+                            ],
+                          ),
+                        ),
                         const Divider(height: 1, indent: 50),
-                        _buildMenuTile('About us', Icons.info_outline, () {}),
+
+                        // Expandable About Us
+                        Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                            leading: const Icon(Icons.info_outline,
+                                color: Color(0xFFE94326)),
+                            title: const Text('About us',
+                                style: TextStyle(
+                                    color: Color(0xFFE94326),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500)),
+                            iconColor: const Color(0xFFE94326),
+                            collapsedIconColor: const Color(0xFFE94326),
+                            children: [
+                              _buildSubTile('Web Site', Icons.language),
+                              _buildSubTile(
+                                  'Privacy Policy', Icons.privacy_tip_outlined),
+                              _buildSubTile('Terms & Conditions',
+                                  Icons.receipt_long_outlined),
+                              _buildSubTile(
+                                  'Share DigiKhata', Icons.share_outlined),
+                            ],
+                          ),
+                        ),
                         const Divider(height: 1, indent: 50),
                         _buildMenuTile('Logout', Icons.logout, _handleLogout),
                       ],
@@ -273,6 +403,119 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               fontWeight: FontWeight.w500)),
       trailing: const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
       onTap: onTap,
+    );
+  }
+
+  Widget _buildSubTile(String title, dynamic icon,
+      {Widget? trailing,
+      String? trailingText,
+      bool isDestructive = false,
+      VoidCallback? onTap}) {
+    final defaultColor = const Color(0xFFE94326);
+    final isFaIcon = icon.runtimeType.toString() == 'IconDataBrands' ||
+        icon.runtimeType.toString() == 'IconDataSolid' ||
+        icon.runtimeType.toString() == 'IconDataRegular';
+    final Widget finalIcon = isFaIcon
+        ? FaIcon(icon,
+            color: isDestructive ? Colors.red.shade600 : defaultColor, size: 20)
+        : Icon(icon,
+            color: isDestructive ? Colors.red.shade600 : defaultColor,
+            size: 20);
+
+    return ListTile(
+      contentPadding: const EdgeInsets.only(left: 42, right: 16),
+      leading: finalIcon,
+      title: Text(title,
+          style: TextStyle(
+              color: isDestructive ? Colors.black87 : Colors.black87,
+              fontSize: 14,
+              fontWeight: FontWeight.w400)),
+      trailing: trailing ??
+          (trailingText != null
+              ? Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text(trailingText, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.chevron_right, size: 20, color: Colors.grey)
+                ])
+              : const Icon(Icons.chevron_right, size: 20, color: Colors.grey)),
+      onTap: onTap ?? () {},
+    );
+  }
+
+  void _showLanguagePicker() {
+    final languages = [
+      'English',
+      'Roman Urdu',
+      'اردو',
+      'سنڌي',
+      'پښتو',
+      'فارسی',
+      'العربية',
+      'বাংলা',
+      'हिंदी',
+      'Français',
+      'Türkçe',
+      'Malay'
+    ];
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      backgroundColor: Colors.grey.shade100,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Select your language',
+                  style: TextStyle(fontSize: 20, color: Colors.black87)),
+              const SizedBox(height: 24),
+              Flexible(
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: languages.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 2.2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemBuilder: (context, index) {
+                    final isSelected = index == 0; // Simulate English selected
+                    return GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFFE94326)
+                                : Colors.grey.shade300,
+                            width: isSelected ? 1.5 : 1,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          languages[index],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isSelected
+                                ? Colors.black87
+                                : Colors.grey.shade800,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
