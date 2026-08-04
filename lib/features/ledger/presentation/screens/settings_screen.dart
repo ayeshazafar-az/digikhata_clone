@@ -3,7 +3,7 @@ import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../app/theme_provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -13,155 +13,266 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  bool _isBackingUp = false;
-
-  void _triggerBackup() async {
-    setState(() => _isBackingUp = true);
-    // Simulate manual sync time
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isBackingUp = false);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Backup successful! Data is safely stored in the cloud.'),
-          backgroundColor: AppTheme.successGreen,
-        ),
-      );
-    }
+  Future<void> _handleLogout() async {
+    await Supabase.instance.client.auth.signOut();
+    if (mounted) context.go('/language');
   }
 
-  Future<void> _showUpdateDialog(String title, String table, String field,
-      {bool isBusiness = false}) async {
-    final controller = TextEditingController();
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: 'Enter new value'),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () async {
-              if (controller.text.trim().isNotEmpty) {
-                final userId = Supabase.instance.client.auth.currentUser!.id;
-                try {
-                  if (isBusiness) {
-                    await Supabase.instance.client.from(table).update(
-                        {field: controller.text.trim()}).eq('owner_id', userId);
-                  } else {
-                    await Supabase.instance.client.from(table).update(
-                        {field: controller.text.trim()}).eq('id', userId);
-                  }
-                  if (mounted) Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Successfully updated!'),
-                      backgroundColor: AppTheme.successGreen));
-                } catch (e) {
-                  debugPrint('Update error: $e');
-                }
-              }
-            },
-            child: const Text('Save'),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade100,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 60,
+            floating: true,
+            pinned: true,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new,
+                  color: Colors.white, size: 20),
+              onPressed: () => context.pop(),
+            ),
+            title: const Text('More',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20)),
+            actions: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.workspace_premium,
+                      color: Color(0xFFD4AF37), size: 22),
+                  onPressed: () {},
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.notifications,
+                      color: Color(0xFFD4AF37), size: 22),
+                  onPressed: () {},
+                ),
+              ),
+              const SizedBox(width: 16),
+            ],
           ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // BACKUP CARD
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.cloud_done_outlined,
+                              color: Color(0xFFE94326)),
+                          title: RichText(
+                            text: const TextSpan(
+                              text: 'Backup ',
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
+                              children: [
+                                TextSpan(
+                                    text: '(Successful)',
+                                    style:
+                                        TextStyle(color: AppTheme.successGreen))
+                              ],
+                            ),
+                          ),
+                          trailing: const Icon(Icons.chevron_right,
+                              color: Color(0xFFE94326)),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFAF7F2),
+                            borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(12),
+                                bottomRight: Radius.circular(12)),
+                          ),
+                          child: Row(
+                            children: [
+                              FaIcon(FontAwesomeIcons.googleDrive,
+                                  color: Colors.blue.shade600, size: 30),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  "We're excited to offer Google Drive backup! This fantastic feature helps you securely save your data.",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black54),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // UTILITIES ROW
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildUtilityBox('BUSINESS\nCARD', Icons.badge_outlined,
+                          () {
+                        context.push('/business_card');
+                      }),
+                      _buildUtilityBox('RECYCLE\nBIN', Icons.delete_outline,
+                          () {
+                        context.push('/recycle_bin');
+                      }),
+                      _buildUtilityBox('MULTI\nDEVICES', Icons.devices, () {
+                        context.push('/multi_devices');
+                      }),
+                      _buildUtilityBox('CALCULATOR', Icons.calculate_outlined,
+                          () {
+                        context.push('/calculator');
+                      }),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // MAIN LIST MENU
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: [
+                        _buildMenuTile('KYC', Icons.badge_outlined, () {
+                          context.push('/kyc_onboarding');
+                        }),
+                        const Divider(height: 1, indent: 50),
+                        _buildMenuTile(
+                            'Change Login PIN', Icons.vpn_key_outlined, () {}),
+                        const Divider(height: 1, indent: 50),
+                        _buildMenuTile(
+                            'Settings', Icons.settings_outlined, () {}),
+                        const Divider(height: 1, indent: 50),
+                        _buildMenuTile(
+                            'Help & Support', Icons.help_outline, () {}),
+                        const Divider(height: 1, indent: 50),
+                        _buildMenuTile('About us', Icons.info_outline, () {}),
+                        const Divider(height: 1, indent: 50),
+                        _buildMenuTile('Logout', Icons.logout, _handleLogout),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // FOOTER
+                  const Text('Follow us on',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87)),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(FontAwesomeIcons.whatsapp,
+                          color: Colors.green.shade600, size: 30),
+                      const SizedBox(width: 16),
+                      FaIcon(FontAwesomeIcons.facebook,
+                          color: Colors.blue.shade700, size: 30),
+                      const SizedBox(width: 16),
+                      FaIcon(FontAwesomeIcons.youtube,
+                          color: Colors.red.shade600, size: 30),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Version: 9.6.0',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark;
+  Widget _buildUtilityBox(String label, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: const Color(0xFFE94326), size: 28),
+            const SizedBox(height: 8),
+            Text(label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87)),
+          ],
+        ),
+      ),
+    );
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('More Settings'),
-      ),
-      body: ListView(
-        children: [
-          const SizedBox(height: 16),
-          ListTile(
-            leading: const Icon(Icons.person, color: AppTheme.primaryBlue),
-            title: const Text('Profile Management'),
-            subtitle: const Text('Update your personal details'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () =>
-                _showUpdateDialog('Update Your Name', 'profiles', 'full_name'),
-          ),
-          const Divider(),
-          ListTile(
-            leading:
-                const Icon(Icons.business_center, color: AppTheme.primaryBlue),
-            title: const Text('Business Settings'),
-            subtitle: const Text('Rename or configure your business'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _showUpdateDialog(
-                'Rename Business', 'businesses', 'name',
-                isBusiness: true),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.badge, color: AppTheme.primaryBlue),
-            title: const Text('Staff Book'),
-            subtitle: const Text('Manage employees and attendance'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/staff_book'),
-          ),
-          const Divider(),
-          SwitchListTile(
-            secondary: Icon(
-              isDark ? Icons.dark_mode : Icons.light_mode,
-              color: AppTheme.primaryBlue,
-            ),
-            title: const Text('Dark Mode'),
-            subtitle: const Text('Toggle application theme'),
-            value: isDark,
-            activeThumbColor: AppTheme.primaryBlue,
-            onChanged: (value) {
-              ref.read(themeModeProvider.notifier).toggleTheme();
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.qr_code_2, color: AppTheme.primaryBlue),
-            title: const Text('My QR Code'),
-            subtitle: const Text('Share your business QR to receive payments'),
-            onTap: () => context.push('/qr_code'),
-          ),
-          const Divider(),
-          ListTile(
-            leading: _isBackingUp
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: AppTheme.primaryBlue))
-                : const Icon(Icons.cloud_upload, color: AppTheme.primaryBlue),
-            title: const Text('Backup & Restore'),
-            subtitle: const Text('Manually sync your local data to the cloud'),
-            onTap: _isBackingUp ? null : _triggerBackup,
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout, color: AppTheme.dangerRed),
-            title: const Text('Logout',
-                style: TextStyle(color: AppTheme.dangerRed)),
-            onTap: () async {
-              await Supabase.instance.client.auth.signOut();
-              if (context.mounted) {
-                context.go('/login');
-              }
-            },
-          ),
-        ],
-      ),
+  Widget _buildMenuTile(String title, IconData icon, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFFE94326)),
+      title: Text(title,
+          style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 15,
+              fontWeight: FontWeight.w500)),
+      trailing: const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
+      onTap: onTap,
     );
   }
 }

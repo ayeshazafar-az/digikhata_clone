@@ -25,16 +25,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _currentIndex = 4; // Assuming FAB triggers the More/Settings panel
-          });
-        },
-        backgroundColor: AppTheme.dangerRed,
-        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex > 3
             ? 0

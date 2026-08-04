@@ -54,7 +54,9 @@ class HomeGridScreen extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.apps, color: AppTheme.primaryBlue),
-            onPressed: () {},
+            onPressed: () {
+              context.push('/settings');
+            },
           ),
         ],
       ),
