@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 
 class DigiCashPinScreen extends StatefulWidget {
   final VoidCallback onSuccess;
@@ -54,10 +55,10 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
           children: [
             const SizedBox(height: 60),
             // Lock Icon
-            Icon(
+            const Icon(
               Icons.lock_outline,
               size: 64,
-              color: const Color(0xFFF3752A),
+              color: AppTheme.primaryBlue,
             ),
             const SizedBox(height: 24),
             // Timeout text
@@ -84,7 +85,7 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _pin.length == index
-                          ? const Color(0xFFF3752A)
+                          ? AppTheme.primaryBlue
                           : Colors.grey.shade200,
                       width: 1.5,
                     ),
@@ -104,11 +105,11 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
               style: TextStyle(fontSize: 16, color: Colors.black87),
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               'Forgot PIN?',
               style: TextStyle(
                 fontSize: 15,
-                color: const Color(0xFFF3752A),
+                color: AppTheme.primaryBlue,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -165,7 +166,7 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
                   width: 64,
                   height: 64,
                   alignment: Alignment.center,
-                  child: Icon(Icons.backspace_outlined,
+                  child: const Icon(Icons.backspace_outlined,
                       color: Colors.black87, size: 28),
                 ),
               ),
@@ -185,10 +186,10 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
         alignment: Alignment.center,
         child: Text(
           digit,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w400,
-            color: const Color(0xFFF3752A),
+            color: AppTheme.primaryBlue,
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 
 class DigiCashScreen extends StatelessWidget {
   const DigiCashScreen({super.key});
@@ -11,13 +12,7 @@ class DigiCashScreen extends StatelessWidget {
         children: [
           // Header section
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF3752A), Color(0xFFE94326)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-            ),
+            color: AppTheme.primaryBlue,
             padding:
                 const EdgeInsets.only(top: 48, left: 16, right: 16, bottom: 64),
             child: Row(
@@ -112,7 +107,7 @@ class DigiCashScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Column(
+                              const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
@@ -120,14 +115,14 @@ class DigiCashScreen extends StatelessWidget {
                                         CrossAxisAlignment.baseline,
                                     textBaseline: TextBaseline.alphabetic,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Rs.',
                                         style: TextStyle(
                                             color: Colors.black87,
                                             fontSize: 20,
                                             fontWeight: FontWeight.w500),
                                       ),
-                                      const Text(
+                                      Text(
                                         '0.00',
                                         style: TextStyle(
                                             color: Colors.black87,
@@ -136,8 +131,8 @@ class DigiCashScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  const Text(
+                                  SizedBox(height: 4),
+                                  Text(
                                     'Balance',
                                     style: TextStyle(
                                         color: Colors.grey,
