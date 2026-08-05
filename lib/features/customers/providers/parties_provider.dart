@@ -14,8 +14,8 @@ final activeBusinessProvider = FutureProvider<String?>((ref) async {
       .select('id')
       .eq('owner_id', user.id)
       .limit(1)
-      .single();
-  return data['id'] as String?;
+      .maybeSingle();
+  return data != null ? data['id'] as String? : null;
 });
 
 final partiesProvider =
