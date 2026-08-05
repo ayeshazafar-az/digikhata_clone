@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/admin_stats_provider.dart';
 
 class AdminDashboardScreen extends ConsumerWidget {
@@ -76,9 +77,11 @@ class AdminDashboardScreen extends ConsumerWidget {
               leading: const Icon(Icons.logout, color: AppTheme.dangerRed),
               title: const Text('Sign Out',
                   style: TextStyle(color: AppTheme.dangerRed)),
-              onTap: () {
-                // Add sign out logic
-                context.go('/');
+              onTap: () async {
+                await Supabase.instance.client.auth.signOut();
+                if (context.mounted) {
+                  context.go('/language');
+                }
               },
             ),
           ],
