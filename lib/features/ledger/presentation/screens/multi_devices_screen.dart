@@ -18,7 +18,7 @@ class MultiDevicesScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -71,7 +71,7 @@ class MultiDevicesScreen extends StatelessWidget {
                           size: 60, color: Colors.grey.shade800),
                       const SizedBox(width: 16),
                       const Icon(Icons.laptop_mac,
-                          size: 90, color: Color(0xFFE94326)),
+                          size: 90, color: Color(0xFF60A5FA)),
                       const SizedBox(width: 16),
                       Icon(Icons.tablet_mac,
                           size: 50, color: Colors.grey.shade800),
@@ -105,7 +105,7 @@ class MultiDevicesScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: Colors.white)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE94326),
+                        backgroundColor: const Color(0xFF60A5FA),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24)),
                         elevation: 0,
@@ -148,7 +148,7 @@ class MultiDevicesScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(Icons.person_outline,
-                        color: Color(0xFFE94326)),
+                        color: Color(0xFF60A5FA)),
                   ),
                   const SizedBox(width: 16),
                   Expanded(

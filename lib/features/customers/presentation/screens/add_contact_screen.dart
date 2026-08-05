@@ -50,7 +50,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -123,7 +123,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
     if (_contacts == null) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFFE94326)));
+          child: CircularProgressIndicator(color: Color(0xFF60A5FA)));
     }
 
     final filteredContacts = _searchQuery.isEmpty
@@ -145,14 +145,14 @@ class _AddContactScreenState extends State<AddContactScreen> {
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.person_add_alt_1,
-                color: Color(0xFFE94326), size: 20),
+                color: Color(0xFF60A5FA), size: 20),
           ),
           title: Text('Add New ${widget.type}',
               style: const TextStyle(
-                  color: Color(0xFFE94326),
+                  color: Color(0xFF60A5FA),
                   fontWeight: FontWeight.w500,
                   fontSize: 16)),
-          trailing: const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
+          trailing: const Icon(Icons.chevron_right, color: Color(0xFF60A5FA)),
           onTap: () {
             context.push('/add_party?type=${widget.type.toLowerCase()}');
           },
@@ -183,7 +183,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
             ),
             child: Text(isPlus ? '+' : '0',
                 style: const TextStyle(
-                    color: Color(0xFFE94326),
+                    color: Color(0xFF60A5FA),
                     fontWeight: FontWeight.bold,
                     fontSize: 16)),
           ),

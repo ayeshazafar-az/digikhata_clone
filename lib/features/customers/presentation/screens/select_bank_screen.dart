@@ -33,7 +33,7 @@ class SelectBankScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -88,15 +88,15 @@ class SelectBankScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.account_balance,
-                        color: Color(0xFFE94326), size: 20),
+                        color: Color(0xFF60A5FA), size: 20),
                   ),
                   title: const Text('Add Bank',
                       style: TextStyle(
-                          color: Color(0xFFE94326),
+                          color: Color(0xFF60A5FA),
                           fontWeight: FontWeight.w500,
                           fontSize: 16)),
                   trailing:
-                      const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
+                      const Icon(Icons.chevron_right, color: Color(0xFF60A5FA)),
                   onTap: () {
                     context.push('/add_new_bank');
                   },
@@ -114,9 +114,13 @@ class SelectBankScreen extends StatelessWidget {
                                   as Color, // Simplified logo representation
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Center(
-                                child: Icon(Icons.account_balance_wallet,
-                                    color: Colors.white, size: 20)),
+                            child: Center(
+                                child: Text(
+                                    (bank['name'] as String).substring(0, 1),
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20))),
                           ),
                           title: Text(bank['name'] as String,
                               style: const TextStyle(

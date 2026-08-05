@@ -37,7 +37,7 @@ class _AddNewBankScreenState extends State<AddNewBankScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -79,7 +79,7 @@ class _AddNewBankScreenState extends State<AddNewBankScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.account_balance,
-                          color: Color(0xFFE94326), size: 18),
+                          color: Color(0xFF60A5FA), size: 18),
                     ),
                   ),
                   hintText: 'Bank Name',
@@ -146,7 +146,7 @@ class _AddNewBankScreenState extends State<AddNewBankScreen> {
                   context.pop(); // Returns to Party tab
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE94326),
+                  backgroundColor: const Color(0xFF60A5FA),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24)),
                 ),

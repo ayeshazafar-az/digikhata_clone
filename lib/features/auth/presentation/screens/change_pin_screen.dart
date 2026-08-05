@@ -21,7 +21,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -99,7 +99,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                   child: const Text(
                     'FORGOT PIN?',
                     style: TextStyle(
-                      color: Color(0xFFE94326),
+                      color: Color(0xFF60A5FA),
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                     ),
@@ -123,7 +123,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
         labelText: label,
         labelStyle: TextStyle(
             color: label == 'Old PIN'
-                ? const Color(0xFFE94326)
+                ? const Color(0xFF60A5FA)
                 : Colors.grey.shade600,
             fontWeight: FontWeight.w500),
         counterText: '',
@@ -137,13 +137,13 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
               color: label == 'Old PIN'
-                  ? const Color(0xFFE94326)
+                  ? const Color(0xFF60A5FA)
                   : Colors.grey.shade300,
               width: 1.5),
           borderRadius: BorderRadius.circular(4),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFE94326), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF60A5FA), width: 1.5),
           borderRadius: BorderRadius.circular(4),
         ),
       ),

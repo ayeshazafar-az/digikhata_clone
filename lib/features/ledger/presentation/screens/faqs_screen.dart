@@ -12,7 +12,7 @@ class FaqsScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -39,7 +39,7 @@ class FaqsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            _buildCategory('Manage Customers', [
+            _buildCategory(context, 'Manage Customers', [
               'How To Add A New Customer?',
               'How To Add An Entry In Customer Ledger?',
               'How To Share The Transaction?',
@@ -53,7 +53,7 @@ class FaqsScreen extends StatelessWidget {
               'How To Schedule SMS Collection Reminder For A Specific Customer?',
               'How To Upload Customer\'s Profile Picture?',
             ]),
-            _buildCategory('Manage Suppliers', [
+            _buildCategory(context, 'Manage Suppliers', [
               'How To Add A New Supplier?',
               'How To Add An Entry In Supplier Ledger?',
               'How To Share The Transaction?',
@@ -64,32 +64,32 @@ class FaqsScreen extends StatelessWidget {
               'How To Change The Language Of SMS Collection Reminder That Is Sent To The Suppliers?',
               'How To Upload Supplier\'s Profile Picture?',
             ]),
-            _buildCategory('My Profile', [
+            _buildCategory(context, 'My Profile', [
               'How Can I Complete My Profile To 100%?',
               'What is an "App Lock"?',
               'How To Set An App Lock in DigiKhata?',
             ]),
-            _buildCategory('Reports', [
+            _buildCategory(context, 'Reports', [
               'How Can I Download A Summary Of All Customer\'s Transactions?',
               'How Can I Download A Summary Of All Transactions Of One Customer?',
               'How To Download A Cash Report?',
               'How To Download A Stock Report?',
             ]),
-            _buildCategory('Data Backup', [
+            _buildCategory(context, 'Data Backup', [
               'What Is Automatic Data Backup?',
               'Can I Transfer My Data To Another Device?',
               'Can I Manually Backup My Data?',
             ]),
-            _buildCategory('Manage Stock & Create Invoice', [
+            _buildCategory(context, 'Manage Stock & Create Invoice', [
               'How To Add A New Item?',
               'How To Manage Your Inventory?',
               'How To Create Digital Invoice With DigiKhata App?',
             ]),
-            _buildCategory('Generate & Share Digital Bills', [
+            _buildCategory(context, 'Generate & Share Digital Bills', [
               'How To Create Digital Bills With DigiKhata App?',
               'How To Download A PDF Report About Bills?',
             ]),
-            _buildCategory('Sell Easyload/Bundles & Send Payments', [
+            _buildCategory(context, 'Sell Easyload/Bundles & Send Payments', [
               'How To Sign In Digi Cash?',
               'How To Complete the Process Of Customer Verification Request In Digi Cash?',
               'How To Add A Bank Account To Your Digi Cash Account?',
@@ -103,7 +103,8 @@ class FaqsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategory(String title, List<String> questions) {
+  Widget _buildCategory(
+      BuildContext context, String title, List<String> questions) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -127,18 +128,32 @@ class FaqsScreen extends StatelessWidget {
               final isLast = entry.key == questions.length - 1;
               return Column(
                 children: [
-                  ListTile(
-                    title: Text(
-                      entry.value,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w400,
+                  Theme(
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      title: Text(
+                        entry.value,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
+                      tilePadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 0),
+                      childrenPadding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 16),
+                      iconColor: const Color(0xFF1E3A8A),
+                      collapsedIconColor: Colors.grey,
+                      children: const [
+                        Text(
+                          'This is a dummy response. In a production environment, this text would securely fetch from a localized CMS payload, detailing exact instructions to complete the action safely and efficiently.',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.black54, height: 1.4),
+                        ),
+                      ],
                     ),
-                    dense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                   ),
                   if (!isLast) Divider(height: 1, color: Colors.grey.shade200),
                 ],

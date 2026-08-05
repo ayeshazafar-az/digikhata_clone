@@ -26,11 +26,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ListTile(
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-          leading: Icon(icon, color: const Color(0xFFE94326), size: 28),
+          leading: Icon(icon, color: AppTheme.primaryBlue, size: 28),
           title: Text(title,
               style: const TextStyle(fontSize: 16, color: Colors.black87)),
           trailing: const Icon(Icons.chevron_right,
-              color: Color(0xFFE94326), size: 24),
+              color: Color(0xFF60A5FA), size: 24),
           onTap: onTap,
         ),
         const Divider(
@@ -62,12 +62,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final isDarkMode = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3752A), // Matches gradient start
+      backgroundColor: AppTheme.primaryBlue, // Matches gradient start
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -136,30 +136,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 data: Theme.of(context)
                     .copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
-                  iconColor: const Color(0xFFE94326),
-                  collapsedIconColor: const Color(0xFFE94326),
+                  iconColor: AppTheme.primaryBlue,
+                  collapsedIconColor: AppTheme.primaryBlue,
                   tilePadding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   leading: const Icon(Icons.settings_outlined,
-                      color: Color(0xFFE94326), size: 28),
+                      color: Color(0xFF60A5FA), size: 28),
                   title: const Text('Settings',
-                      style: TextStyle(fontSize: 16, color: Color(0xFFE94326))),
+                      style: TextStyle(fontSize: 16, color: Color(0xFF60A5FA))),
                   initiallyExpanded: true,
                   children: [
                     _buildSubTile(
                       leading: const Icon(Icons.notifications_active_outlined,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'Quick entry from notification',
                       trailing: Switch(
                         value: _quickEntryEnabled,
                         onChanged: (val) =>
                             setState(() => _quickEntryEnabled = val),
-                        activeColor: const Color(0xFFE94326),
+                        activeColor: AppTheme.primaryBlue,
                       ),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.dark_mode_outlined,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'Dark Mode',
                       trailing: Switch(
                         value: isDarkMode,
@@ -168,24 +168,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               .read(themeModeProvider.notifier)
                               .setTheme(val ? ThemeMode.dark : ThemeMode.light);
                         },
-                        activeColor: const Color(0xFFE94326),
+                        activeColor: AppTheme.primaryBlue,
                       ),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.lock_outline,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'App Lock',
                       onTap: () {},
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.g_translate_outlined,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'Language',
                       onTap: () => context.push('/language'),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.currency_rupee,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'Business Currency:',
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -207,13 +207,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'Delete Business',
                       onTap: () {},
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
-                          color: Color(0xFFE94326), size: 20),
+                          color: Color(0xFF60A5FA), size: 20),
                       title: 'Delete DigiKhata Account',
                       onTap: () async {
                         await Supabase.instance.client.auth.signOut();

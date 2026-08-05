@@ -21,7 +21,7 @@ class TasdeeqScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -123,7 +123,7 @@ class TasdeeqScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: _launchPlayStore,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE94326),
+              backgroundColor: const Color(0xFF60A5FA),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
             ),

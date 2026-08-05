@@ -53,7 +53,7 @@ class _CurrencySelectionScreenState extends State<CurrencySelectionScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -75,7 +75,7 @@ class _CurrencySelectionScreenState extends State<CurrencySelectionScreen> {
       body: Column(
         children: [
           Container(
-            color: const Color(0xFFE94326),
+            color: const Color(0xFF60A5FA),
             padding:
                 const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 8),
             child: Container(

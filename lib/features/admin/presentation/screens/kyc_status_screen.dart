@@ -64,7 +64,7 @@ class _KycStatusScreenState extends State<KycStatusScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -105,7 +105,7 @@ class _KycStatusScreenState extends State<KycStatusScreen> {
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.phone_in_talk_outlined,
-                color: Color(0xFFE94326), size: 20),
+                color: Color(0xFF60A5FA), size: 20),
           ),
           const SizedBox(width: 16),
         ],
@@ -176,9 +176,9 @@ class _KycStatusScreenState extends State<KycStatusScreen> {
                   : const Row(mainAxisSize: MainAxisSize.min, children: [
                       Text('Add ',
                           style: TextStyle(
-                              color: Color(0xFFE94326), fontSize: 16)),
+                              color: Color(0xFF60A5FA), fontSize: 16)),
                       Icon(Icons.chevron_right,
-                          color: Color(0xFFE94326), size: 20)
+                          color: Color(0xFF60A5FA), size: 20)
                     ]),
               cardColor: Colors.white,
             ),
@@ -204,9 +204,9 @@ class _KycStatusScreenState extends State<KycStatusScreen> {
                       children: [
                         Text('Add ',
                             style: TextStyle(
-                                color: Color(0xFFE94326), fontSize: 16)),
+                                color: Color(0xFF60A5FA), fontSize: 16)),
                         Icon(Icons.chevron_right,
-                            color: Color(0xFFE94326), size: 20),
+                            color: Color(0xFF60A5FA), size: 20),
                       ],
                     ),
               opacity: (isPending || isApproved) ? 1.0 : 0.5,
@@ -368,7 +368,7 @@ class _KycStatusScreenState extends State<KycStatusScreen> {
             right: 4,
             child: Container(
               height: 2,
-              color: const Color(0xFFE94326), // red bottom line
+              color: const Color(0xFF60A5FA), // red bottom line
             ),
           ),
         ],

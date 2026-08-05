@@ -12,7 +12,7 @@ class RecycleBinScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -44,7 +44,7 @@ class RecycleBinScreen extends StatelessWidget {
             height: 40,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+                colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -138,7 +138,7 @@ class RecycleBinScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(Icons.menu_book,
-                                color: Color(0xFFE94326), size: 24),
+                                color: Color(0xFF60A5FA), size: 24),
                           ),
                           const SizedBox(width: 12),
                           Column(
