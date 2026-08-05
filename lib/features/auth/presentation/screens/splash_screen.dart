@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
@@ -12,12 +13,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late StreamSubscription<AuthState> _authStateSubscription;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () async {
-      final session = Supabase.instance.client.auth.currentSession;
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    // Wait short time to allow UI to render first
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    _authStateSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+      final AuthChangeEvent event = data.event;
+      final Session? session = data.session;
+
+      // If we are signed in, or if it's the initial session check and it's already signed in
       if (session != null) {
+        _authStateSubscription.cancel(); // Stop listening once resolved
         try {
           final profile = await Supabase.instance.client
               .from('profiles')
@@ -28,15 +43,12 @@ class _SplashScreenState extends State<SplashScreen> {
           if (profile != null && profile['role'] == 'super_admin') {
             if (mounted) context.go('/admin');
           } else {
-            // Require biometrics for normal users to protect their ledger!
             final hasBio = await BiometricService.isBiometricAvailable();
             if (hasBio) {
               final authSuccess = await BiometricService.authenticate();
               if (authSuccess) {
                 if (mounted) context.go('/home');
               } else {
-                // If failed, arguably we might want a retry button.
-                // For simplicity, we fallback to login or retry UI.
                 if (mounted) context.go('/language');
               }
             } else {
@@ -46,10 +58,18 @@ class _SplashScreenState extends State<SplashScreen> {
         } catch (e) {
           if (mounted) context.go('/home');
         }
-      } else {
+      } else if (event == AuthChangeEvent.initialSession) {
+        // Only if it's explicitly null after initial check, we know no link was parsed
+        _authStateSubscription.cancel();
         if (mounted) context.go('/language');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _authStateSubscription.cancel();
+    super.dispose();
   }
 
   @override
