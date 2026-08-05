@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/parties_provider.dart';
 
 class CustomerListScreen extends ConsumerStatefulWidget {
-  const CustomerListScreen({super.key});
+  final bool isRoot;
+  const CustomerListScreen({super.key, this.isRoot = false});
 
   @override
   ConsumerState<CustomerListScreen> createState() => _CustomerListScreenState();
@@ -21,11 +22,13 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
         appBar: AppBar(
           backgroundColor: AppTheme.primaryBlue, // STRICTLY requested feature
           elevation: 0,
-          leading: IconButton(
-            icon:
-                const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-            onPressed: () => context.pop(),
-          ),
+          leading: widget.isRoot
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.arrow_back_ios,
+                      color: Colors.white, size: 20),
+                  onPressed: () => context.pop(),
+                ),
           title: const Text('Party',
               style: TextStyle(color: Colors.white, fontSize: 20)),
           actions: [

@@ -24,7 +24,8 @@ final cashbookProvider =
 });
 
 class CashBookScreen extends ConsumerWidget {
-  const CashBookScreen({super.key});
+  final bool isRoot;
+  const CashBookScreen({super.key, this.isRoot = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,10 +39,13 @@ class CashBookScreen extends ConsumerWidget {
         backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: isRoot
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back_ios,
+                    color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
       ),
       body: cashAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

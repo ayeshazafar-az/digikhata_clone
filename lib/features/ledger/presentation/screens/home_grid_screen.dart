@@ -4,7 +4,8 @@ import '../../../../app/theme.dart';
 import '../widgets/app_drawer_menu.dart';
 
 class HomeGridScreen extends StatelessWidget {
-  const HomeGridScreen({super.key});
+  final bool isRoot;
+  const HomeGridScreen({super.key, this.isRoot = false});
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +16,14 @@ class HomeGridScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
-        ),
+        leading: isRoot
+            ? null
+            : Builder(
+                builder: (ctx) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
+              ),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(

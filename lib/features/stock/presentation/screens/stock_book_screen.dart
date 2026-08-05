@@ -23,7 +23,8 @@ final stockProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
 });
 
 class StockBookScreen extends ConsumerWidget {
-  const StockBookScreen({super.key});
+  final bool isRoot;
+  const StockBookScreen({super.key, this.isRoot = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,10 +38,13 @@ class StockBookScreen extends ConsumerWidget {
         backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: isRoot
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back_ios,
+                    color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
         actions: [
           Padding(
             padding:
