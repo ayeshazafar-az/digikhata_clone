@@ -65,7 +65,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       setState(() => _isLoading = true);
       try {
-        await Supabase.instance.client.auth.signInWithOtp(email: email);
+        await Supabase.instance.client.auth.signInWithOtp(
+          email: email,
+          emailRedirectTo:
+              kIsWeb ? null : 'io.supabase.digikhata://login-callback',
+        );
         if (mounted) context.push('/otp', extra: email);
       } catch (e) {
         if (mounted)

@@ -13,28 +13,59 @@ class AdminStats {
   });
 }
 
-final adminStatsProvider = FutureProvider<AdminStats>((ref) async {
-  final supabase = Supabase.instance.client;
-
-  // Realistically we can use the count() feature in PostgREST
-  final businessesRes =
-      await supabase.from('businesses').select('id').count(CountOption.exact);
-  final usersRes = await supabase
-      .from('profiles')
-      .select('id')
-      .count(CountOption.exact)
-      .catchError((_) =>
-          // Fallback if profiles table isn't created or inaccessible
-          supabase.from('businesses').select('id').count(CountOption.exact));
-  // Let's just query total entries too
-  final entriesRes = await supabase
-      .from('ledger_entries')
-      .select('id')
-      .count(CountOption.exact);
-
-  return AdminStats(
-    totalUsers: usersRes.count,
-    totalBusinesses: businessesRes.count,
-    totalLedgerEntries: entriesRes.count,
-  );
+final adminStatsProvider =
+    StateNotifierProvider<AdminStatsNotifier, AsyncValue<AdminStats>>((ref) {
+  return AdminStatsNotifier();
 });
+
+class AdminStatsNotifier extends StateNotifier<AsyncValue<AdminStats>> {
+  AdminStatsNotifier() : super(const AsyncValue.loading()) {
+    loadStats();
+  }
+
+  Future<void> loadStats() async {
+    try {
+      state = const AsyncValue.loading();
+      final supabase = Supabase.instance.client;
+
+      final businessesRes = await supabase
+          .from('businesses')
+          .select('id')
+          .count(CountOption.exact);
+
+      final usersRes = await supabase
+          .from('profiles')
+          .select('id')
+          .count(CountOption.exact)
+          .catchError((_) => supabase
+              .from('businesses')
+              .select('id')
+              .count(CountOption.exact));
+
+      final entriesRes = await supabase
+          .from('ledger_entries')
+          .select('id')
+          .count(CountOption.exact);
+
+      state = AsyncValue.data(AdminStats(
+        totalUsers: usersRes.count,
+        totalBusinesses: businessesRes.count,
+        totalLedgerEntries: entriesRes.count,
+      ));
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  void decrementBusiness() {
+    if (state is AsyncData) {
+      final current = state.value!;
+      state = AsyncValue.data(AdminStats(
+        totalUsers: current.totalUsers,
+        totalBusinesses:
+            current.totalBusinesses - 1 >= 0 ? current.totalBusinesses - 1 : 0,
+        totalLedgerEntries: current.totalLedgerEntries,
+      ));
+    }
+  }
+}
