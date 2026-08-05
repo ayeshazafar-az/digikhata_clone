@@ -3,6 +3,7 @@ import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../ledger/providers/ledger_entries_provider.dart';
+import '../../../ledger/models/ledger_entry_model.dart';
 import 'package:intl/intl.dart';
 import '../../providers/parties_provider.dart';
 import '../../../../core/utils/pdf_service.dart';
@@ -279,10 +280,11 @@ class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
                                         title: const Text('Edit Transaction'),
                                         onTap: () {
                                           Navigator.pop(ctx);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Editing coming soon...')));
+                                          _showEditTransactionDialog(
+                                            context,
+                                            ref,
+                                            entry,
+                                          );
                                         },
                                       ),
                                       ListTile(
@@ -354,6 +356,93 @@ class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showEditTransactionDialog(
+    BuildContext context,
+    WidgetRef ref,
+    LedgerEntryModel entry,
+  ) {
+    final amountController =
+        TextEditingController(text: entry.amount.toStringAsFixed(0));
+    final descController = TextEditingController(text: entry.description ?? '');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Transaction'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Amount (Rs)',
+                prefixText: 'Rs. ',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descController,
+              decoration: const InputDecoration(
+                labelText: 'Description / Note',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newAmount = double.tryParse(amountController.text);
+              if (newAmount == null || newAmount <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Enter a valid amount')),
+                );
+                return;
+              }
+              if (entry.remoteId != null) {
+                try {
+                  await ref
+                      .read(ledgerEntriesProvider(widget.customerId).notifier)
+                      .editEntry(
+                        entry.remoteId!,
+                        newAmount,
+                        descController.text,
+                      );
+                  if (ctx.mounted) Navigator.pop(ctx);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Transaction updated successfully'),
+                        backgroundColor: AppTheme.successGreen,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('SAVE'),
+          ),
+        ],
       ),
     );
   }

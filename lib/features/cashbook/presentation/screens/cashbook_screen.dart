@@ -202,7 +202,7 @@ class CashBookScreen extends ConsumerWidget {
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87)),
+                        color: Colors.white)),
                 const SizedBox(height: 4),
                 const Text('Cash in Hand',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -217,7 +217,7 @@ class CashBookScreen extends ConsumerWidget {
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87)),
+                        color: Colors.white)),
                 const SizedBox(height: 4),
                 const Text('Today Balance',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -228,7 +228,7 @@ class CashBookScreen extends ConsumerWidget {
           const Expanded(
             child: Column(
               children: [
-                Icon(Icons.history, color: Colors.black87, size: 20),
+                Icon(Icons.history, color: Colors.white, size: 20),
                 SizedBox(height: 4),
                 Text('History',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -252,7 +252,8 @@ class CashBookScreen extends ConsumerWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                const Icon(Icons.calendar_month, size: 90, color: Colors.black87),
+                const Icon(Icons.calendar_month,
+                    size: 90, color: Colors.black87),
                 Positioned(
                   top: 20,
                   left: 0,
@@ -288,7 +289,7 @@ class CashBookScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF252525),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(

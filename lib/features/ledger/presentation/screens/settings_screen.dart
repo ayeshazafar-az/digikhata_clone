@@ -51,9 +51,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             floating: true,
             pinned: true,
             flexibleSpace: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFFF3752A), Color(0xFFE94326)],
+                  colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
@@ -119,9 +119,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   width: 24,
                                   height: 24,
                                   child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Color(0xFFE94326)))
+                                      strokeWidth: 2,
+                                      color: AppTheme.primaryBlue))
                               : const Icon(Icons.cloud_done_outlined,
-                                  color: Color(0xFFE94326)),
+                                  color: AppTheme.primaryBlue),
                           title: RichText(
                             text: TextSpan(
                               text: _isBackingUp ? 'Backing up... ' : 'Backup ',
@@ -144,7 +145,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFAF7F2),
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.05),
                             borderRadius: const BorderRadius.only(
                                 bottomLeft: Radius.circular(12),
                                 bottomRight: Radius.circular(12)),
@@ -218,14 +219,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               .copyWith(dividerColor: Colors.transparent),
                           child: ExpansionTile(
                             leading: const Icon(Icons.settings_outlined,
-                                color: Color(0xFFE94326)),
+                                color: AppTheme.primaryBlue),
                             title: const Text('Settings',
                                 style: TextStyle(
-                                    color: Color(0xFFE94326),
+                                    color: AppTheme.primaryBlue,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500)),
-                            iconColor: const Color(0xFFE94326),
-                            collapsedIconColor: const Color(0xFFE94326),
+                            iconColor: AppTheme.primaryBlue,
+                            collapsedIconColor: AppTheme.primaryBlue,
                             children: [
                               _buildSubTile('Quick entry from notification',
                                   Icons.notifications_active_outlined,
@@ -235,7 +236,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   'Dark Mode', Icons.dark_mode_outlined,
                                   trailing: Switch(
                                     value: isDark,
-                                    activeColor: const Color(0xFFF3752A),
+                                    activeColor: AppTheme.primaryBlue,
                                     onChanged: (val) {
                                       if (val != isDark) {
                                         ref
@@ -254,10 +255,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       context.push('/currency_selection')),
                               _buildSubTile(
                                   'Delete Business', Icons.delete_outline,
-                                  isDestructive: true),
+                                  isDestructive: true,
+                                  onTap: () => _showDeleteConfirmation(
+                                        context,
+                                        'Delete Business',
+                                        'Are you sure you want to delete this business and all its data? This action cannot be undone.',
+                                        () async {
+                                          try {
+                                            final supabase =
+                                                Supabase.instance.client;
+                                            final profile = await supabase
+                                                .from('profiles')
+                                                .select('active_business_id')
+                                                .single();
+                                            final bizId =
+                                                profile['active_business_id'];
+                                            if (bizId != null) {
+                                              await supabase
+                                                  .from('businesses')
+                                                  .delete()
+                                                  .eq('id', bizId);
+                                              if (mounted) {
+                                                context.go('/home');
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                      content: Text(
+                                                          'Business deleted')),
+                                                );
+                                              }
+                                            }
+                                          } catch (e) {
+                                            if (mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content:
+                                                          Text('Error: $e')));
+                                            }
+                                          }
+                                        },
+                                      )),
                               _buildSubTile('Delete DigiKhata Account',
                                   Icons.delete_outline,
-                                  isDestructive: true),
+                                  isDestructive: true,
+                                  onTap: () => _showDeleteConfirmation(
+                                        context,
+                                        'Delete Account',
+                                        'This will permanently delete your account and all associated data. You will be logged out immediately.',
+                                        () async {
+                                          try {
+                                            await Supabase.instance.client.auth
+                                                .signOut();
+                                            if (mounted) {
+                                              context.go('/language');
+                                            }
+                                          } catch (e) {
+                                            if (mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content:
+                                                          Text('Error: $e')));
+                                            }
+                                          }
+                                        },
+                                      )),
                             ],
                           ),
                         ),
@@ -269,14 +330,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               .copyWith(dividerColor: Colors.transparent),
                           child: ExpansionTile(
                             leading: const Icon(Icons.help_outline,
-                                color: Color(0xFFE94326)),
+                                color: AppTheme.primaryBlue),
                             title: const Text('Help & Support',
                                 style: TextStyle(
-                                    color: Color(0xFFE94326),
+                                    color: AppTheme.primaryBlue,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500)),
-                            iconColor: const Color(0xFFE94326),
-                            collapsedIconColor: const Color(0xFFE94326),
+                            iconColor: AppTheme.primaryBlue,
+                            collapsedIconColor: AppTheme.primaryBlue,
                             children: [
                               _buildSubTile('FAQs', Icons.help_center_outlined,
                                   onTap: () => context.push('/faqs')),
@@ -296,14 +357,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               .copyWith(dividerColor: Colors.transparent),
                           child: ExpansionTile(
                             leading: const Icon(Icons.info_outline,
-                                color: Color(0xFFE94326)),
+                                color: AppTheme.primaryBlue),
                             title: const Text('About us',
                                 style: TextStyle(
-                                    color: Color(0xFFE94326),
+                                    color: AppTheme.primaryBlue,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500)),
-                            iconColor: const Color(0xFFE94326),
-                            collapsedIconColor: const Color(0xFFE94326),
+                            iconColor: AppTheme.primaryBlue,
+                            collapsedIconColor: AppTheme.primaryBlue,
                             children: [
                               _buildSubTile('Web Site', Icons.language),
                               _buildSubTile(
@@ -379,7 +440,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: const Color(0xFFE94326), size: 28),
+            Icon(icon, color: AppTheme.primaryBlue, size: 28),
             const SizedBox(height: 8),
             Text(label,
                 textAlign: TextAlign.center,
@@ -395,13 +456,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildMenuTile(String title, IconData icon, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFFE94326)),
+      leading: Icon(icon, color: AppTheme.primaryBlue),
       title: Text(title,
           style: const TextStyle(
               color: Colors.black87,
               fontSize: 15,
               fontWeight: FontWeight.w500)),
-      trailing: const Icon(Icons.chevron_right, color: Color(0xFFE94326)),
+      trailing: const Icon(Icons.chevron_right, color: AppTheme.primaryBlue),
       onTap: onTap,
     );
   }
@@ -411,7 +472,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       String? trailingText,
       bool isDestructive = false,
       VoidCallback? onTap}) {
-    final defaultColor = const Color(0xFFE94326);
+    const defaultColor = AppTheme.primaryBlue;
     final isFaIcon = icon.runtimeType.toString() == 'IconDataBrands' ||
         icon.runtimeType.toString() == 'IconDataSolid' ||
         icon.runtimeType.toString() == 'IconDataRegular';
@@ -492,7 +553,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFFE94326)
+                                ? AppTheme.primaryBlue
                                 : Colors.grey.shade300,
                             width: isSelected ? 1.5 : 1,
                           ),

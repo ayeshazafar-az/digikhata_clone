@@ -120,10 +120,13 @@ class AppRouter {
       GoRoute(
         path: '/qr_code',
         name: 'qr_code',
-        builder: (context, state) => const QrCodeScreen(
-          businessName: 'My DigiKhata Business',
-          phoneNumber: '+923245423290',
-        ),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return QrCodeScreen(
+            businessName: extra['businessName'] ?? 'My Business',
+            phoneNumber: extra['phoneNumber'] ?? '',
+          );
+        },
       ),
       GoRoute(
         path: '/customer_ledger',
@@ -250,16 +253,7 @@ class AppRouter {
         name: 'faqs',
         builder: (context, state) => const FaqsScreen(),
       ),
-      GoRoute(
-        path: '/multi_devices',
-        name: 'multi_devices',
-        builder: (context, state) => const MultiDevicesScreen(),
-      ),
-      GoRoute(
-        path: '/recycle_bin',
-        name: 'recycle_bin',
-        builder: (context, state) => const RecycleBinScreen(),
-      ),
+      // Duplicate /multi_devices and /recycle_bin routes removed (defined at top)
       GoRoute(
         path: '/add_customer_route',
         builder: (context, state) => const AddContactScreen(type: 'Customer'),

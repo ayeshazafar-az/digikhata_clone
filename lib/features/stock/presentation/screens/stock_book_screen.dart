@@ -108,11 +108,10 @@ class StockBookScreen extends ConsumerWidget {
           onPressed: () => _showAddProductModal(context, ref),
           icon: const Icon(Icons.add, color: Colors.black87),
           label: const Text('ADD ITEM',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black87)),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(
-                0xFFF05A28), // Matches the specific orange from screenshot
+            backgroundColor: AppTheme.primaryBlue,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -191,14 +190,14 @@ class StockBookScreen extends ConsumerWidget {
                         style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87)),
+                            color: Colors.white)),
                     const SizedBox(height: 4),
                     const Text('View Rate List',
                         style:
                             TextStyle(color: Colors.redAccent, fontSize: 14)),
                   ],
                 ),
-                const Icon(Icons.chevron_right, color: Colors.black87, size: 28),
+                const Icon(Icons.chevron_right, color: Colors.white, size: 28),
               ],
             ),
           ),
@@ -230,8 +229,7 @@ class StockBookScreen extends ConsumerWidget {
                   child: const Center(
                       child: Text('Stock OUT Report',
                           style: TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold))),
+                              color: Colors.red, fontWeight: FontWeight.bold))),
                 ),
               ),
             ],
@@ -295,7 +293,7 @@ class StockBookScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF252525),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(
@@ -428,7 +426,7 @@ class StockBookScreen extends ConsumerWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 54),
-                  backgroundColor: const Color(0xFFF05A28),
+                  backgroundColor: AppTheme.primaryBlue,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),

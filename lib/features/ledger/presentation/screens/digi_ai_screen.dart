@@ -355,13 +355,14 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.transparent,
-          border: Border.all(color: Colors.white24),
+          border:
+              Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(24),
         ),
         child: Text(
           text,
           style: const TextStyle(
-              color: Colors.white70, fontStyle: FontStyle.italic),
+              color: AppTheme.primaryBlue, fontStyle: FontStyle.italic),
         ),
       ),
     );
@@ -370,34 +371,35 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
   Widget _buildInputBar() {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: const BoxDecoration(
-        color: Color(0xFF121212),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey.shade200)),
       ),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.white70),
+            icon: const Icon(Icons.add, color: AppTheme.primaryBlue),
             onPressed: () {},
           ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E1E1E),
+                color: Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
               child: TextField(
                 controller: _controller,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black87),
                 onSubmitted: _sendMessage,
                 decoration: InputDecoration(
                   hintText: 'Ask Digi-AI anything...',
-                  hintStyle: const TextStyle(
-                      color: Colors.white54, fontStyle: FontStyle.italic),
+                  hintStyle: TextStyle(
+                      color: Colors.grey.shade500, fontStyle: FontStyle.italic),
                   border: InputBorder.none,
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.deepOrange),
+                    icon: const Icon(Icons.send, color: AppTheme.primaryBlue),
                     onPressed: () {
                       _sendMessage(_controller.text);
                     },
