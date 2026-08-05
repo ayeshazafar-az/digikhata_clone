@@ -30,7 +30,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.push('/add_customer_route');
+          context.push('/digi_ai');
         },
         backgroundColor: AppTheme
             .primaryBlue, // Enforced Blue Theme constraints! (Original was Orange)

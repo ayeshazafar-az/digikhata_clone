@@ -55,11 +55,13 @@ class HomeGridScreen extends StatelessWidget {
             icon: const Icon(Icons.notifications, color: AppTheme.primaryBlue),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.apps, color: AppTheme.primaryBlue),
-            onPressed: () {
-              context.push('/settings');
-            },
+          Builder(
+            builder: (ctx) => IconButton(
+              icon: const Icon(Icons.grid_view, color: AppTheme.primaryBlue),
+              onPressed: () {
+                Scaffold.of(ctx).openDrawer();
+              },
+            ),
           ),
         ],
       ),

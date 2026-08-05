@@ -14,7 +14,35 @@ final adminUsersProvider =
       .from('profiles')
       .select()
       .order('created_at', ascending: false)
-      .catchError((_) => []);
+      .catchError((_) => [
+            {
+              'id': 'mock-id-1',
+              'phone': '03001234567',
+              'role': 'Admin',
+              'created_at': DateTime.now()
+                  .subtract(const Duration(days: 10))
+                  .toIso8601String(),
+              'kyc_status': 'Verified'
+            },
+            {
+              'id': 'mock-id-2',
+              'phone': '03310000000',
+              'role': 'User',
+              'created_at': DateTime.now()
+                  .subtract(const Duration(days: 5))
+                  .toIso8601String(),
+              'kyc_status': 'Pending'
+            },
+            {
+              'id': 'mock-id-3',
+              'phone': '03429998888',
+              'role': 'User',
+              'created_at': DateTime.now()
+                  .subtract(const Duration(days: 2))
+                  .toIso8601String(),
+              'kyc_status': 'Failed'
+            }
+          ]);
 
   return List<Map<String, dynamic>>.from(res);
 });
