@@ -343,4 +343,126 @@ class PdfService {
           'Stock_${reportType}_Report_${DateTime.now().millisecondsSinceEpoch}.pdf',
     );
   }
+
+  static Future<void> generateDigiPosReceipt({
+    required String userName,
+    required String userPhone,
+  }) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.zero, // Full bleed for the orange footer
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              // Header area
+              pw.Container(
+                padding: const pw.EdgeInsets.all(32),
+                child: pw.Column(
+                  children: [
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('DigiKhata',
+                            style: pw.TextStyle(
+                                fontSize: 24,
+                                fontWeight: pw.FontWeight.bold,
+                                color: PdfColors.red800)),
+                        pw.Container(
+                          padding: const pw.EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: const pw.BoxDecoration(
+                              color: PdfColors.green800,
+                              borderRadius:
+                                  pw.BorderRadius.all(pw.Radius.circular(4))),
+                          child: pw.Text('Raast',
+                              style: pw.TextStyle(
+                                  color: PdfColors.white,
+                                  fontWeight: pw.FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    pw.SizedBox(height: 32),
+                    pw.Container(
+                      padding: const pw.EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 8),
+                      decoration: const pw.BoxDecoration(
+                        color: PdfColors.grey200,
+                        borderRadius:
+                            pw.BorderRadius.all(pw.Radius.circular(20)),
+                      ),
+                      child: pw.Text(userName,
+                          style: pw.TextStyle(
+                              fontSize: 20,
+                              color: PdfColors.red800,
+                              fontWeight: pw.FontWeight.bold)),
+                    ),
+                    pw.SizedBox(height: 16),
+                    pw.Text('+92 $userPhone',
+                        style: const pw.TextStyle(
+                            fontSize: 16, color: PdfColors.grey700)),
+                    pw.SizedBox(height: 32),
+                    // QR Code
+                    pw.Container(
+                      height: 250,
+                      width: 250,
+                      child: pw.BarcodeWidget(
+                        barcode: pw.Barcode.qrCode(),
+                        data: 'https://digikhata.app/pay?phone=$userPhone',
+                        color: PdfColors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              pw.Spacer(),
+              // Solid Orange Footer matching screenshot
+              pw.Container(
+                width: double.infinity,
+                padding: const pw.EdgeInsets.all(32),
+                decoration: const pw.BoxDecoration(color: PdfColors.deepOrange),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Peyment ke liye scan karein',
+                        style: pw.TextStyle(
+                            color: PdfColors.white,
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 16),
+                    pw.Text('Tareeqa:',
+                        style: pw.TextStyle(
+                            color: PdfColors.white,
+                            fontSize: 18,
+                            fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 8),
+                    pw.Text(
+                        '1. Apne kisi bhi bank application se QR scan karein',
+                        style: const pw.TextStyle(
+                            color: PdfColors.white, fontSize: 14)),
+                    pw.SizedBox(height: 4),
+                    pw.Text(
+                        '2. Payment amount darj karein aur ba-asani payment karein',
+                        style: const pw.TextStyle(
+                            color: PdfColors.white, fontSize: 14)),
+                    pw.SizedBox(height: 24),
+                    pw.Text('Helpline: 111 797999',
+                        style: const pw.TextStyle(
+                            color: PdfColors.white, fontSize: 12)),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'DigiKhata_QR_${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
+  }
 }
