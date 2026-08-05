@@ -61,9 +61,13 @@ class _SplashScreenState extends State<SplashScreen> {
           if (mounted) context.go('/home');
         }
       } else if (event == AuthChangeEvent.initialSession) {
-        // Only if it's explicitly null after initial check, we know no link was parsed
-        _authStateSubscription.cancel();
-        if (mounted) context.go('/language');
+        // Give native deep links (app_links) up to 2 seconds to finish token parsing before forcing unauthenticated fallback
+        Future.delayed(const Duration(milliseconds: 2000), () {
+          if (mounted && Supabase.instance.client.auth.currentSession == null) {
+            _authStateSubscription.cancel();
+            context.go('/language');
+          }
+        });
       }
     });
   }

@@ -276,7 +276,6 @@ class _PartyTab extends ConsumerWidget {
                 ),
                 child: const Icon(Icons.lock, color: Colors.white, size: 24),
               ),
-              const SizedBox(width: -10),
               Container(
                 width: 140,
                 height: 140,
