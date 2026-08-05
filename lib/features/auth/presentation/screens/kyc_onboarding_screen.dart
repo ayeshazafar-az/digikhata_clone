@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -18,49 +17,11 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _businessController = TextEditingController();
 
-  CameraController? _cameraController;
-  List<CameraDescription>? _cameras;
-
-  String? selfiePath;
-  String? cnicFrontPath;
-  String? cnicBackPath;
-
-  bool _isInitCamera = false;
-  bool _mockErrorThrown = false;
   bool _isProcessing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initCameras();
-  }
-
-  Future<void> _initCameras() async {
-    _cameras = await availableCameras();
-    if (_cameras != null && _cameras!.isNotEmpty) {
-      // Setup front camera for selfie first
-      final frontCamera = _cameras!.firstWhere(
-          (c) => c.lensDirection == CameraLensDirection.front,
-          orElse: () => _cameras!.first);
-      _setupCamera(frontCamera);
-    }
-  }
-
-  Future<void> _setupCamera(CameraDescription camera) async {
-    _cameraController = CameraController(camera, ResolutionPreset.high);
-    await _cameraController!.initialize();
-    if (mounted) setState(() => _isInitCamera = true);
-  }
+  bool _mockErrorThrown = false;
 
   void _nextPage() {
     if (_currentIndex < 3) {
-      if (_currentIndex == 1) {
-        // Switching to CNIC front, change to Back camera
-        final backCamera = _cameras!.firstWhere(
-            (c) => c.lensDirection == CameraLensDirection.back,
-            orElse: () => _cameras!.first);
-        _setupCamera(backCamera);
-      }
       _pageController.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
       setState(() => _currentIndex++);
@@ -70,36 +31,23 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
   }
 
   Future<void> _captureImage() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return;
-    }
-
-    try {
-      final XFile image = await _cameraController!.takePicture();
-
-      if (_currentIndex == 1) {
-        selfiePath = image.path;
-        _nextPage();
-      } else if (_currentIndex == 2) {
-        cnicFrontPath = image.path;
-        _nextPage();
-      } else if (_currentIndex == 3) {
-        if (!_mockErrorThrown) {
-          // Simulate the OCR error!
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-                'Verification Failed: NADRA Barcode unreadable on the back. Please strictly align your CNIC within the box and retake!'),
-            backgroundColor: AppTheme.dangerRed,
-            duration: Duration(seconds: 4),
-          ));
-          setState(() => _mockErrorThrown = true);
-          return;
-        }
-        cnicBackPath = image.path;
-        _submitKyc();
+    if (_currentIndex == 1) {
+      _nextPage();
+    } else if (_currentIndex == 2) {
+      _nextPage();
+    } else if (_currentIndex == 3) {
+      if (!_mockErrorThrown) {
+        // Simulate the OCR error!
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Verification Failed: NADRA Barcode unreadable on the back. Please strictly align your CNIC within the box and retake!'),
+          backgroundColor: AppTheme.dangerRed,
+          duration: Duration(seconds: 4),
+        ));
+        setState(() => _mockErrorThrown = true);
+        return;
       }
-    } catch (e) {
-      debugPrint('Camera error: $e');
+      _submitKyc();
     }
   }
 
@@ -137,45 +85,43 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
   @override
   void dispose() {
     _pageController.dispose();
-    _cameraController?.dispose();
     super.dispose();
   }
 
   Widget _buildCameraOverlay(String title, String instruction, bool isSquare) {
-    if (!_isInitCamera || _cameraController == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
     return Stack(
       children: [
-        SizedBox.expand(
-          child: CameraPreview(_cameraController!),
-        ),
-        // Dark Overlay with Cutout
-        ColorFiltered(
-          colorFilter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.7),
-            BlendMode.srcOut,
+        // Simulated Camera Viewfinder
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.black87,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(isSquare ? Icons.person_outline : Icons.credit_card,
+                    size: 80, color: Colors.white30),
+                const SizedBox(height: 16),
+                const Text('SIMULATED CAMERA',
+                    style: TextStyle(
+                        color: Colors.white30,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.bold)),
+              ],
+            ),
           ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  backgroundBlendMode: BlendMode.dstOut,
-                ),
-              ),
-              Center(
-                child: Container(
-                  width: isSquare ? 300 : 320,
-                  height: isSquare ? 300 : 200,
-                  decoration: BoxDecoration(
-                    color: Colors.red, // Cutout shape
-                    borderRadius: BorderRadius.circular(isSquare ? 150 : 16),
-                  ),
-                ),
-              ),
-            ],
+        ),
+        // Dark Overlay with Cutout mockup (rendered simply as a border for simulation)
+        Center(
+          child: Container(
+            width: isSquare ? 300 : 320,
+            height: isSquare ? 300 : 200,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(color: AppTheme.successGreen, width: 3),
+              borderRadius: BorderRadius.circular(isSquare ? 150 : 16),
+            ),
           ),
         ),
         // UI Elements
