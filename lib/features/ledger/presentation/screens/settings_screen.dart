@@ -8,6 +8,8 @@ import '../../../../app/theme_provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/database/local_db.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -19,6 +21,22 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _isBackingUp = false;
+  bool _appLockEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppLockState();
+  }
+
+  Future<void> _loadAppLockState() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _appLockEnabled = prefs.getBool('app_lock_enabled') ?? false;
+      });
+    }
+  }
 
   void _triggerBackup() async {
     setState(() => _isBackingUp = true);
@@ -246,6 +264,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         borderRadius: BorderRadius.circular(12)),
                     child: Column(
                       children: [
+                        _buildMenuTile(
+                            'Edit Profile & Business', Icons.edit_note_outlined,
+                            () {
+                          context.push('/profile_edit');
+                        }),
+                        const Divider(height: 1, indent: 50),
                         _buildMenuTile('KYC', Icons.badge_outlined, () {
                           context
                               .push('/kyc_status'); // Changed to new KYC route
@@ -289,7 +313,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       }
                                     },
                                   )),
-                              _buildSubTile('App Lock', Icons.lock_outline),
+                              _buildSubTile('App Lock', Icons.lock_outline,
+                                  trailing: Switch(
+                                    value: _appLockEnabled,
+                                    activeColor: AppTheme.primaryBlue,
+                                    onChanged: (val) async {
+                                      final prefs =
+                                          await SharedPreferences.getInstance();
+                                      await prefs.setBool(
+                                          'app_lock_enabled', val);
+                                      setState(() {
+                                        _appLockEnabled = val;
+                                      });
+                                    },
+                                  )),
                               _buildSubTile('Language', Icons.g_translate,
                                   onTap: _showLanguagePicker),
                               _buildSubTile('Business Currency:',
@@ -385,9 +422,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             children: [
                               _buildSubTile('FAQs', Icons.help_center_outlined,
                                   onTap: () => context.push('/faqs')),
-                              _buildSubTile('Call Us', Icons.call_outlined),
+                              _buildSubTile('Call Us', Icons.call_outlined,
+                                  onTap: () async {
+                                final uri = Uri.parse('tel:+923001234567');
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                } else {
+                                  if (mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Could not launch dialer')));
+                                }
+                              }),
                               _buildSubTile(
-                                  'WhatsApp Us', FontAwesomeIcons.whatsapp),
+                                  'WhatsApp Us', FontAwesomeIcons.whatsapp,
+                                  onTap: () async {
+                                final uri = Uri.parse(
+                                    'whatsapp://send?phone=923001234567');
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                } else {
+                                  if (mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'WhatsApp not installed')));
+                                }
+                              }),
                               _buildSubTile('How to use DigiKhata',
                                   Icons.play_circle_outline),
                             ],

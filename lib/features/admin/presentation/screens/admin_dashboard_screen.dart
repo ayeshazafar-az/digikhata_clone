@@ -140,16 +140,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Global System Report generation queued. A PDF copy will be dispatched shortly.'),
-                            backgroundColor: AppTheme.primaryBlue,
-                          ),
-                        );
+                        context.push('/admin_analytics');
                       },
-                      icon: const Icon(Icons.picture_as_pdf),
-                      label: const Text('Export Global Metrics'),
+                      icon: const Icon(Icons.analytics_outlined),
+                      label: const Text('View Advanced Analytics'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.warningOrange,
                         foregroundColor: Colors.white,

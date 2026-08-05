@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/utils/pdf_service.dart';
+import '../../../../core/database/local_db.dart';
 
 final stockProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final supabase = Supabase.instance.client;
@@ -126,7 +128,7 @@ class StockBookScreen extends ConsumerWidget {
       List<Map<String, dynamic>> products, bool isLowStock) {
     return Column(
       children: [
-        _buildStatsHeader(products.length),
+        _buildStatsHeader(products.length, products),
         if (products.isEmpty)
           Expanded(child: _buildEmptyState())
         else
@@ -169,7 +171,8 @@ class StockBookScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsHeader(int totalItems) {
+  Widget _buildStatsHeader(
+      int totalItems, List<Map<String, dynamic>> products) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -205,31 +208,66 @@ class StockBookScreen extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(12),
+                child: GestureDetector(
+                  onTap: () async {
+                    if (products.isEmpty) return;
+                    await PdfService.generateStockReport(
+                      items: products
+                          .map((p) => {
+                                'name': p['name'],
+                                'current_stock': p['current_stock'],
+                                'unit': p['unit'],
+                                'purchase_price': p['purchase_price'],
+                                'selling_price': p['selling_price'],
+                              })
+                          .toList(),
+                      reportType: 'IN',
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                        child: Text('Stock IN Report',
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold))),
                   ),
-                  child: const Center(
-                      child: Text('Stock IN Report',
-                          style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold))),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(12),
+                child: GestureDetector(
+                  onTap: () async {
+                    if (products.isEmpty) return;
+                    await PdfService.generateStockReport(
+                      items: products
+                          .map((p) => {
+                                'name': p['name'],
+                                'current_stock': p['current_stock'],
+                                'unit': p['unit'],
+                                'purchase_price': p['purchase_price'],
+                                'selling_price': p['selling_price'],
+                              })
+                          .toList(),
+                      reportType: 'OUT',
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                        child: Text('Stock OUT Report',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold))),
                   ),
-                  child: const Center(
-                      child: Text('Stock OUT Report',
-                          style: TextStyle(
-                              color: Colors.red, fontWeight: FontWeight.bold))),
                 ),
               ),
             ],

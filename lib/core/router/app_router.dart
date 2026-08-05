@@ -39,6 +39,8 @@ import '../../features/ledger/presentation/screens/currency_selection_screen.dar
 import '../../features/ledger/presentation/screens/faqs_screen.dart';
 import '../../features/ledger/presentation/screens/multi_devices_screen.dart';
 import '../../features/ledger/presentation/screens/recycle_bin_screen.dart';
+import '../../features/ledger/presentation/screens/profile_edit_screen.dart';
+import '../../features/admin/presentation/screens/admin_analytics_screen.dart';
 
 // Customer specific sub-routes
 import '../../features/customers/presentation/screens/add_contact_screen.dart';
@@ -60,6 +62,12 @@ class AppRouter {
       GoRoute(
           path: '/business_card',
           builder: (context, state) => const BusinessCardScreen()),
+      GoRoute(
+          path: '/profile_edit',
+          builder: (context, state) => const ProfileEditScreen()),
+      GoRoute(
+          path: '/admin_analytics',
+          builder: (context, state) => const AdminAnalyticsScreen()),
       GoRoute(
           path: '/tasdeeq', builder: (context, state) => const TasdeeqScreen()),
       GoRoute(
