@@ -368,6 +368,32 @@ class StockBookScreen extends ConsumerWidget {
                       borderSide: BorderSide(color: Colors.black87)),
                 ),
               ),
+              const SizedBox(height: 12),
+              InkWell(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Barcode scanner interface activated')));
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.qr_code_scanner, color: AppTheme.primaryBlue),
+                      SizedBox(width: 8),
+                      Text('Scan Barcode',
+                          style: TextStyle(
+                              color: AppTheme.primaryBlue,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [

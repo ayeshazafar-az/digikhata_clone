@@ -35,7 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           context.push('/add_customer_route');
         },
         backgroundColor:
-            const Color(0xFFE94326), // Original brand orange button
+            AppTheme.primaryBlue, // Enforced Blue Theme constraints
         shape: const CircleBorder(),
         elevation: 4,
         child:

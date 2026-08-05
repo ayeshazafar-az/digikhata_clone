@@ -120,6 +120,50 @@ class _CashEntryScreenState extends ConsumerState<CashEntryScreen> {
                 }
               },
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Attachment picker opened')));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.camera_alt, color: AppTheme.primaryBlue),
+                          SizedBox(width: 8),
+                          Text('Add Attachment',
+                              style: TextStyle(
+                                  color: AppTheme.primaryBlue,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Send Free SMS to Customer'),
+              subtitle: const Text('Notifies customer about this transaction'),
+              activeColor: AppTheme.primaryBlue,
+              value:
+                  true, // Tied to state if needed, defaulting to true in clone
+              onChanged: (val) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text(
+                        'SMS state toggled - Defaulting to TRUE for demo')));
+              },
+            ),
             const Spacer(),
             _isLoading
                 ? const CircularProgressIndicator()
@@ -128,9 +172,14 @@ class _CashEntryScreenState extends ConsumerState<CashEntryScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: color,
                       minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Save Entry',
-                        style: TextStyle(fontSize: 18, color: Colors.white)),
+                    child: const Text('SAVE',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
                   ),
           ],
         ),
