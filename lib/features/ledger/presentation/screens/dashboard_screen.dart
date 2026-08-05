@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
-import 'home_grid_screen.dart';
+import '../../../customers/presentation/screens/customer_list_screen.dart';
 import '../../../digicash/presentation/screens/digicash_secure_wrapper.dart';
 import 'digi_pos_screen.dart';
 import 'digi_bazar_screen.dart';
@@ -17,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const HomeGridScreen(),
+    const CustomerListScreen(isRoot: true),
     const DigiBazarScreen(),
     const DigiPosScreen(),
     const DigiCashSecureWrapper(),

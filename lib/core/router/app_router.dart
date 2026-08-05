@@ -212,6 +212,25 @@ class AppRouter {
             partyType: state.uri.queryParameters['type'] ?? 'customer'),
       ),
       GoRoute(
+        path: '/add_customer_route',
+        name: 'add_customer_route',
+        builder: (context, state) =>
+            const AddPartyScreen(partyType: 'customer'),
+      ),
+      GoRoute(
+        path: '/add_supplier_route',
+        name: 'add_supplier_route',
+        builder: (context, state) =>
+            const AddPartyScreen(partyType: 'supplier'),
+      ),
+      GoRoute(
+        path: '/all_transactions_route',
+        name: 'all_transactions_route',
+        builder: (context, state) => AllTransactionsScreen(
+          type: state.uri.queryParameters['type'] ?? 'all',
+        ),
+      ),
+      GoRoute(
         path: '/cashbook',
         name: 'cashbook',
         builder: (context, state) => const CashBookScreen(),
