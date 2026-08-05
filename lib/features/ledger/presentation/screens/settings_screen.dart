@@ -5,6 +5,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../app/theme_provider.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/database/local_db.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -18,17 +22,57 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _triggerBackup() async {
     setState(() => _isBackingUp = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isBackingUp = false);
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) throw Exception('Not logged in');
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Backup successful! Data is safely stored in the cloud.'),
-          backgroundColor: AppTheme.successGreen,
-        ),
-      );
+      // 1. Get local Isar instance
+      final isar = LocalDb.isar;
+      if (isar != null) {
+        // 2. Create a backup file path in temp directory
+        final tempDir = await getTemporaryDirectory();
+        final backupFile = File('${tempDir.path}/backup_${user.id}.isar');
+        if (backupFile.existsSync()) {
+          backupFile.deleteSync();
+        }
+
+        // 3. Export Isar database to file
+        await isar.copyToFile(backupFile.path);
+
+        // 4. Upload to Supabase Storage (Bucket 'backups')
+        final fileName =
+            'backup_${user.id}_${DateTime.now().millisecondsSinceEpoch}.isar';
+
+        await Supabase.instance.client.storage.from('backups').upload(
+              '${user.id}/$fileName',
+              backupFile,
+              fileOptions:
+                  const FileOptions(cacheControl: '3600', upsert: true),
+            );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Backup successful! Data is safely stored in the cloud.'),
+              backgroundColor: AppTheme.successGreen,
+            ),
+          );
+        }
+      } else {
+        throw Exception('Database not initialized locally');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Backup failed: $e'),
+            backgroundColor: AppTheme.dangerRed,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isBackingUp = false);
     }
   }
 
@@ -525,58 +569,110 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       backgroundColor: Colors.grey.shade100,
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Select your language',
-                  style: TextStyle(fontSize: 20, color: Colors.black87)),
-              const SizedBox(height: 24),
-              Flexible(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: languages.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 2.2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemBuilder: (context, index) {
-                    final isSelected = index == 0; // Simulate English selected
-                    return GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppTheme.primaryBlue
-                                : Colors.grey.shade300,
-                            width: isSelected ? 1.5 : 1,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          languages[index],
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isSelected
-                                ? Colors.black87
-                                : Colors.grey.shade800,
-                          ),
-                        ),
+        return Consumer(
+          builder: (context, ref, child) {
+            final currentLocale =
+                ref.watch(localeProvider); // Ensure localeProvider is in scope
+
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Select your language',
+                      style: TextStyle(fontSize: 20, color: Colors.black87)),
+                  const SizedBox(height: 24),
+                  Flexible(
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: languages.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 2.2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
                       ),
-                    );
-                  },
-                ),
+                      itemBuilder: (context, index) {
+                        bool isSelected = false;
+                        if (index == 0 && currentLocale == 'en')
+                          isSelected = true;
+                        if (index == 2 && currentLocale == 'ur')
+                          isSelected = true;
+
+                        return GestureDetector(
+                          onTap: () {
+                            if (index == 0) {
+                              ref.read(localeProvider.notifier).setLocale('en');
+                            } else if (index == 2) {
+                              ref.read(localeProvider.notifier).setLocale('ur');
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppTheme.primaryBlue
+                                    : Colors.grey.shade300,
+                                width: isSelected ? 1.5 : 1,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              languages[index],
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isSelected
+                                    ? Colors.black87
+                                    : Colors.grey.shade800,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
+    );
+  }
+
+  void _showDeleteConfirmation(
+    BuildContext context,
+    String title,
+    String message,
+    VoidCallback onConfirm,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title, style: const TextStyle(color: AppTheme.dangerRed)),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              onConfirm();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.dangerRed,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('DELETE'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -105,4 +105,38 @@ class PartiesNotifier extends StateNotifier<AsyncValue<List<PartyModel>>> {
       rethrow;
     }
   }
+
+  Future<void> editParty(String remoteId, String name, String phone) async {
+    if (businessId == null) return;
+
+    try {
+      await _supabase.from('parties').update({
+        'name': name,
+        'phone': phone,
+      }).eq('id', remoteId);
+
+      await loadParties();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteParty(String remoteId) async {
+    if (businessId == null) return;
+
+    try {
+      await _supabase.from('parties').delete().eq('id', remoteId);
+
+      // Ensure local deletion
+      if (!kIsWeb && LocalDb.isar != null) {
+        await LocalDb.isar!.writeTxn(() async {
+          await LocalDb.isar!.partyModels.deleteByRemoteId(remoteId);
+        });
+      }
+
+      await loadParties();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../ledger/providers/ledger_entries_provider.dart';
 import '../../../ledger/models/ledger_entry_model.dart';
+import '../../models/party_model.dart';
 import 'package:intl/intl.dart';
 import '../../providers/parties_provider.dart';
 import '../../../../core/utils/pdf_service.dart';
@@ -63,7 +64,35 @@ class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
                 _isSearching = !_isSearching;
               });
             },
-          )
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'edit') {
+                _showEditCustomerDialog(context, ref);
+              } else if (value == 'delete') {
+                _showDeleteCustomerDialog(context, ref);
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'edit',
+                child: ListTile(
+                  leading: Icon(Icons.edit, color: AppTheme.primaryBlue),
+                  title: Text('Edit Customer'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: ListTile(
+                  leading: Icon(Icons.delete, color: AppTheme.dangerRed),
+                  title: Text('Delete Customer',
+                      style: TextStyle(color: AppTheme.dangerRed)),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: entriesState.when(
@@ -356,6 +385,144 @@ class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showEditCustomerDialog(BuildContext context, WidgetRef ref) {
+    final parties = ref.read(partiesProvider).value ?? [];
+    final party = parties.firstWhere(
+      (p) => p.remoteId == widget.customerId,
+      orElse: () => PartyModel(),
+    );
+
+    if (party.remoteId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Customer not found.')),
+      );
+      return;
+    }
+
+    final nameController = TextEditingController(text: party.name);
+    final phoneController = TextEditingController(text: party.phone ?? '');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Customer'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Customer Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newName = nameController.text.trim();
+              if (newName.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Name cannot be empty')),
+                );
+                return;
+              }
+              try {
+                await ref.read(partiesProvider.notifier).editParty(
+                      party.remoteId!,
+                      newName,
+                      phoneController.text.trim(),
+                    );
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Customer updated successfully'),
+                      backgroundColor: AppTheme.successGreen,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('SAVE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteCustomerDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Customer',
+            style: TextStyle(color: AppTheme.dangerRed)),
+        content: const Text(
+            'Are you sure you want to delete this customer? This will NOT delete their transactions, but you will lose their contact info.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await ref
+                    .read(partiesProvider.notifier)
+                    .deleteParty(widget.customerId);
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (context.mounted) {
+                  context.pop(); // Go back to previous screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Customer deleted successfully'),
+                      backgroundColor: AppTheme.successGreen,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.dangerRed,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('DELETE'),
+          ),
+        ],
       ),
     );
   }
