@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
+import '../../providers/digi_bazar_provider.dart';
 
-class DigiBazarScreen extends StatelessWidget {
+class DigiBazarScreen extends ConsumerWidget {
   const DigiBazarScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final productsState = ref.watch(digiBazarProvider);
+    final formatter = NumberFormat('#,###');
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -137,25 +143,90 @@ class DigiBazarScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Product Grid Mockup
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.65,
-              children: [
-                _buildProductCard(
-                    'Men Loose Fit Cargo Pants...', '1,999', Icons.inventory),
-                _buildProductCard(
-                    'Pack of 5 Printed Cotton...', '1,000', Icons.checkroom),
-                _buildProductCard('Men Straight Fit Jeans - Me...', '1,299',
-                    Icons.inventory_2),
-                _buildProductCard('Eternity Men Black Sando...', '900',
-                    Icons.accessibility_new,
-                    discount: '25% Discount', oldPrice: '1,200'),
-              ],
+            // Dynamic Product Grid
+            productsState.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+              data: (products) {
+                if (products.isEmpty) {
+                  return const SizedBox(
+                    height: 200,
+                    child:
+                        Center(child: Text('No Wholesale Products Available')),
+                  );
+                }
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.65,
+                  ),
+                  itemCount: products.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20))),
+                            builder: (ctx) => Padding(
+                                  padding: const EdgeInsets.all(24.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(product.title,
+                                          style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                          'Rs. ${formatter.format(product.price)} (MOQ: ${product.moq})',
+                                          style: const TextStyle(fontSize: 16)),
+                                      const SizedBox(height: 24),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(ctx);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Added ${product.moq}x ${product.title} to cart!',
+                                                      style: const TextStyle(
+                                                          color: Colors.white)),
+                                                  backgroundColor:
+                                                      AppTheme.successGreen));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppTheme.primaryBlue,
+                                          minimumSize:
+                                              const Size(double.infinity, 50),
+                                        ),
+                                        child: const Text('Add to Cart',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      )
+                                    ],
+                                  ),
+                                ));
+                      },
+                      child: _buildProductCard(
+                        product.title,
+                        formatter.format(product.price),
+                        imageUrl: product.imageUrl,
+                        discount: product.discount,
+                        oldPrice: product.oldPrice != null
+                            ? formatter.format(product.oldPrice)
+                            : null,
+                        moq: product.moq,
+                      ),
+                    );
+                  },
+                );
+              },
             ),
             const SizedBox(height: 80),
           ],
@@ -196,8 +267,8 @@ class DigiBazarScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProductCard(String title, String price, IconData fallbackIcon,
-      {String? discount, String? oldPrice}) {
+  Widget _buildProductCard(String title, String price,
+      {String? imageUrl, String? discount, String? oldPrice, int? moq}) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade200),
@@ -216,9 +287,15 @@ class DigiBazarScreen extends StatelessWidget {
                     color: Colors.grey.shade100,
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(12)),
+                    image: imageUrl != null
+                        ? DecorationImage(
+                            image: NetworkImage(imageUrl), fit: BoxFit.cover)
+                        : null,
                   ),
-                  child:
-                      Icon(fallbackIcon, size: 60, color: Colors.grey.shade300),
+                  child: imageUrl == null
+                      ? Icon(Icons.image_not_supported,
+                          color: Colors.grey.shade300)
+                      : null,
                 ),
                 // Favourite heart
                 const Positioned(
@@ -248,22 +325,23 @@ class DigiBazarScreen extends StatelessWidget {
                     ),
                   ),
                 // MOQ badge
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: const Text('5 MOQ',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold)),
+                if (moq != null)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Text('$moq MOQ',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold)),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
