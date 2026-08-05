@@ -52,7 +52,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
-      title: 'DigiKhata Clone',
+      title: 'DigiKhata Lite',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: AppTheme.lightTheme,
