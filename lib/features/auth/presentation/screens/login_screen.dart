@@ -72,9 +72,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
         if (mounted) context.push('/otp', extra: email);
       } catch (e) {
-        if (mounted)
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        if (mounted) {
+          final errorMsg = e.toString().toLowerCase();
+          if (errorMsg.contains('rate_limit') ||
+              errorMsg.contains('limit') ||
+              errorMsg.contains('exceeded')) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text(
+                  'Email login limit reached (3/hr). Please try again later or use the "Continue with Phone" option above.'),
+              backgroundColor: AppTheme.warningOrange,
+              duration: Duration(seconds: 5),
+            ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error: ${e.toString()}')));
+          }
+        }
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
