@@ -160,9 +160,9 @@ class _PartyTab extends ConsumerWidget {
                   if (isBank) {
                     context.push('/select_bank');
                   } else if (isSupplier) {
-                    context.push('/add_supplier_route');
+                    context.push('/add_contact?type=supplier');
                   } else {
-                    context.push('/add_customer_route');
+                    context.push('/add_contact?type=customer');
                   }
                 },
                 icon: Icon(

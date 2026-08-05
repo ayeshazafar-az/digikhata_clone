@@ -212,10 +212,29 @@ class AppRouter {
             partyType: state.uri.queryParameters['type'] ?? 'customer'),
       ),
       GoRoute(
+        path: '/select_bank',
+        name: 'select_bank',
+        builder: (context, state) => const SelectBankScreen(),
+      ),
+      GoRoute(
+        path: '/add_contact',
+        name: 'add_contact',
+        builder: (context, state) => AddContactScreen(
+          type: state.uri.queryParameters['type'] ?? 'customer',
+        ),
+      ),
+      GoRoute(
         path: '/add_customer_route',
         name: 'add_customer_route',
         builder: (context, state) =>
             const AddPartyScreen(partyType: 'customer'),
+      ),
+      GoRoute(
+        path: '/add_new_bank',
+        name: 'add_new_bank',
+        builder: (context, state) => AddNewBankScreen(
+          bankName: state.uri.queryParameters['bankName'],
+        ),
       ),
       GoRoute(
         path: '/add_supplier_route',
