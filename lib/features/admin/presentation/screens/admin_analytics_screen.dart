@@ -73,7 +73,31 @@ class AdminAnalyticsScreen extends ConsumerWidget {
         BarChartData(
           alignment: BarChartAlignment.spaceAround,
           maxY: maxValue,
-          barTouchData: BarTouchData(enabled: false),
+          barTouchData: BarTouchData(
+            enabled: true,
+            touchTooltipData: BarTouchTooltipData(
+              getTooltipColor: (_) => Colors.black87,
+              tooltipPadding: const EdgeInsets.all(8),
+              tooltipMargin: 8,
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                return BarTooltipItem(
+                  '${monthKeys[group.x.toInt()]}\n',
+                  const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: (rod.toY.toInt()).toString(),
+                      style: const TextStyle(
+                        color: AppTheme.warningOrange,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
           titlesData: FlTitlesData(
             show: true,
             bottomTitles: AxisTitles(
@@ -159,6 +183,10 @@ class AdminAnalyticsScreen extends ConsumerWidget {
           Expanded(
             child: PieChart(
               PieChartData(
+                pieTouchData: PieTouchData(
+                  enabled: true,
+                  touchCallback: (FlTouchEvent event, pieTouchResponse) {},
+                ),
                 sectionsSpace: 2,
                 centerSpaceRadius: 40,
                 sections: [
