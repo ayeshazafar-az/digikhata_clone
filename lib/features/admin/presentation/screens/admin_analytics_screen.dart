@@ -99,7 +99,13 @@ class AdminAnalyticsScreen extends ConsumerWidget {
             topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
-          gridData: FlGridData(show: false),
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            horizontalInterval: maxValue / 4 > 0 ? maxValue / 4 : 1,
+            getDrawingHorizontalLine: (val) => FlLine(
+                color: Colors.grey.withValues(alpha: 0.2), strokeWidth: 1),
+          ),
           borderData: FlBorderData(show: false),
           barGroups: List.generate(monthKeys.length, (index) {
             return _buildBarGroup(
@@ -116,10 +122,19 @@ class AdminAnalyticsScreen extends ConsumerWidget {
       barRods: [
         BarChartRodData(
           toY: y,
-          color: AppTheme.secondaryBlue,
+          gradient: const LinearGradient(
+            colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
           width: 22,
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(6), topRight: Radius.circular(6)),
+          backDrawRodData: BackgroundBarChartRodData(
+            show: true,
+            toY: 100, // Maximum expected bar height container wrapper
+            color: Colors.grey.withValues(alpha: 0.05),
+          ),
         )
       ],
     );

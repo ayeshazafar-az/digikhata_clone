@@ -79,179 +79,102 @@ class AdminBusinessesScreen extends ConsumerWidget {
             return const Center(child: Text('No businesses registered yet.'));
           }
 
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth < 600) {
-                // Mobile View - ListView of Cards
-                return ListView.builder(
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: businesses.length,
+            itemBuilder: (context, index) {
+              final business = businesses[index];
+              final profile = business['profiles'] ?? {};
+              final phone = profile['phone'] ?? 'Unknown';
+              final dateStr = DateFormat('dd MMM yyyy')
+                  .format(DateTime.parse(business['created_at']));
+              final isBlocked = profile['role'] == 'blocked';
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
                   padding: const EdgeInsets.all(16),
-                  itemCount: businesses.length,
-                  itemBuilder: (context, index) {
-                    final business = businesses[index];
-                    final profile = business['profiles'] ?? {};
-                    final phone = profile['phone'] ?? 'Unknown';
-                    final dateStr = DateFormat('dd MMM yyyy')
-                        .format(DateTime.parse(business['created_at']));
-
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    '${business['business_name'] ?? 'Unnamed'}',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor:
+                                    AppTheme.primaryBlue.withValues(alpha: 0.1),
+                                child: const Icon(Icons.store,
+                                    color: AppTheme.primaryBlue),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    business['business_name'] ?? 'Unnamed',
                                     style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold)),
-                                const Chip(
-                                  label: Text('Active',
-                                      style: TextStyle(
-                                          fontSize: 10, color: Colors.white)),
-                                  backgroundColor: AppTheme.successGreen,
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ],
-                            ),
-                            const Divider(),
-                            Text(
-                                'ID: ${business['id'].toString().substring(0, 8)}...'),
-                            const SizedBox(height: 4),
-                            Text('Owner: $phone'),
-                            const SizedBox(height: 4),
-                            Text('Created: $dateStr'),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                OutlinedButton.icon(
-                                  icon: const Icon(Icons.edit, size: 16),
-                                  label: const Text('Edit'),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Edit feature mocked for evaluation.')),
-                                    );
-                                  },
-                                ),
-                                const SizedBox(width: 8),
-                                OutlinedButton.icon(
-                                  icon: const Icon(Icons.delete,
-                                      color: AppTheme.dangerRed, size: 16),
-                                  label: const Text('Suspend',
-                                      style:
-                                          TextStyle(color: AppTheme.dangerRed)),
-                                  onPressed: () {
-                                    ref
-                                        .read(adminBusinessesProvider.notifier)
-                                        .deleteBusiness(business['id']);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            'Successfully suspended ${business['business_name'] ?? 'Unnamed'}'),
-                                        backgroundColor: AppTheme.successGreen,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }
-
-              // Web / Desktop View - Data Table
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    headingRowColor: WidgetStateProperty.all(
-                        AppTheme.primaryBlue.withValues(alpha: 0.1)),
-                    columns: const [
-                      DataColumn(
-                          label: Text('ID',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
-                          label: Text('Business Name',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
-                          label: Text('Owner Phone',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
-                          label: Text('Created At',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
-                          label: Text('Status',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
-                          label: Text('Actions',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                    ],
-                    rows: businesses.map((business) {
-                      final profile = business['profiles'] ?? {};
-                      final phone = profile['phone'] ?? 'Unknown';
-                      final dateStr = DateFormat('dd MMM yyyy')
-                          .format(DateTime.parse(business['created_at']));
-
-                      return DataRow(cells: [
-                        DataCell(Text(
-                            '${business['id'].toString().substring(0, 8)}...')),
-                        DataCell(Text(business['business_name'] ?? 'Unnamed')),
-                        DataCell(Text(phone)),
-                        DataCell(Text(dateStr)),
-                        const DataCell(Chip(
-                          label: Text('Active',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.white)),
-                          backgroundColor: AppTheme.successGreen,
-                          padding: EdgeInsets.zero,
-                        )),
-                        DataCell(Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit,
-                                  color: AppTheme.primaryBlue),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Edit feature mocked for evaluation.')),
-                                );
-                              },
-                              tooltip: 'Edit Business',
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete,
-                                  color: AppTheme.dangerRed),
-                              onPressed: () {
-                                ref
-                                    .read(adminBusinessesProvider.notifier)
-                                    .deleteBusiness(business['id']);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Successfully suspended ${business['business_name'] ?? 'Unnamed'}'),
-                                    backgroundColor: AppTheme.successGreen,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                );
-                              },
-                              tooltip: 'Suspend Business',
+                                  Text(
+                                      'ID: ${business['id'].toString().substring(0, 8)}...',
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 12)),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Chip(
+                            label: Text(
+                              isBlocked ? 'SUSPENDED' : 'ACTIVE',
+                              style: const TextStyle(
+                                  fontSize: 10, color: Colors.white),
                             ),
-                          ],
-                        )),
-                      ]);
-                    }).toList(),
+                            backgroundColor: isBlocked
+                                ? AppTheme.dangerRed
+                                : AppTheme.successGreen,
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Owner: $phone',
+                                  style: const TextStyle(fontSize: 13)),
+                              const SizedBox(height: 4),
+                              Text('Created: $dateStr',
+                                  style: const TextStyle(
+                                      color: Colors.black54, fontSize: 12)),
+                            ],
+                          ),
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.delete,
+                                color: AppTheme.dangerRed, size: 16),
+                            label: const Text('Delete Data',
+                                style: TextStyle(color: AppTheme.dangerRed)),
+                            onPressed: () {
+                              ref
+                                  .read(adminBusinessesProvider.notifier)
+                                  .deleteBusiness(business['id']);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Business record wiped.')),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               );

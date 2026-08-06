@@ -49,119 +49,146 @@ class AdminUsersScreen extends ConsumerWidget {
                     'No user profiles found. (Make sure public.profiles has RLS allowing admins to select)'));
           }
 
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                headingRowColor: WidgetStateProperty.all(
-                    AppTheme.primaryBlue.withValues(alpha: 0.1)),
-                columns: const [
-                  DataColumn(
-                      label: Text('ID',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(
-                      label: Text('Phone',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(
-                      label: Text('Role',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(
-                      label: Text('Join Date',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(
-                      label: Text('KYC Status',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(
-                      label: Text('Actions',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                ],
-                rows: users.map((user) {
-                  final dateStr = DateFormat('dd MMM yyyy')
-                      .format(DateTime.parse(user['created_at']));
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              final dateStr = DateFormat('dd MMM yyyy')
+                  .format(DateTime.parse(user['created_at']));
+              final isVerified = user['kyc_status'] == 'verified';
+              final isBlocked = user['role'] == 'blocked';
 
-                  return DataRow(cells: [
-                    DataCell(
-                        Text('${user['id'].toString().substring(0, 8)}...')),
-                    DataCell(Text(user['phone'] ?? 'Unknown')),
-                    DataCell(Chip(
-                      label: Text((user['role'] ?? 'user').toUpperCase(),
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.white)),
-                      backgroundColor: user['role'] == 'super_admin'
-                          ? AppTheme.warningOrange
-                          : AppTheme.secondaryBlue,
-                      padding: EdgeInsets.zero,
-                    )),
-                    DataCell(Text(dateStr)),
-                    DataCell(Chip(
-                      label: Text(
-                        (user['kyc_status'] ?? 'pending').toUpperCase(),
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.white),
-                      ),
-                      backgroundColor: user['kyc_status'] == 'verified'
-                          ? AppTheme.successGreen
-                          : (user['kyc_status'] == 'rejected'
-                              ? AppTheme.dangerRed
-                              : AppTheme.warningOrange),
-                      padding: EdgeInsets.zero,
-                    )),
-                    DataCell(Row(
-                      children: [
-                        if (user['kyc_status'] == 'pending')
-                          IconButton(
-                            icon: const Icon(Icons.assignment_ind,
-                                color: AppTheme.primaryBlue),
-                            tooltip: 'Review KYC Documents',
-                            onPressed: () {
-                              _showKycReviewDialog(context, ref, user);
-                            },
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: isBlocked
+                                    ? AppTheme.dangerRed.withValues(alpha: 0.1)
+                                    : AppTheme.primaryBlue
+                                        .withValues(alpha: 0.1),
+                                child: Icon(
+                                  isBlocked
+                                      ? Icons.block
+                                      : Icons.person_outline,
+                                  color: isBlocked
+                                      ? AppTheme.dangerRed
+                                      : AppTheme.primaryBlue,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    user['phone'] ?? 'Unknown User',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  Text(
+                                      'ID: ${user['id'].toString().substring(0, 8)}',
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 12)),
+                                ],
+                              ),
+                            ],
                           ),
-                        IconButton(
-                          icon: Icon(
-                            user['role'] == 'blocked'
-                                ? Icons.check_circle
-                                : Icons.block,
-                            color: user['role'] == 'blocked'
+                          Chip(
+                            label: Text(
+                              (user['kyc_status'] ?? 'pending').toUpperCase(),
+                              style: const TextStyle(
+                                  fontSize: 10, color: Colors.white),
+                            ),
+                            backgroundColor: isVerified
                                 ? AppTheme.successGreen
-                                : AppTheme.dangerRed,
+                                : (user['kyc_status'] == 'rejected'
+                                    ? AppTheme.dangerRed
+                                    : AppTheme.warningOrange),
+                            visualDensity: VisualDensity.compact,
                           ),
-                          onPressed: () async {
-                            final newRole =
-                                user['role'] == 'blocked' ? 'user' : 'blocked';
-                            try {
-                              await Supabase.instance.client
-                                  .from('profiles')
-                                  .update({'role': newRole}).eq(
-                                      'id', user['id']);
-
-                              ref.invalidate(adminUsersProvider);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'User ${newRole.toUpperCase()}')),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Error: $e')),
-                                );
-                              }
-                            }
-                          },
-                          tooltip: user['role'] == 'blocked'
-                              ? 'Unblock User'
-                              : 'Block User',
-                        ),
-                      ],
-                    )),
-                  ]);
-                }).toList(),
-              ),
-            ),
+                        ],
+                      ),
+                      const Divider(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Joined: $dateStr',
+                              style: const TextStyle(color: Colors.black54)),
+                          Row(
+                            children: [
+                              if (user['kyc_status'] == 'pending')
+                                IconButton(
+                                  icon: const Icon(Icons.assignment_ind,
+                                      color: AppTheme.primaryBlue),
+                                  tooltip: 'Review KYC Documents',
+                                  onPressed: () {
+                                    _showKycReviewDialog(context, ref, user);
+                                  },
+                                ),
+                              OutlinedButton.icon(
+                                icon: Icon(
+                                  isBlocked ? Icons.check_circle : Icons.block,
+                                  size: 16,
+                                  color: isBlocked
+                                      ? AppTheme.successGreen
+                                      : AppTheme.dangerRed,
+                                ),
+                                label: Text(
+                                  isBlocked ? 'Unblock' : 'Suspend',
+                                  style: TextStyle(
+                                      color: isBlocked
+                                          ? AppTheme.successGreen
+                                          : AppTheme.dangerRed),
+                                ),
+                                onPressed: () async {
+                                  final newRole =
+                                      isBlocked ? 'user' : 'blocked';
+                                  try {
+                                    await Supabase.instance.client
+                                        .from('profiles')
+                                        .update({'role': newRole}).eq(
+                                            'id', user['id']);
+                                    ref.invalidate(adminUsersProvider);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'User ${newRole.toUpperCase()} successfully')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -173,82 +200,157 @@ class AdminUsersScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('KYC Review: ${user['phone']}'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Live Selfie',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    shape: BoxShape.circle,
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.verified_user,
+                          color: AppTheme.primaryBlue, size: 28),
+                      const SizedBox(width: 8),
+                      Text(
+                        'KYC Request',
+                        style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryBlue),
+                      ),
+                    ],
                   ),
-                  child: user['kyc_selfie_url'] != null
-                      ? Image.network(user['kyc_selfie_url'], fit: BoxFit.cover)
-                      : const Icon(Icons.face, size: 50, color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-                const Text('CNIC Front',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Container(
-                  height: 120,
-                  width: 220,
-                  color: Colors.grey.shade200,
-                  child: user['kyc_cnic_front_url'] != null
-                      ? Image.network(user['kyc_cnic_front_url'],
-                          fit: BoxFit.cover)
-                      : const Icon(Icons.badge, size: 50, color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-                const Text('CNIC Back',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Container(
-                  height: 120,
-                  width: 220,
-                  color: Colors.grey.shade200,
-                  child: user['kyc_cnic_back_url'] != null
-                      ? Image.network(user['kyc_cnic_back_url'],
-                          fit: BoxFit.cover)
-                      : const Icon(Icons.qr_code_2,
-                          size: 50, color: Colors.grey),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    user['phone'] ?? 'Unknown Number',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                  ),
+                  const Divider(height: 32),
+                  const Text('Live Selfie Verification',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 140,
+                    width: 140,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                        border:
+                            Border.all(color: AppTheme.secondaryBlue, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                AppTheme.secondaryBlue.withValues(alpha: 0.2),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          )
+                        ]),
+                    child: user['kyc_selfie_url'] != null
+                        ? ClipOval(
+                            child: Image.network(user['kyc_selfie_url'],
+                                fit: BoxFit.cover))
+                        : const Icon(Icons.face, size: 50, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text('CNIC Front',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 140,
+                    width: 240,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300, width: 2),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: user['kyc_cnic_front_url'] != null
+                        ? Image.network(user['kyc_cnic_front_url'],
+                            fit: BoxFit.cover)
+                        : const Icon(Icons.badge, size: 50, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text('CNIC Back',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 140,
+                    width: 240,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300, width: 2),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: user['kyc_cnic_back_url'] != null
+                        ? Image.network(user['kyc_cnic_back_url'],
+                            fit: BoxFit.cover)
+                        : const Icon(Icons.qr_code_2,
+                            size: 50, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppTheme.dangerRed,
+                            side: const BorderSide(color: AppTheme.dangerRed),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12))),
+                        onPressed: () async {
+                          await Supabase.instance.client
+                              .from('profiles')
+                              .update({'kyc_status': 'rejected'}).eq(
+                                  'id', user['id']);
+                          ref.invalidate(adminUsersProvider);
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.close),
+                        label: const Text('Reject KYC',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.successGreen,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12))),
+                        onPressed: () async {
+                          await Supabase.instance.client
+                              .from('profiles')
+                              .update({'kyc_status': 'verified'}).eq(
+                                  'id', user['id']);
+                          ref.invalidate(adminUsersProvider);
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.check),
+                        label: const Text('Approve KYC',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                await Supabase.instance.client
-                    .from('profiles')
-                    .update({'kyc_status': 'rejected'}).eq('id', user['id']);
-                ref.invalidate(adminUsersProvider);
-                if (context.mounted) Navigator.pop(context);
-              },
-              style: TextButton.styleFrom(foregroundColor: AppTheme.dangerRed),
-              child: const Text('REJECT'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await Supabase.instance.client
-                    .from('profiles')
-                    .update({'kyc_status': 'verified'}).eq('id', user['id']);
-                ref.invalidate(adminUsersProvider);
-                if (context.mounted) Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.successGreen,
-                  foregroundColor: Colors.white),
-              child: const Text('APPROVE'),
-            ),
-          ],
         );
       },
     );

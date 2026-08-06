@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,17 +14,38 @@ class AdminDashboardScreen extends ConsumerWidget {
     final statsAsync = ref.watch(adminStatsProvider);
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Super Admin'),
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        title: const Text('Super Admin',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.black87),
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               child: Text('Admin Portal',
                   style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
@@ -103,20 +125,28 @@ class AdminDashboardScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Expanded(
-                        child: _StatCard('Total Users',
-                            stats.totalUsers.toString(), Icons.people_outline)),
-                    const SizedBox(width: 16),
+                        child: _StatCard(
+                            'Total\nUsers',
+                            stats.totalUsers.toString(),
+                            Icons.people_outline,
+                            Colors.blue.shade50,
+                            Colors.blue.shade700)),
+                    const SizedBox(width: 12),
                     Expanded(
                         child: _StatCard(
-                            'Active Businesses',
+                            'Active\nShops',
                             stats.totalBusinesses.toString(),
-                            Icons.store_mall_directory)),
-                    const SizedBox(width: 16),
+                            Icons.store_mall_directory,
+                            Colors.orange.shade50,
+                            Colors.orange.shade700)),
+                    const SizedBox(width: 12),
                     Expanded(
                         child: _StatCard(
-                            'Total Entries',
+                            'Total\nEntries',
                             stats.totalLedgerEntries.toString(),
-                            Icons.receipt)),
+                            Icons.receipt_long,
+                            Colors.green.shade50,
+                            Colors.green.shade700)),
                   ],
                 ),
                 const SizedBox(height: 48),
@@ -169,26 +199,56 @@ class _StatCard extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
+  final Color bg;
+  final Color iconColor;
 
-  const _StatCard(this.title, this.value, this.icon);
+  const _StatCard(this.title, this.value, this.icon, this.bg, this.iconColor);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Icon(icon, size: 48, color: AppTheme.primaryBlue),
-            const SizedBox(height: 16),
-            Text(value,
-                style:
-                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(title, style: const TextStyle(color: Colors.grey)),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            color: bg.withValues(alpha: 0.7),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 32, color: iconColor),
+                const SizedBox(height: 12),
+                Text(
+                  value,
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: iconColor),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: iconColor.withValues(alpha: 0.8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
