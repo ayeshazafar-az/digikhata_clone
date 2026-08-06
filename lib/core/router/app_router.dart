@@ -49,6 +49,9 @@ import '../../features/customers/presentation/screens/select_bank_screen.dart';
 import '../../features/customers/presentation/screens/add_new_bank_screen.dart';
 import '../../features/customers/presentation/screens/all_transactions_screen.dart';
 
+import '../../features/ledger/presentation/screens/categories_screen.dart';
+import '../../features/ledger/presentation/screens/all_brands_screen.dart';
+
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -57,6 +60,12 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     routes: [
+      GoRoute(
+          path: '/categories',
+          builder: (context, state) => const CategoriesScreen()),
+      GoRoute(
+          path: '/all_brands',
+          builder: (context, state) => const AllBrandsScreen()),
       GoRoute(
           path: '/calculator',
           builder: (context, state) => const CalculatorScreen()),

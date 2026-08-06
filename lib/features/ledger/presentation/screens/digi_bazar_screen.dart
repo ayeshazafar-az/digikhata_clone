@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import '../../providers/digi_bazar_provider.dart';
 
@@ -142,6 +143,25 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
                 ],
               ),
             ),
+
+            // Tabs Categories vs Brands
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildActionTab('Categories', Icons.layers_outlined,
+                        onTap: () => context.push('/categories')),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildActionTab('Brands', Icons.local_offer_outlined,
+                        onTap: () => context.push('/all_brands')),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
 
             // Horizontal Brand Filters Ribbon
             SizedBox(
@@ -302,6 +322,30 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
       decoration:
           const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
       child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
+    );
+  }
+
+  Widget _buildActionTab(String title, IconData icon,
+      {required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppTheme.dangerRed),
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
     );
   }
 
