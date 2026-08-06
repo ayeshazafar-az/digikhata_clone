@@ -7,20 +7,24 @@ import 'package:intl/intl.dart';
 
 final cashbookProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = Supabase.instance.client;
-  final profileRes =
-      await supabase.from('profiles').select('active_business_id').single();
-  final activeBusinessId = profileRes['active_business_id'];
+  try {
+    final supabase = Supabase.instance.client;
+    final profileRes =
+        await supabase.from('profiles').select('active_business_id').single();
+    final activeBusinessId = profileRes['active_business_id'];
 
-  if (activeBusinessId == null) return [];
+    if (activeBusinessId == null) return [];
 
-  final res = await supabase
-      .from('cashbook_entries')
-      .select()
-      .eq('business_id', activeBusinessId)
-      .order('created_at', ascending: false);
+    final res = await supabase
+        .from('cashbook_entries')
+        .select()
+        .eq('business_id', activeBusinessId)
+        .order('created_at', ascending: false);
 
-  return List<Map<String, dynamic>>.from(res);
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    return [];
+  }
 });
 
 class CashBookScreen extends ConsumerWidget {

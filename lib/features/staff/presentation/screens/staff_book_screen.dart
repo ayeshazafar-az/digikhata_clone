@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../app/theme.dart';
 
 final staffProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = Supabase.instance.client;
-  final profileRes =
-      await supabase.from('profiles').select('active_business_id').single();
-  final activeBusinessId = profileRes['active_business_id'];
+  try {
+    final supabase = Supabase.instance.client;
+    final profileRes =
+        await supabase.from('profiles').select('active_business_id').single();
+    final activeBusinessId = profileRes['active_business_id'];
 
-  if (activeBusinessId == null) return [];
+    if (activeBusinessId == null) return [];
 
-  final res = await supabase
-      .from('staff')
-      .select()
-      .eq('business_id', activeBusinessId)
-      .order('created_at', ascending: false);
+    final res = await supabase
+        .from('staff')
+        .select()
+        .eq('business_id', activeBusinessId)
+        .order('created_at', ascending: false);
 
-  return List<Map<String, dynamic>>.from(res);
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    return [];
+  }
 });
 
 class StaffBookScreen extends ConsumerWidget {
@@ -81,16 +86,16 @@ class StaffBookScreen extends ConsumerWidget {
                 color: Colors.black87,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.chevron_left, color: Colors.black87),
-                  Text('Sat, 01 Aug 26',
-                      style: TextStyle(
+                  const Icon(Icons.chevron_left, color: Colors.black87),
+                  Text(DateFormat('EEE, dd MMM yy').format(DateTime.now()),
+                      style: const TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
-                  Icon(Icons.chevron_right, color: Colors.black87),
+                  const Icon(Icons.chevron_right, color: Colors.black87),
                 ],
               ),
             ),
@@ -292,16 +297,16 @@ class StaffBookScreen extends ConsumerWidget {
                 color: Colors.black87,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.chevron_left, color: Colors.black87),
-                  Text('August 2026',
-                      style: TextStyle(
+                  const Icon(Icons.chevron_left, color: Colors.black87),
+                  Text(DateFormat('MMMM yyyy').format(DateTime.now()),
+                      style: const TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
-                  Icon(Icons.chevron_right, color: Colors.black87),
+                  const Icon(Icons.chevron_right, color: Colors.black87),
                 ],
               ),
             ),
@@ -334,8 +339,8 @@ class StaffBookScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Total Salary Generated',
-                              style:
-                                  TextStyle(color: Colors.black87, fontSize: 16)),
+                              style: TextStyle(
+                                  color: Colors.black87, fontSize: 16)),
                           Text('Rs $totalSalary',
                               style: const TextStyle(
                                   color: Colors.blue,

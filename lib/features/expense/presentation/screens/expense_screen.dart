@@ -7,20 +7,24 @@ import 'package:intl/intl.dart';
 
 final expensesProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = Supabase.instance.client;
-  final profileRes =
-      await supabase.from('profiles').select('active_business_id').single();
-  final activeBusinessId = profileRes['active_business_id'];
+  try {
+    final supabase = Supabase.instance.client;
+    final profileRes =
+        await supabase.from('profiles').select('active_business_id').single();
+    final activeBusinessId = profileRes['active_business_id'];
 
-  if (activeBusinessId == null) return [];
+    if (activeBusinessId == null) return [];
 
-  final res = await supabase
-      .from('expense_entries')
-      .select()
-      .eq('business_id', activeBusinessId)
-      .order('created_at', ascending: false);
+    final res = await supabase
+        .from('expense_entries')
+        .select()
+        .eq('business_id', activeBusinessId)
+        .order('created_at', ascending: false);
 
-  return List<Map<String, dynamic>>.from(res);
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    return [];
+  }
 });
 
 class ExpenseScreen extends ConsumerWidget {
@@ -116,7 +120,8 @@ class ExpenseScreen extends ConsumerWidget {
         backgroundColor: const Color(0xFFF05A28), // Orange
         icon: const Icon(Icons.add, color: Colors.black87),
         label: const Text('ADD EXPENSE',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+            style:
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
       ),
     );
   }

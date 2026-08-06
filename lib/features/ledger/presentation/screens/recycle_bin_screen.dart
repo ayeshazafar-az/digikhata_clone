@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class RecycleBinScreen extends StatelessWidget {
   const RecycleBinScreen({super.key});
@@ -109,9 +110,9 @@ class RecycleBinScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Tuesday, 04 Aug 2026',
-                        style: TextStyle(
+                      Text(
+                        DateFormat('EEEE, dd MMM yyyy').format(DateTime.now()),
+                        style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87),
@@ -123,7 +124,7 @@ class RecycleBinScreen extends StatelessWidget {
                           Text('Ayesha\'s Ledger',
                               style: TextStyle(
                                   fontSize: 12, color: Colors.grey.shade500)),
-                          Text('07:36 PM',
+                          Text(DateFormat('hh:mm a').format(DateTime.now()),
                               style: TextStyle(
                                   fontSize: 12, color: Colors.grey.shade500)),
                         ],

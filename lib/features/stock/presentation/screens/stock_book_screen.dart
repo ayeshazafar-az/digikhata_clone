@@ -6,20 +6,24 @@ import '../../../../core/utils/pdf_service.dart';
 import '../../../../core/database/local_db.dart';
 
 final stockProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = Supabase.instance.client;
-  final profileRes =
-      await supabase.from('profiles').select('active_business_id').single();
-  final activeBusinessId = profileRes['active_business_id'];
+  try {
+    final supabase = Supabase.instance.client;
+    final profileRes =
+        await supabase.from('profiles').select('active_business_id').single();
+    final activeBusinessId = profileRes['active_business_id'];
 
-  if (activeBusinessId == null) return [];
+    if (activeBusinessId == null) return [];
 
-  final res = await supabase
-      .from('products')
-      .select()
-      .eq('business_id', activeBusinessId)
-      .order('created_at', ascending: false);
+    final res = await supabase
+        .from('products')
+        .select()
+        .eq('business_id', activeBusinessId)
+        .order('created_at', ascending: false);
 
-  return List<Map<String, dynamic>>.from(res);
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    return [];
+  }
 });
 
 class StockBookScreen extends ConsumerWidget {
@@ -72,8 +76,8 @@ class StockBookScreen extends ConsumerWidget {
         child: Column(
           children: [
             const TabBar(
-              indicatorColor: Colors.white,
-              labelColor: Colors.white,
+              indicatorColor: AppTheme.primaryBlue,
+              labelColor: AppTheme.primaryBlue,
               unselectedLabelColor: Colors.grey,
               tabs: [
                 Tab(text: 'All Items'),
@@ -463,14 +467,14 @@ class StockBookScreen extends ConsumerWidget {
                   if (nameController.text.isEmpty) return;
 
                   final supabase = Supabase.instance.client;
-                  final profileRes = await supabase
-                      .from('profiles')
-                      .select('active_business_id')
-                      .single();
-                  final activeBusinessId = profileRes['active_business_id'];
+                  try {
+                    final profileRes = await supabase
+                        .from('profiles')
+                        .select('active_business_id')
+                        .single();
+                    final activeBusinessId = profileRes['active_business_id'];
 
-                  if (activeBusinessId != null) {
-                    try {
+                    if (activeBusinessId != null) {
                       final startingQty =
                           double.tryParse(stockController.text) ?? 0;
                       await supabase.from('products').insert({

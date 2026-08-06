@@ -6,6 +6,8 @@ import '../../../../app/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+final currencyProvider = StateProvider<String>((ref) => 'PKR');
+
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
@@ -184,24 +186,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onTap: () => context.push('/language'),
                     ),
                     _buildSubTile(
-                      leading: const Icon(Icons.currency_rupee,
+                      leading: const Icon(Icons.monetization_on_outlined,
                           color: Color(0xFF60A5FA), size: 20),
                       title: 'Business Currency:',
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 16,
-                            color: Colors.green.shade700,
-                            child: const Center(
-                                child: Icon(Icons.star,
-                                    color: Colors.white, size: 8)), // Fake flag
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.chevron_right,
-                              color: Colors.black26, size: 20),
-                        ],
+                      trailing: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: ref.watch(currencyProvider),
+                          icon: const Icon(Icons.keyboard_arrow_down,
+                              color: Colors.black26),
+                          style: const TextStyle(
+                              color: Colors.black87, fontSize: 14),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              ref.read(currencyProvider.notifier).state =
+                                  newValue;
+                            }
+                          },
+                          items: <String>['PKR', 'USD', 'EUR', 'GBP', 'INR']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            );
+                          }).toList(),
+                        ),
                       ),
                       onTap: () {},
                     ),

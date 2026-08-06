@@ -7,20 +7,24 @@ import '../../../../core/utils/pdf_service.dart';
 import '../../../stock/presentation/screens/stock_book_screen.dart'; // import stockProvider
 
 final billsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = Supabase.instance.client;
-  final profileRes =
-      await supabase.from('profiles').select('active_business_id').single();
-  final activeBusinessId = profileRes['active_business_id'];
+  try {
+    final supabase = Supabase.instance.client;
+    final profileRes =
+        await supabase.from('profiles').select('active_business_id').single();
+    final activeBusinessId = profileRes['active_business_id'];
 
-  if (activeBusinessId == null) return [];
+    if (activeBusinessId == null) return [];
 
-  final res = await supabase
-      .from('bills')
-      .select()
-      .eq('business_id', activeBusinessId)
-      .order('created_at', ascending: false);
+    final res = await supabase
+        .from('bills')
+        .select()
+        .eq('business_id', activeBusinessId)
+        .order('created_at', ascending: false);
 
-  return List<Map<String, dynamic>>.from(res);
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    return [];
+  }
 });
 
 // Cart State: productId -> quantity
@@ -45,7 +49,8 @@ class BillBookScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50, // Very dark background matching screens
+      backgroundColor:
+          Colors.grey.shade50, // Very dark background matching screens
       appBar: AppBar(
         title: const Text('Bill Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
@@ -126,12 +131,13 @@ class BillBookScreen extends ConsumerWidget {
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total sale for August',
-                            style:
-                                TextStyle(color: Colors.black87, fontSize: 16)),
+                        Text(
+                            'Total sale for ${DateFormat('MMMM').format(DateTime.now())}',
+                            style: const TextStyle(
+                                color: Colors.black87, fontSize: 16)),
                         Text('Rs 0',
                             style: TextStyle(
                                 color: Colors.red,
