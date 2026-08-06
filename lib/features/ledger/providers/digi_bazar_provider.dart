@@ -1,5 +1,44 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class DigiBazarUrlHelper {
+  static void launchBrandUrl(String brandName) async {
+    final Map<String, String> explicitUrls = {
+      'Khaadi': 'https://pk.khaadi.com',
+      'Gul Ahmed': 'https://www.gulahmedshop.com',
+      'Stylo': 'https://stylo.pk',
+      'Sapphire': 'https://pk.sapphireonline.pk',
+      'J.': 'https://www.junaidjamshed.com',
+      'Sana Safinaz': 'https://www.sanasafinaz.com/pk',
+      'Alkaram': 'https://www.alkaramstudio.com',
+      'Nishat Linen': 'https://nishatlinen.com',
+      'Servis': 'https://servis.pk',
+      'Bata': 'https://www.bata.com.pk',
+      'Limelight': 'https://www.limelight.pk',
+      'Outfitters': 'https://outfitters.com.pk',
+      'MTJ': 'https://mtj.com.pk'
+    };
+
+    String finalUrl;
+    if (explicitUrls.containsKey(brandName)) {
+      finalUrl = explicitUrls[brandName]!;
+    } else {
+      // Generic fallback
+      final query = Uri.encodeComponent('$brandName official website pakistan');
+      finalUrl = 'https://www.google.com/search?q=$query';
+    }
+
+    try {
+      final uri = Uri.parse(finalUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      // Fail silently
+    }
+  }
+}
 
 class BazarProductModel {
   final String id;

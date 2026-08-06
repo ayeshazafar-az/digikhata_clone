@@ -65,37 +65,41 @@ class AllBrandsScreen extends ConsumerWidget {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          )
-                        ],
-                        border: Border.all(color: Colors.grey.shade100),
-                      ),
-                      child: ClipOval(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: brand['logo_url'] != null &&
-                                  brand['logo_url']
-                                      .toString()
-                                      .startsWith('http')
-                              ? Image.network(
-                                  brand['logo_url'],
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (ctx, err, stack) => const Icon(
-                                      Icons.local_offer,
-                                      color: Colors.grey),
-                                )
-                              : const Icon(Icons.local_offer,
-                                  color: Colors.grey),
+                    GestureDetector(
+                      onTap: () =>
+                          DigiBazarUrlHelper.launchBrandUrl(brand['name']),
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            )
+                          ],
+                          border: Border.all(color: Colors.grey.shade100),
+                        ),
+                        child: ClipOval(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: brand['logo_url'] != null &&
+                                    brand['logo_url']
+                                        .toString()
+                                        .startsWith('http')
+                                ? Image.network(
+                                    brand['logo_url'],
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (ctx, err, stack) =>
+                                        const Icon(Icons.local_offer,
+                                            color: Colors.grey),
+                                  )
+                                : const Icon(Icons.local_offer,
+                                    color: Colors.grey),
+                          ),
                         ),
                       ),
                     ),

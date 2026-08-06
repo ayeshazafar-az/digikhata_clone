@@ -3,43 +3,56 @@ import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PinSetupScreen extends StatefulWidget {
-  final bool hasBusiness;
-  const PinSetupScreen({super.key, this.hasBusiness = false});
+class PinLoginScreen extends StatefulWidget {
+  const PinLoginScreen({super.key});
 
   @override
-  State<PinSetupScreen> createState() => _PinSetupScreenState();
+  State<PinLoginScreen> createState() => _PinLoginScreenState();
 }
 
-class _PinSetupScreenState extends State<PinSetupScreen> {
+class _PinLoginScreenState extends State<PinLoginScreen> {
   String _pin = '';
+  bool _isError = false;
 
   void _onKeyPress(String value) {
     if (_pin.length < 4) {
-      setState(() => _pin += value);
+      setState(() {
+        _pin += value;
+        _isError = false; // reset error state
+      });
 
       if (_pin.length == 4) {
-        // Auto-submit when 4 digits entered
-        Future.delayed(const Duration(milliseconds: 300), () async {
-          if (mounted) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('app_pin', _pin);
-            if (mounted) {
-              if (widget.hasBusiness) {
-                context.go('/home');
-              } else {
-                context.go('/create_business');
-              }
-            }
-          }
-        });
+        _verifyPin();
       }
     }
   }
 
   void _onBackspace() {
     if (_pin.isNotEmpty) {
-      setState(() => _pin = _pin.substring(0, _pin.length - 1));
+      setState(() {
+        _pin = _pin.substring(0, _pin.length - 1);
+        _isError = false;
+      });
+    }
+  }
+
+  Future<void> _verifyPin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedPin = prefs.getString('app_pin');
+
+    if (storedPin == _pin) {
+      if (mounted) context.go('/home');
+    } else {
+      setState(() {
+        _isError = true;
+      });
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() {
+            _pin = '';
+          });
+        }
+      });
     }
   }
 
@@ -50,14 +63,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
-                onPressed: () => context.pop(),
-              ),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
             Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -79,7 +85,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             ),
             const SizedBox(height: 48),
             const Text(
-              "Let's set your login PIN",
+              "Welcome Back!",
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
@@ -87,11 +93,14 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              "Please enter your login PIN",
+            Text(
+              _isError
+                  ? "Incorrect PIN, try again."
+                  : "Please enter your login PIN",
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black54,
+                color: _isError ? AppTheme.dangerRed : Colors.black54,
+                fontWeight: _isError ? FontWeight.bold : FontWeight.normal,
               ),
             ),
             const SizedBox(height: 32),
@@ -104,17 +113,33 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                   height: 48,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: _isError ? Colors.red.shade50 : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(12),
+                    border:
+                        _isError ? Border.all(color: AppTheme.dangerRed) : null,
                   ),
                   child: Center(
                     child: isFilled
-                        ? const CircleAvatar(
-                            radius: 6, backgroundColor: Colors.black)
+                        ? CircleAvatar(
+                            radius: 6,
+                            backgroundColor:
+                                _isError ? AppTheme.dangerRed : Colors.black)
                         : null,
                   ),
                 );
               }),
+            ),
+            // "Forgot Pin" option if needed
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                // To reset PIN, user can clear storage by logging out
+                context.go('/language');
+              },
+              child: const Text('Forgot PIN / Switch Account',
+                  style: TextStyle(
+                      color: AppTheme.primaryBlue,
+                      fontWeight: FontWeight.bold)),
             ),
             const Spacer(),
             _buildCustomKeypad(),
@@ -137,7 +162,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const SizedBox(width: 64), // For alignment with 0
+            const SizedBox(width: 64),
             _buildKeypadButton('0'),
             GestureDetector(
               onTap: _onBackspace,
@@ -174,8 +199,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w500,
-            color: AppTheme
-                .dangerRed, // In screenshot it's Orange, let's use dangerRed for parity as brand color
+            color: AppTheme.dangerRed,
           ),
         ),
       ),

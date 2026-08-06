@@ -280,7 +280,23 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
                                             'Rs. ${formatter.format(product.price)} (MOQ: ${product.moq})',
                                             style:
                                                 const TextStyle(fontSize: 16)),
-                                        const SizedBox(height: 24),
+                                        const SizedBox(height: 12),
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            Navigator.pop(ctx);
+                                            DigiBazarUrlHelper.launchBrandUrl(
+                                                product.brandName);
+                                          },
+                                          icon: const Icon(Icons.language,
+                                              color: AppTheme.primaryBlue,
+                                              size: 18),
+                                          label: const Text(
+                                              'Visit Official Website',
+                                              style: TextStyle(
+                                                  color: AppTheme.primaryBlue,
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        const SizedBox(height: 12),
                                         ElevatedButton(
                                           onPressed: () {
                                             Navigator.pop(ctx);

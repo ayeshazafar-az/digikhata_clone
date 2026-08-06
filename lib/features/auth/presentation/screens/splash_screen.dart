@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/utils/biometric_service.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -45,20 +46,32 @@ class _SplashScreenState extends State<SplashScreen> {
               session.user.phone == '+923245423290') {
             if (mounted) context.go('/admin');
           } else {
+            final prefs = await SharedPreferences.getInstance();
+            final savedPin = prefs.getString('app_pin');
+
+            // Force them to setup a PIN if one has never been registered on this device
+            // before even trying biometrics
+            if (savedPin == null) {
+              if (mounted) context.go('/pin_setup');
+              return;
+            }
+
             final hasBio = await BiometricService.isBiometricAvailable();
             if (hasBio) {
               final authSuccess = await BiometricService.authenticate();
               if (authSuccess) {
                 if (mounted) context.go('/home');
               } else {
-                if (mounted) context.go('/language');
+                // Biometrics failed, fallback to manual PIN entry
+                if (mounted) context.go('/pin_login');
               }
             } else {
-              if (mounted) context.go('/home');
+              // No Biometrics available on this hardware, force PIN Login
+              if (mounted) context.go('/pin_login');
             }
           }
         } catch (e) {
-          if (mounted) context.go('/home');
+          if (mounted) context.go('/pin_login');
         }
       } else if (event == AuthChangeEvent.initialSession) {
         // Give native deep links (app_links) up to 2 seconds to finish token parsing before forcing unauthenticated fallback
