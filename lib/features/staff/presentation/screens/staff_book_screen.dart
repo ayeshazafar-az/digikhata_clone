@@ -188,32 +188,86 @@ class StaffBookScreen extends ConsumerWidget {
                         Divider(height: 1, color: Colors.grey.shade800),
                     itemBuilder: (context, index) {
                       final staff = staffList[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.blue.withValues(alpha: 0.2),
-                          child: Text(
-                              (staff['name'] ?? '?')
-                                  .substring(0, 1)
-                                  .toUpperCase(),
+                      return Dismissible(
+                        key: Key(staff['id'].toString()),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        confirmDismiss: (direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete Staff'),
+                              content: const Text(
+                                  'Are you sure you want to delete this staff member?'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: const Text('Cancel')),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('Delete',
+                                      style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        onDismissed: (direction) async {
+                          try {
+                            await Supabase.instance.client
+                                .from('staff')
+                                .delete()
+                                .eq('id', staff['id']);
+                            ref.invalidate(staffProvider);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Staff deleted')));
+                            }
+                          } catch (err) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Failed to delete: $err')));
+                            }
+                          }
+                        },
+                        child: ListTile(
+                          onTap: () {
+                            _showAddStaffModal(context, ref,
+                                existingStaff: staff);
+                          },
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.blue.withValues(alpha: 0.2),
+                            child: Text(
+                                (staff['name'] ?? '?')
+                                    .substring(0, 1)
+                                    .toUpperCase(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue)),
+                          ),
+                          title: Text(staff['name'],
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue)),
-                        ),
-                        title: Text(staff['name'],
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white)),
-                        subtitle: Text(
-                            'Monthly: $currency ${staff['monthly_salary']}',
-                            style: const TextStyle(color: Colors.grey)),
-                        trailing: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8))),
-                          child: const Text('Mark Present',
-                              style: TextStyle(color: Colors.white)),
+                                  color: Colors.white)),
+                          subtitle: Text(
+                              'Monthly: $currency ${staff['monthly_salary']}',
+                              style: const TextStyle(color: Colors.grey)),
+                          trailing: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8))),
+                            child: const Text('Mark Present',
+                                style: TextStyle(color: Colors.white)),
+                          ),
                         ),
                       );
                     },
@@ -430,9 +484,14 @@ class StaffBookScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddStaffModal(BuildContext context, WidgetRef ref) {
-    final nameController = TextEditingController();
-    final salaryController = TextEditingController();
+  void _showAddStaffModal(BuildContext context, WidgetRef ref,
+      {Map<String, dynamic>? existingStaff}) {
+    final nameController =
+        TextEditingController(text: existingStaff?['name'] ?? '');
+    final salaryController = TextEditingController(
+        text: existingStaff != null
+            ? existingStaff['monthly_salary'].toString()
+            : '');
 
     showModalBottomSheet(
       context: context,
@@ -451,8 +510,8 @@ class StaffBookScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add Staff',
-                style: TextStyle(
+            Text(existingStaff != null ? 'Edit Staff' : 'Add Staff',
+                style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87)),
@@ -500,12 +559,18 @@ class StaffBookScreen extends ConsumerWidget {
                       .single();
                   final bId = pRes['active_business_id'];
                   if (bId != null) {
-                    await supabase.from('staff').insert({
-                      'business_id': bId,
-                      'name': nameController.text,
-                      'monthly_salary':
-                          double.tryParse(salaryController.text) ?? 0,
-                    });
+                    if (existingStaff != null) {
+                      await supabase.from('staff').update({
+                        'name': nameController.text,
+                        'monthly_salary': double.parse(salaryController.text),
+                      }).eq('id', existingStaff['id']);
+                    } else {
+                      await supabase.from('staff').insert({
+                        'business_id': bId,
+                        'name': nameController.text,
+                        'monthly_salary': double.parse(salaryController.text),
+                      });
+                    }
                     ref.invalidate(staffProvider);
                     if (context.mounted) Navigator.pop(ctx);
                   }

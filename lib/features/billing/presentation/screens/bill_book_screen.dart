@@ -216,33 +216,93 @@ class BillBookScreen extends ConsumerWidget {
                       final date = DateFormat('dd MMM yyyy')
                           .format(DateTime.parse(b['created_at']));
                       final isPaid = b['status'] == 'paid';
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.amber.withValues(alpha: 0.2),
-                          child: const Icon(Icons.receipt_long,
-                              color: Colors.amber),
+                      return Dismissible(
+                        key: Key(b['id'].toString()),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                        title: Text(b['customer_name'] ?? 'Walk-in Customer',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87)),
-                        subtitle: Text('Date: $date',
-                            style: const TextStyle(color: Colors.grey)),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text('$currency ${b['total_amount']}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.black87)),
-                            Text(isPaid ? 'PAID' : 'UNPAID',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: isPaid ? Colors.green : Colors.red)),
-                          ],
+                        confirmDismiss: (direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete Bill'),
+                              content: const Text(
+                                  'Are you sure you want to delete this bill?'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: const Text('Cancel')),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('Delete',
+                                      style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        onDismissed: (direction) async {
+                          try {
+                            // Also delete related items
+                            await Supabase.instance.client
+                                .from('bill_items')
+                                .delete()
+                                .eq('bill_id', b['id']);
+
+                            await Supabase.instance.client
+                                .from('bills')
+                                .delete()
+                                .eq('id', b['id']);
+
+                            ref.invalidate(billsProvider);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text('Bill deleted successfully')));
+                            }
+                          } catch (err) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Failed to delete: $err')));
+                            }
+                          }
+                        },
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor:
+                                Colors.amber.withValues(alpha: 0.2),
+                            child: const Icon(Icons.receipt_long,
+                                color: Colors.amber),
+                          ),
+                          title: Text(b['customer_name'] ?? 'Walk-in Customer',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87)),
+                          subtitle: Text('Date: $date',
+                              style: const TextStyle(color: Colors.grey)),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('$currency ${b['total_amount']}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black87)),
+                              Text(isPaid ? 'PAID' : 'UNPAID',
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          isPaid ? Colors.green : Colors.red)),
+                            ],
+                          ),
                         ),
                       );
                     },

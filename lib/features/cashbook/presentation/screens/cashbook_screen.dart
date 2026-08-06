@@ -102,35 +102,94 @@ class CashBookScreen extends ConsumerWidget {
                           final isCashIn = e['entry_type'] == 'cash_in';
                           final date = DateFormat('dd MMM yyyy, hh:mm a')
                               .format(DateTime.parse(e['created_at']));
-                          return ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 4),
-                            leading: CircleAvatar(
-                              backgroundColor: isCashIn
-                                  ? Colors.green.withValues(alpha: 0.1)
-                                  : Colors.red.withValues(alpha: 0.1),
-                              child: Icon(
-                                isCashIn
-                                    ? Icons.arrow_downward
-                                    : Icons.arrow_upward,
-                                color: isCashIn ? Colors.green : Colors.red,
-                              ),
+                          return Dismissible(
+                            key: Key(e['id'].toString()),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child:
+                                  const Icon(Icons.delete, color: Colors.white),
                             ),
-                            title: Text(
-                                e['remark'] ??
-                                    (isCashIn ? 'Cash In' : 'Cash Out'),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black87)),
-                            subtitle: Text(date,
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.grey)),
-                            trailing: Text(
-                              '${isCashIn ? '+' : '-'} $currency ${e['amount']}',
-                              style: TextStyle(
-                                color: isCashIn ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                            confirmDismiss: (direction) async {
+                              return await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Entry'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this entry? This action cannot be undone.'),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(ctx, false),
+                                        child: const Text('Cancel')),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      child: const Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            onDismissed: (direction) async {
+                              try {
+                                await Supabase.instance.client
+                                    .from('cashbook_entries')
+                                    .delete()
+                                    .eq('id', e['id']);
+                                ref.invalidate(cashbookProvider);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Entry deleted successfully')));
+                                }
+                              } catch (err) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text('Failed to delete: $err')));
+                                }
+                              }
+                            },
+                            child: ListTile(
+                              onTap: () {
+                                _showAddEntryModal(
+                                    context, ref, e['entry_type'], currency,
+                                    existingEntry: e);
+                              },
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 4),
+                              leading: CircleAvatar(
+                                backgroundColor: isCashIn
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.red.withValues(alpha: 0.1),
+                                child: Icon(
+                                  isCashIn
+                                      ? Icons.arrow_downward
+                                      : Icons.arrow_upward,
+                                  color: isCashIn ? Colors.green : Colors.red,
+                                ),
+                              ),
+                              title: Text(
+                                  e['remark'] ??
+                                      (isCashIn ? 'Cash In' : 'Cash Out'),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87)),
+                              subtitle: Text(date,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey)),
+                              trailing: Text(
+                                '${isCashIn ? '+' : '-'} $currency ${e['amount']}',
+                                style: TextStyle(
+                                  color: isCashIn ? Colors.green : Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           );
@@ -293,9 +352,12 @@ class CashBookScreen extends ConsumerWidget {
   }
 
   void _showAddEntryModal(
-      BuildContext context, WidgetRef ref, String type, String currency) {
-    final amountController = TextEditingController();
-    final remarkController = TextEditingController();
+      BuildContext context, WidgetRef ref, String type, String currency,
+      {Map<String, dynamic>? existingEntry}) {
+    final amountController = TextEditingController(
+        text: existingEntry != null ? existingEntry['amount'].toString() : '');
+    final remarkController =
+        TextEditingController(text: existingEntry?['remark'] ?? '');
 
     showModalBottomSheet(
       context: context,
@@ -314,7 +376,10 @@ class CashBookScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(type == 'cash_in' ? 'Add Cash In' : 'Add Cash Out',
+            Text(
+                existingEntry != null
+                    ? 'Edit Entry'
+                    : (type == 'cash_in' ? 'Add Cash In' : 'Add Cash Out'),
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -366,17 +431,29 @@ class CashBookScreen extends ConsumerWidget {
 
                 if (activeBusinessId != null) {
                   try {
-                    await supabase.from('cashbook_entries').insert({
-                      'business_id': activeBusinessId,
-                      'entry_type': type,
-                      'amount': double.parse(amountController.text),
-                      'remark': remarkController.text,
-                    });
-                    ref.invalidate(cashbookProvider); // Refresh list
-                    Navigator.pop(ctx);
+                    if (existingEntry != null) {
+                      await supabase.from('cashbook_entries').update({
+                        'amount': double.parse(amountController.text),
+                        'remark': remarkController.text,
+                      }).eq('id', existingEntry['id']);
+                    } else {
+                      await supabase.from('cashbook_entries').insert({
+                        'business_id': activeBusinessId,
+                        'entry_type': type,
+                        'amount': double.parse(amountController.text),
+                        'remark': remarkController.text,
+                      });
+                    }
+
+                    ref.invalidate(cashbookProvider);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Error: Database error.')));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to save entry: $e')));
+                    }
                   }
                 }
               },

@@ -14,10 +14,10 @@ class DigiBazarScreen extends ConsumerStatefulWidget {
 
 class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
   String _selectedBrand = 'All';
-  final List<String> _brands = ['All', 'Khaadi', 'J.', 'Nishat', 'Bonanza'];
 
   @override
   Widget build(BuildContext context) {
+    final brandsState = ref.watch(bazarBrandsProvider);
     // Watch the family provider filtering dynamically by currently selected brand
     final productsState = ref.watch(digiBazarProvider(_selectedBrand));
     final formatter = NumberFormat('#,###');
@@ -166,36 +166,52 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
             // Horizontal Brand Filters Ribbon
             SizedBox(
               height: 45,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _brands.length,
-                itemBuilder: (context, index) {
-                  final brand = _brands[index];
-                  final isSelected = _selectedBrand == brand;
+              child: brandsState.when(
+                loading: () => const Center(
+                    child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2))),
+                error: (err, stack) => Center(child: Text('Error: $err')),
+                data: (brandsData) {
+                  final brands = [
+                    'All',
+                    ...brandsData.map((e) => e['name'] as String)
+                  ];
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: brands.length,
+                    itemBuilder: (context, index) {
+                      final brand = brands[index];
+                      final isSelected = _selectedBrand == brand;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ChoiceChip(
-                      label: Text(brand,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  isSelected ? Colors.white : Colors.black87)),
-                      selected: isSelected,
-                      selectedColor: AppTheme.primaryBlue,
-                      backgroundColor: Colors.grey.shade100,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        side: BorderSide(
-                            color: isSelected
-                                ? AppTheme.primaryBlue
-                                : Colors.grey.shade300),
-                      ),
-                      onSelected: (selected) {
-                        if (selected) setState(() => _selectedBrand = brand);
-                      },
-                    ),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: ChoiceChip(
+                          label: Text(brand,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87)),
+                          selected: isSelected,
+                          selectedColor: AppTheme.primaryBlue,
+                          backgroundColor: Colors.grey.shade100,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            side: BorderSide(
+                                color: isSelected
+                                    ? AppTheme.primaryBlue
+                                    : Colors.grey.shade300),
+                          ),
+                          onSelected: (selected) {
+                            if (selected)
+                              setState(() => _selectedBrand = brand);
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),

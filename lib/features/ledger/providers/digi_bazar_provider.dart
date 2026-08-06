@@ -37,6 +37,32 @@ class BazarProductModel {
 }
 
 // Added family modifier to accept brand filtering
+final bazarBrandsProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  try {
+    final response = await Supabase.instance.client
+        .from('bazar_brands')
+        .select()
+        .order('name');
+    return List<Map<String, dynamic>>.from(response);
+  } catch (e) {
+    return [];
+  }
+});
+
+final bazarCategoriesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  try {
+    final response = await Supabase.instance.client
+        .from('bazar_categories')
+        .select()
+        .order('name');
+    return List<Map<String, dynamic>>.from(response);
+  } catch (e) {
+    return [];
+  }
+});
+
 final digiBazarProvider =
     FutureProvider.family<List<BazarProductModel>, String>(
         (ref, brandFilter) async {

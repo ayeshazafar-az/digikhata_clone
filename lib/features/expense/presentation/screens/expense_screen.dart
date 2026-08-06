@@ -86,28 +86,85 @@ class ExpenseScreen extends ConsumerWidget {
                           final e = entries[index];
                           final date = DateFormat('dd MMM yyyy, hh:mm a')
                               .format(DateTime.parse(e['created_at']));
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor:
-                                  Colors.orange.withValues(alpha: 0.2),
-                              child: const Icon(Icons.receipt,
-                                  color: Colors.orange),
+                          return Dismissible(
+                            key: Key(e['id'].toString()),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child:
+                                  const Icon(Icons.delete, color: Colors.white),
                             ),
-                            title: Text(e['category'],
+                            confirmDismiss: (direction) async {
+                              return await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Expense'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this expense?'),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(ctx, false),
+                                        child: const Text('Cancel')),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      child: const Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            onDismissed: (direction) async {
+                              try {
+                                await Supabase.instance.client
+                                    .from('expense_entries')
+                                    .delete()
+                                    .eq('id', e['id']);
+                                ref.invalidate(expensesProvider);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Expense deleted')));
+                                }
+                              } catch (err) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text('Failed to delete: $err')));
+                                }
+                              }
+                            },
+                            child: ListTile(
+                              onTap: () {
+                                _showAddExpenseModal(context, ref, currency,
+                                    existingEntry: e);
+                              },
+                              leading: CircleAvatar(
+                                backgroundColor:
+                                    Colors.orange.withValues(alpha: 0.2),
+                                child: const Icon(Icons.receipt,
+                                    color: Colors.orange),
+                              ),
+                              title: Text(e['category'],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87)),
+                              subtitle: Text(
+                                  '${e['remark'] ?? 'No remark'} \n$date',
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 12)),
+                              isThreeLine: true,
+                              trailing: Text(
+                                '- $currency ${e['amount']}',
                                 style: const TextStyle(
+                                    color: Colors.redAccent,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87)),
-                            subtitle: Text(
-                                '${e['remark'] ?? 'No remark'} \n$date',
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 12)),
-                            isThreeLine: true,
-                            trailing: Text(
-                              '- $currency ${e['amount']}',
-                              style: const TextStyle(
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
+                                    fontSize: 16),
+                              ),
                             ),
                           );
                         },
@@ -194,10 +251,14 @@ class ExpenseScreen extends ConsumerWidget {
   }
 
   void _showAddExpenseModal(
-      BuildContext context, WidgetRef ref, String currency) {
-    final amountController = TextEditingController();
-    final categoryController = TextEditingController();
-    final remarkController = TextEditingController();
+      BuildContext context, WidgetRef ref, String currency,
+      {Map<String, dynamic>? existingEntry}) {
+    final amountController = TextEditingController(
+        text: existingEntry != null ? existingEntry['amount'].toString() : '');
+    final categoryController =
+        TextEditingController(text: existingEntry?['category'] ?? '');
+    final remarkController =
+        TextEditingController(text: existingEntry?['remark'] ?? '');
 
     showModalBottomSheet(
       context: context,
@@ -216,8 +277,8 @@ class ExpenseScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add Expense',
-                style: TextStyle(
+            Text(existingEntry != null ? 'Edit Expense' : 'Add Expense',
+                style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87)),
@@ -282,12 +343,20 @@ class ExpenseScreen extends ConsumerWidget {
                       .single();
                   final bId = pRes['active_business_id'];
                   if (bId != null) {
-                    await supabase.from('expense_entries').insert({
-                      'business_id': bId,
-                      'category': categoryController.text,
-                      'amount': double.parse(amountController.text),
-                      'remark': remarkController.text,
-                    });
+                    if (existingEntry != null) {
+                      await supabase.from('expense_entries').update({
+                        'category': categoryController.text,
+                        'amount': double.parse(amountController.text),
+                        'remark': remarkController.text,
+                      }).eq('id', existingEntry['id']);
+                    } else {
+                      await supabase.from('expense_entries').insert({
+                        'business_id': bId,
+                        'category': categoryController.text,
+                        'amount': double.parse(amountController.text),
+                        'remark': remarkController.text,
+                      });
+                    }
                     ref.invalidate(expensesProvider);
                     if (context.mounted) Navigator.pop(ctx);
                   }
