@@ -91,7 +91,11 @@ class AllTransactionsScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16, color: Colors.black87),
             ),
 
-            const SizedBox(height: 64),
+            const SizedBox(height: 48),
+
+            // Animated bouncing arrow mimicking reference design
+            const _EmptyStateArrow(),
+            const SizedBox(height: 24),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -115,9 +119,56 @@ class AllTransactionsScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ],
         ),
       ),
     );
   }
 }
+
+class _EmptyStateArrow extends StatefulWidget {
+  const _EmptyStateArrow();
+
+  @override
+  State<_EmptyStateArrow> createState() => _EmptyStateArrowState();
+}
+
+class _EmptyStateArrowState extends State<_EmptyStateArrow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 600), vsync: this)
+      ..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0, end: 15).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _animation.value),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.keyboard_arrow_down_rounded,
+                  color: Color(0xFFD63C1B), size: 48), // matching red accent
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+

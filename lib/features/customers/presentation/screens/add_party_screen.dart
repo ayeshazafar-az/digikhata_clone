@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import '../../../../app/theme.dart';
 import '../../providers/parties_provider.dart';
 
@@ -15,7 +16,25 @@ class AddPartyScreen extends ConsumerStatefulWidget {
 class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  String _selectedCountryCode = '+92';
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Parse name and phone from GoRouter if pushing from AddContactScreen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = GoRouterState.of(context);
+      final prefillPhone = state.uri.queryParameters['phone'] ?? '';
+      final prefillName = state.uri.queryParameters['name'] ?? '';
+      if (prefillPhone.isNotEmpty) {
+        _phoneController.text = prefillPhone;
+      }
+      if (prefillName.isNotEmpty) {
+        _nameController.text = prefillName;
+      }
+    });
+  }
 
   void _triggerMockContactPermission() {
     showDialog(
@@ -85,9 +104,9 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
     if (name.isEmpty) return;
     setState(() => _isLoading = true);
     try {
-      await ref
-          .read(partiesProvider.notifier)
-          .addParty(name, _phoneController.text.trim(), widget.partyType);
+      final phone = '$_selectedCountryCode${_phoneController.text.trim()}';
+      await ref.read(partiesProvider.notifier).addParty(
+          name, phone.replaceAll(RegExp(r'\s+'), ''), widget.partyType);
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
@@ -146,11 +165,34 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
                   style: const TextStyle(color: Colors.white),
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: 'Phone Number',
+                    prefixIcon: CountryCodePicker(
+                      onChanged: (code) {
+                        setState(() {
+                          _selectedCountryCode = code.dialCode ?? '+92';
+                        });
+                      },
+                      initialSelection: 'PK',
+                      favorite: const ['+92', 'PK'],
+                      showCountryOnly: false,
+                      showOnlyCountryWhenClosed: false,
+                      alignLeft: false,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      textStyle: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                      searchDecoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        fillColor: Colors.grey.shade800,
+                        filled: true,
+                      ),
+                      dialogBackgroundColor: Colors.grey.shade900,
+                      dialogTextStyle: const TextStyle(color: Colors.white),
+                    ),
+                    hintText: 'Mobile Number',
                     hintStyle: TextStyle(color: Colors.grey.shade600),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 16),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
                   ),
                 ),
               ),

@@ -164,6 +164,11 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/collection',
+        name: 'collection',
+        builder: (context, state) => const CollectionScreen(),
+      ),
+      GoRoute(
         path: '/customer_ledger',
         name: 'customer_ledger',
         builder: (context, state) {

@@ -162,7 +162,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
           final phone =
               contact.phones.isNotEmpty ? contact.phones.first.number : '';
           if (phone.isEmpty) return const SizedBox.shrink();
-          return _buildContactTile((contact.displayName ?? 'Unknown'), phone);
+          return _buildContactTile((contact.displayName), phone);
         }),
       ],
     );
@@ -187,7 +187,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                     fontWeight: FontWeight.bold,
                     fontSize: 16)),
           ),
-          title: Text(name,
+          title: Text(name.trim().isEmpty ? 'Unknown' : name,
               style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
@@ -196,7 +196,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
               style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
           onTap: () {
             context.push(
-                '/add_party?type=${widget.type.toLowerCase()}&phone=$phone');
+                '/add_party?type=${widget.type.toLowerCase()}&phone=${Uri.encodeComponent(phone)}&name=${Uri.encodeComponent(name)}');
           },
         ),
         Divider(color: Colors.grey.shade100, height: 1, indent: 80),

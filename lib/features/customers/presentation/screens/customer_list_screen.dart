@@ -37,15 +37,13 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      AppTheme.primaryBlue.withValues(alpha: 0.9), // Match blue theme
+                  backgroundColor: AppTheme.primaryBlue
+                      .withValues(alpha: 0.9), // Match blue theme
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text(
-                          'Collection routing integrated with DigiCash (Coming Soon in V2)')));
+                  context.push('/collection');
                 },
                 child: const Text('COLLECTION',
                     style: TextStyle(
@@ -296,7 +294,10 @@ class _PartyTab extends ConsumerWidget {
           _buildStepRow('1- $t1'),
           _buildStepRow('2- Add entries & maintain khata'),
           _buildStepRow('3- $t3'),
-          const SizedBox(height: 80),
+          const SizedBox(height: 60),
+          // Bouncing arrow mimicking screenshot 1
+          const _EmptyStateArrow(),
+          const SizedBox(height: 40),
         ],
       ),
     );
