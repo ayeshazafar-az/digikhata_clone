@@ -100,7 +100,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                                color: AppTheme.dangerRed, width: 1.5),
+                                color: AppTheme.primaryBlue, width: 1.5),
                           )
                         : null,
                     child: Column(
@@ -128,7 +128,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 ? FontWeight.bold
                                 : FontWeight.normal,
                             color: isSelected
-                                ? AppTheme.dangerRed
+                                ? AppTheme.primaryBlue
                                 : Colors.black87,
                           ),
                         ),
@@ -220,11 +220,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.dangerRed.withOpacity(0.1),
+                                  color: AppTheme.primaryBlue.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(Icons.grid_view_rounded,
-                                    color: AppTheme.dangerRed, size: 18),
+                                    color: AppTheme.primaryBlue, size: 18),
                               ),
                               title: Text(
                                 _subcategories[index],

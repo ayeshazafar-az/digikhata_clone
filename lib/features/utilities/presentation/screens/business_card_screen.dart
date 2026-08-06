@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../app/theme.dart';
 
 class BusinessCardScreen extends StatefulWidget {
   const BusinessCardScreen({super.key});
@@ -52,9 +53,9 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF05A28), Color(0xFFE65100)],
+              colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -111,7 +112,7 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
                   height: 8,
                   decoration: BoxDecoration(
                     color: _currentPage == index
-                        ? const Color(0xFFF05A28)
+                        ? AppTheme.primaryBlue
                         : Colors.grey.shade300,
                     shape: BoxShape.circle,
                   ),
@@ -137,8 +138,8 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
                 ),
                 Container(
                   padding: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF05A28),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.camera_alt,
@@ -199,7 +200,7 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF05A28),
+                  backgroundColor: AppTheme.primaryBlue,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25)),

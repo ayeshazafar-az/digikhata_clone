@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,9 +20,9 @@ class TasdeeqScreen extends StatelessWidget {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
+              colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -49,7 +50,7 @@ class TasdeeqScreen extends StatelessWidget {
               height: 120,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E3C72),
+                color: AppTheme.primaryBlue,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Center(
@@ -75,7 +76,7 @@ class TasdeeqScreen extends StatelessWidget {
                   const Center(
                     child: Text('About TASDEEQ',
                         style: TextStyle(
-                            color: Color(0xFF1A5276),
+                            color: AppTheme.primaryBlue,
                             fontSize: 22,
                             fontWeight: FontWeight.bold)),
                   ),
@@ -88,7 +89,7 @@ class TasdeeqScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   const Text('Services for Individuals',
                       style: TextStyle(
-                          color: Color(0xFF1A5276),
+                          color: AppTheme.primaryBlue,
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
@@ -99,7 +100,7 @@ class TasdeeqScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   const Text('Why?',
                       style: TextStyle(
-                          color: Color(0xFF1A5276),
+                          color: AppTheme.primaryBlue,
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
@@ -123,7 +124,7 @@ class TasdeeqScreen extends StatelessWidget {
           child: ElevatedButton(
             onPressed: _launchPlayStore,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF60A5FA),
+              backgroundColor: AppTheme.secondaryBlue,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
             ),

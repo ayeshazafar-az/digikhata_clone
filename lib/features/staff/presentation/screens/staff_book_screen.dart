@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/theme.dart';
+import '../../../../core/providers/currency_provider.dart';
 
 final staffProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   try {
@@ -32,7 +33,7 @@ class StaffBookScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50, // Dark Theme
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Dark Theme
       appBar: AppBar(
         title: const Text('Staff Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
@@ -74,33 +75,32 @@ class StaffBookScreen extends ConsumerWidget {
 
   Widget _buildAttendanceTab(BuildContext context, WidgetRef ref) {
     final staffAsync = ref.watch(staffProvider);
+    final currency = ref.watch(currencyProvider);
     return Stack(
       children: [
         Column(
           children: [
-            // Date Scroller
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.black87,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.chevron_left, color: Colors.black87),
+                  const Icon(Icons.chevron_left, color: Colors.grey),
                   Text(DateFormat('EEE, dd MMM yy').format(DateTime.now()),
                       style: const TextStyle(
-                          color: Colors.black87,
+                          color: Colors.grey,
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
-                  const Icon(Icons.chevron_right, color: Colors.black87),
+                  const Icon(Icons.chevron_right, color: Colors.grey),
                 ],
               ),
             ),
             const SizedBox(height: 12),
-            // Present/Absent Metrics
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -109,7 +109,7 @@ class StaffBookScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -125,8 +125,8 @@ class StaffBookScreen extends ConsumerWidget {
                                     fontWeight: FontWeight.bold)),
                           ),
                           const SizedBox(height: 8),
-                          const Text('Rs 0',
-                              style: TextStyle(
+                          Text('$currency 0',
+                              style: const TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16)),
@@ -142,7 +142,7 @@ class StaffBookScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -158,8 +158,8 @@ class StaffBookScreen extends ConsumerWidget {
                                     fontWeight: FontWeight.bold)),
                           ),
                           const SizedBox(height: 8),
-                          const Text('Rs 0',
-                              style: TextStyle(
+                          Text('$currency 0',
+                              style: const TextStyle(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16)),
@@ -178,7 +178,7 @@ class StaffBookScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.black87))),
+                        style: const TextStyle(color: Colors.grey))),
                 data: (staffList) {
                   if (staffList.isEmpty) return _buildAttendanceEmptyState();
                   return ListView.separated(
@@ -202,9 +202,9 @@ class StaffBookScreen extends ConsumerWidget {
                         title: Text(staff['name'],
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87)),
+                                color: Colors.white)),
                         subtitle: Text(
-                            'Monthly: Rs. ${staff['monthly_salary']}',
+                            'Monthly: $currency ${staff['monthly_salary']}',
                             style: const TextStyle(color: Colors.grey)),
                         trailing: ElevatedButton(
                           onPressed: () {},
@@ -213,7 +213,7 @@ class StaffBookScreen extends ConsumerWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8))),
                           child: const Text('Mark Present',
-                              style: TextStyle(color: Colors.black87)),
+                              style: TextStyle(color: Colors.white)),
                         ),
                       );
                     },
@@ -228,12 +228,12 @@ class StaffBookScreen extends ConsumerWidget {
           right: 24,
           child: ElevatedButton.icon(
             onPressed: () => _showAddStaffModal(context, ref),
-            icon: const Icon(Icons.person_add, color: Colors.black87),
+            icon: const Icon(Icons.person_add, color: Colors.white),
             label: const Text('ADD STAFF',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.black87)),
+                    fontWeight: FontWeight.bold, color: Colors.white)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFF05A28),
+              backgroundColor: AppTheme.primaryBlue,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
@@ -255,7 +255,7 @@ class StaffBookScreen extends ConsumerWidget {
               Container(
                 margin: const EdgeInsets.only(top: 10, left: 10),
                 child: const Icon(Icons.groups,
-                    size: 100, color: Color(0xFFE8C17F)),
+                    size: 100, color: AppTheme.amberHighlight),
               ),
             ],
           ),
@@ -284,40 +284,39 @@ class StaffBookScreen extends ConsumerWidget {
 
   Widget _buildPayrollTab(BuildContext context, WidgetRef ref) {
     final staffAsync = ref.watch(staffProvider);
+    final currency = ref.watch(currencyProvider);
 
     return Stack(
       children: [
         Column(
           children: [
-            // Month Scroller
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.black87,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.chevron_left, color: Colors.black87),
+                  const Icon(Icons.chevron_left, color: Colors.grey),
                   Text(DateFormat('MMMM yyyy').format(DateTime.now()),
                       style: const TextStyle(
-                          color: Colors.black87,
+                          color: Colors.grey,
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
-                  const Icon(Icons.chevron_right, color: Colors.black87),
+                  const Icon(Icons.chevron_right, color: Colors.grey),
                 ],
               ),
             ),
             const SizedBox(height: 12),
-            // Total Salary Metric
             Expanded(
               child: staffAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
                     child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.black87))),
+                        style: const TextStyle(color: Colors.grey))),
                 data: (staffList) {
                   if (staffList.isEmpty) return _buildPayrollEmptyState();
 
@@ -332,16 +331,16 @@ class StaffBookScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Total Salary Generated',
-                              style: TextStyle(
-                                  color: Colors.black87, fontSize: 16)),
-                          Text('Rs $totalSalary',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 16)),
+                          Text('$currency $totalSalary',
                               style: const TextStyle(
                                   color: Colors.blue,
                                   fontSize: 18,
@@ -368,14 +367,22 @@ class StaffBookScreen extends ConsumerWidget {
                                 title: Text(staff['name'],
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black87)),
+                                        color: Colors.white)),
                                 subtitle: const Text('Present: 28 Days',
                                     style: TextStyle(color: Colors.grey)),
-                                trailing: Text('Rs. ${staff['monthly_salary']}',
-                                    style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
+                                trailing: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('$currency ${staff['monthly_salary']}',
+                                        style: const TextStyle(
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    Text('Advance: $currency 2,000',
+                                        style: TextStyle(
+                                            color: Colors.grey, fontSize: 12)),
+                                  ],
+                                ),
                               );
                             }))
                   ]);
@@ -399,7 +406,7 @@ class StaffBookScreen extends ConsumerWidget {
               Container(
                 margin: const EdgeInsets.only(top: 10, left: 10),
                 child: const Icon(Icons.assignment,
-                    size: 100, color: Color(0xFFE8C17F)),
+                    size: 100, color: AppTheme.amberHighlight),
               ),
               Container(
                 padding: const EdgeInsets.all(4),
@@ -430,7 +437,7 @@ class StaffBookScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF252525),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(
@@ -511,14 +518,14 @@ class StaffBookScreen extends ConsumerWidget {
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 54),
-                backgroundColor: const Color(0xFFF05A28),
+                backgroundColor: AppTheme.primaryBlue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('SAVE STAFF',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Colors.white,
                       fontSize: 16)),
             ),
             const SizedBox(height: 24),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/providers/currency_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -34,9 +35,10 @@ class CashBookScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cashAsync = ref.watch(cashbookProvider);
+    final currency = ref.watch(currencyProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50, // Dark mode background
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Cash Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
@@ -86,7 +88,7 @@ class CashBookScreen extends ConsumerWidget {
             children: [
               Column(
                 children: [
-                  _buildHeader(totalCashInHand, todayBalance),
+                  _buildHeader(totalCashInHand, todayBalance, currency),
                   if (entries.isEmpty)
                     Expanded(child: _buildEmptyState(context))
                   else
@@ -124,7 +126,7 @@ class CashBookScreen extends ConsumerWidget {
                                 style: const TextStyle(
                                     fontSize: 12, color: Colors.grey)),
                             trailing: Text(
-                              '${isCashIn ? '+' : '-'} Rs. ${e['amount']}',
+                              '${isCashIn ? '+' : '-'} $currency ${e['amount']}',
                               style: TextStyle(
                                 color: isCashIn ? Colors.green : Colors.red,
                                 fontWeight: FontWeight.bold,
@@ -150,8 +152,8 @@ class CashBookScreen extends ConsumerWidget {
                     Row(
                       children: [
                         ElevatedButton(
-                          onPressed: () =>
-                              _showAddEntryModal(context, ref, 'cash_out'),
+                          onPressed: () => _showAddEntryModal(
+                              context, ref, 'cash_out', currency),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red.shade900,
                             padding: const EdgeInsets.symmetric(
@@ -166,8 +168,8 @@ class CashBookScreen extends ConsumerWidget {
                         ),
                         const SizedBox(width: 12),
                         ElevatedButton(
-                          onPressed: () =>
-                              _showAddEntryModal(context, ref, 'cash_in'),
+                          onPressed: () => _showAddEntryModal(
+                              context, ref, 'cash_in', currency),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             padding: const EdgeInsets.symmetric(
@@ -192,7 +194,7 @@ class CashBookScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(double total, double todayBal) {
+  Widget _buildHeader(double total, double todayBal, String currency) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -206,7 +208,7 @@ class CashBookScreen extends ConsumerWidget {
           Expanded(
             child: Column(
               children: [
-                Text('Rs $total',
+                Text('$currency ${total.toStringAsFixed(2)}',
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -221,7 +223,7 @@ class CashBookScreen extends ConsumerWidget {
           Expanded(
             child: Column(
               children: [
-                Text('Rs $todayBal',
+                Text('$currency ${todayBal.toStringAsFixed(2)}',
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -290,7 +292,8 @@ class CashBookScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddEntryModal(BuildContext context, WidgetRef ref, String type) {
+  void _showAddEntryModal(
+      BuildContext context, WidgetRef ref, String type, String currency) {
     final amountController = TextEditingController();
     final remarkController = TextEditingController();
 
@@ -324,14 +327,15 @@ class CashBookScreen extends ConsumerWidget {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87),
-              decoration: const InputDecoration(
-                prefixText: 'Rs. ',
-                prefixStyle: TextStyle(color: Colors.black87, fontSize: 24),
+              decoration: InputDecoration(
+                prefixText: '$currency ',
+                prefixStyle:
+                    const TextStyle(color: Colors.black87, fontSize: 24),
                 labelText: 'Amount',
-                labelStyle: TextStyle(color: Colors.grey),
-                enabledBorder: OutlineInputBorder(
+                labelStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black87)),
               ),
             ),

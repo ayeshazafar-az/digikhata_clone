@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/utils/pdf_service.dart';
-import '../../../../core/database/local_db.dart';
 
 final stockProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   try {
@@ -296,7 +295,7 @@ class StockBookScreen extends ConsumerWidget {
               Container(
                 margin: const EdgeInsets.only(top: 10, left: 10),
                 child: const Icon(Icons.inventory,
-                    size: 100, color: Color(0xFFE8C17F)),
+                    size: 100, color: AppTheme.amberHighlight),
               ),
               Container(
                 padding: const EdgeInsets.all(4),

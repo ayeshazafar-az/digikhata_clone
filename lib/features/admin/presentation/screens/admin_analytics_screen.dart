@@ -50,6 +50,12 @@ class AdminAnalyticsScreen extends ConsumerWidget {
   }
 
   Widget _buildBarChart(AdminStats stats) {
+    final monthKeys = stats.monthlyGrowth.keys.toList();
+    final maxValue = stats.monthlyGrowth.values.isEmpty
+        ? 10.0
+        : (stats.monthlyGrowth.values.reduce((a, b) => a > b ? a : b) + 5)
+            .toDouble();
+
     return Container(
       height: 300,
       padding: const EdgeInsets.all(16),
@@ -66,8 +72,7 @@ class AdminAnalyticsScreen extends ConsumerWidget {
       child: BarChart(
         BarChartData(
           alignment: BarChartAlignment.spaceAround,
-          maxY: (stats.totalUsers + 100)
-              .toDouble(), // Safe upper bound for dummy chart
+          maxY: maxValue,
           barTouchData: BarTouchData(enabled: false),
           titlesData: FlTitlesData(
             show: true,
@@ -75,10 +80,12 @@ class AdminAnalyticsScreen extends ConsumerWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
-                  const titles = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                  if (value.toInt() < 0 || value.toInt() >= monthKeys.length) {
+                    return const SizedBox();
+                  }
                   return Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(titles[value.toInt() % 6],
+                    child: Text(monthKeys[value.toInt()],
                         style: const TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.bold,
@@ -94,14 +101,10 @@ class AdminAnalyticsScreen extends ConsumerWidget {
           ),
           gridData: FlGridData(show: false),
           borderData: FlBorderData(show: false),
-          barGroups: [
-            _buildBarGroup(0, (stats.totalUsers * 0.2).toDouble()),
-            _buildBarGroup(1, (stats.totalUsers * 0.4).toDouble()),
-            _buildBarGroup(2, (stats.totalUsers * 0.5).toDouble()),
-            _buildBarGroup(3, (stats.totalUsers * 0.7).toDouble()),
-            _buildBarGroup(4, (stats.totalUsers * 0.9).toDouble()),
-            _buildBarGroup(5, stats.totalUsers.toDouble()),
-          ],
+          barGroups: List.generate(monthKeys.length, (index) {
+            return _buildBarGroup(
+                index, stats.monthlyGrowth[monthKeys[index]]!.toDouble());
+          }),
         ),
       ),
     );

@@ -10,6 +10,10 @@ class AppTheme {
   static const Color warningOrange = Color(0xFFFF9800); // For Admins
   static const Color secondaryOrange =
       Color(0xFFFF5722); // True Deep Orange (removes mustard hue)
+  static const Color goldAccent = Color(0xFFD4AF37); // Pro/Premium gold
+  static const Color darkSurface = Color(0xFF252525); // Dark modal background
+  static const Color amberHighlight =
+      Color(0xFFE8C17F); // Empty state illustrations
 
   static ThemeData get lightTheme {
     return ThemeData(

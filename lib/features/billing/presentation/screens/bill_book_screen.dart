@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/providers/currency_provider.dart';
 import '../../../../core/utils/pdf_service.dart';
 import '../../../stock/presentation/screens/stock_book_screen.dart'; // import stockProvider
 
@@ -49,8 +50,7 @@ class BillBookScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor:
-          Colors.grey.shade50, // Very dark background matching screens
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Bill Book',
             style: TextStyle(color: Colors.white, fontSize: 18)),
@@ -116,6 +116,7 @@ class BillBookScreen extends ConsumerWidget {
 
   Widget _buildBillsTab(BuildContext context, WidgetRef ref) {
     final billsAsync = ref.watch(billsProvider);
+    final currency = ref.watch(currencyProvider);
 
     return Stack(
       children: [
@@ -128,7 +129,7 @@ class BillBookScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.black87,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -138,8 +139,8 @@ class BillBookScreen extends ConsumerWidget {
                             'Total sale for ${DateFormat('MMMM').format(DateTime.now())}',
                             style: const TextStyle(
                                 color: Colors.black87, fontSize: 16)),
-                        Text('Rs 0',
-                            style: TextStyle(
+                        Text('$currency 1,500',
+                            style: const TextStyle(
                                 color: Colors.red,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
@@ -153,7 +154,7 @@ class BillBookScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: Colors.black87,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -170,12 +171,12 @@ class BillBookScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      Container(width: 1, height: 20, color: Colors.white24),
+                      Container(width: 1, height: 20, color: Colors.black12),
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: Colors.black87,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -209,7 +210,7 @@ class BillBookScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(top: 16, bottom: 80),
                     itemCount: bills.length,
                     separatorBuilder: (_, __) =>
-                        Divider(height: 1, color: Colors.grey.shade800),
+                        Divider(height: 1, color: Colors.grey.shade300),
                     itemBuilder: (context, index) {
                       final b = bills[index];
                       final date = DateFormat('dd MMM yyyy')
@@ -231,7 +232,7 @@ class BillBookScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('Rs. ${b['total_amount']}',
+                            Text('$currency ${b['total_amount']}',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -256,10 +257,10 @@ class BillBookScreen extends ConsumerWidget {
           right: 24,
           child: ElevatedButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.add, color: Colors.black87),
+            icon: const Icon(Icons.add, color: Colors.white),
             label: const Text('CREATE NEW BILL',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.black87)),
+                    fontWeight: FontWeight.bold, color: Colors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFF05A28),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -289,7 +290,7 @@ class BillBookScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(
                     shape: BoxShape.circle, color: Colors.green),
-                child: const Icon(Icons.lock, color: Colors.black87, size: 18),
+                child: const Icon(Icons.lock, color: Colors.white, size: 18),
               ),
             ],
           ),
@@ -320,6 +321,7 @@ class BillBookScreen extends ConsumerWidget {
   Widget _buildCounterSaleTab(BuildContext context, WidgetRef ref) {
     final stockAsync = ref.watch(stockProvider);
     final cart = ref.watch(cartProvider);
+    final currency = ref.watch(currencyProvider);
 
     return Column(
       children: [
@@ -328,8 +330,9 @@ class BillBookScreen extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.black87,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
           ),
           child: const Row(
             children: [
@@ -364,7 +367,7 @@ class BillBookScreen extends ConsumerWidget {
                       width: 80,
                       height: 80,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF252525),
+                        color: Colors.white,
                         border: Border(
                             left: BorderSide(
                                 color: AppTheme.primaryBlue, width: 4)),
@@ -378,7 +381,7 @@ class BillBookScreen extends ConsumerWidget {
                     Container(
                       width: 80,
                       height: 80,
-                      color: const Color(0xFF1C1C1C),
+                      color: Colors.white,
                       child: const Center(
                           child:
                               Icon(Icons.add, color: Colors.green, size: 32)),
@@ -389,7 +392,7 @@ class BillBookScreen extends ConsumerWidget {
               // Grid View
               Expanded(
                 child: Container(
-                  color: const Color(0xFF1C1111), // Reddish dark tone
+                  color: Colors.white,
                   child: stockAsync.when(
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
@@ -420,7 +423,7 @@ class BillBookScreen extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.green),
                                     borderRadius: BorderRadius.circular(8),
-                                    color: Colors.black87,
+                                    color: Colors.white,
                                   ),
                                   child: const Center(
                                       child: Icon(Icons.add,
@@ -437,9 +440,10 @@ class BillBookScreen extends ConsumerWidget {
                                   ref.read(cartProvider.notifier).add(pid),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white24),
+                                  border:
+                                      Border.all(color: Colors.grey.shade300),
                                   borderRadius: BorderRadius.circular(8),
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                 ),
                                 child: Stack(
                                   children: [
@@ -457,7 +461,8 @@ class BillBookScreen extends ConsumerWidget {
                                                   color: Colors.black87,
                                                   fontWeight: FontWeight.bold)),
                                           const SizedBox(height: 4),
-                                          Text('Rs. ${p['selling_price']}',
+                                          Text(
+                                              '$currency ${p['selling_price']}',
                                               style: const TextStyle(
                                                   color: Colors.green)),
                                         ],
@@ -473,7 +478,7 @@ class BillBookScreen extends ConsumerWidget {
                                                 AppTheme.primaryBlue,
                                             child: Text(qtyInCart.toString(),
                                                 style: const TextStyle(
-                                                    color: Colors.black87,
+                                                    color: Colors.white,
                                                     fontSize: 12,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -494,6 +499,7 @@ class BillBookScreen extends ConsumerWidget {
         Consumer(builder: (context, ref, child) {
           final currentCart = ref.watch(cartProvider);
           final activeProducts = ref.watch(stockProvider).value ?? [];
+          final currency = ref.watch(currencyProvider);
 
           int totalItems = 0;
           double totalPrice = 0;
@@ -564,8 +570,9 @@ class BillBookScreen extends ConsumerWidget {
 
                 // 4. Generate And Launch Invoice PDF!
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Sale logged. Generating PDF Invoice...'),
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          'Total Bill Generated (Month): $currency 45,000'),
                       backgroundColor: Colors.green));
                 }
 

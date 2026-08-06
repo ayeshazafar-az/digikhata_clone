@@ -56,9 +56,9 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFF05A28), Color(0xFFE65100)],
+                colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),

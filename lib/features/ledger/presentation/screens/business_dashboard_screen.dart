@@ -2,18 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class BusinessDashboardScreen extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../app/theme.dart';
+import '../../../../core/providers/currency_provider.dart';
+
+class BusinessDashboardScreen extends ConsumerWidget {
   const BusinessDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currency = ref.watch(currencyProvider);
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF05A28), Color(0xFFE65100)],
+              colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -38,7 +44,7 @@ class BusinessDashboardScreen extends StatelessWidget {
             height: 40,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFF05A28), Color(0xFFE65100)],
+                colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -48,13 +54,13 @@ class BusinessDashboardScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                _buildMainCard(),
+                _buildMainCard(context, currency),
                 const SizedBox(height: 16),
-                _buildReceiveablesCard(),
+                _buildReceiveablesCard(context, currency),
                 const SizedBox(height: 16),
-                _buildCashFlowCard(),
+                _buildCashFlowCard(context, currency),
                 const SizedBox(height: 16),
-                _buildAvailableStockCard(),
+                _buildAvailableStockCard(context, currency),
                 const SizedBox(height: 40),
               ],
             ),
@@ -64,10 +70,10 @@ class BusinessDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMainCard() {
+  Widget _buildMainCard(BuildContext context, String currency) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -244,7 +250,7 @@ class BusinessDashboardScreen extends StatelessWidget {
           Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(12),
                       bottomRight: Radius.circular(12))),
@@ -258,7 +264,7 @@ class BusinessDashboardScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(8)),
                       child: const Row(children: [
                         Text('Lifetime', style: TextStyle(color: Colors.grey)),
@@ -270,10 +276,10 @@ class BusinessDashboardScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Row(
+                Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(children: [
+                      const Row(children: [
                         Icon(Icons.trending_up, color: Colors.green),
                         Icon(Icons.monetization_on, color: Colors.amber),
                         SizedBox(width: 4),
@@ -281,19 +287,24 @@ class BusinessDashboardScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16))
                       ]),
-                      Text('Rs 0',
-                          style: TextStyle(
+                      Text('$currency 0',
+                          style: const TextStyle(
                               color: Colors.red, fontWeight: FontWeight.bold)),
                     ]),
                 const SizedBox(height: 16),
-                _buildActionRow('Income', 'Rs 0', isGreen: true),
-                _buildActionRow('Stock Sale', 'Add >', isBtn: true),
-                _buildActionRow('Bill Sale', 'Add >', isBtn: true),
+                _buildActionRow('Income', '$currency 0', isGreen: true),
+                _buildActionRow('Stock Sale', 'Add >',
+                    isBtn: true, context: context),
+                _buildActionRow('Bill Sale', 'Add >',
+                    isBtn: true, context: context),
                 const SizedBox(height: 8),
-                _buildActionRow('Expense', 'Rs 0', isGreen: false),
-                _buildActionRow('Purchases', 'Add >', isBtn: true),
-                _buildActionRow('Expenses', 'Add >', isBtn: true),
-                _buildActionRow('Salaries', 'Add >', isBtn: true),
+                _buildActionRow('Expense', '$currency 0', isGreen: false),
+                _buildActionRow('Purchases', 'Add >',
+                    isBtn: true, context: context),
+                _buildActionRow('Expenses', 'Add >',
+                    isBtn: true, context: context),
+                _buildActionRow('Salaries', 'Add >',
+                    isBtn: true, context: context),
               ]))
         ],
       ),
@@ -301,7 +312,7 @@ class BusinessDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildActionRow(String label, String trailing,
-      {bool isGreen = false, bool isBtn = false}) {
+      {bool isGreen = false, bool isBtn = false, BuildContext? context}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       margin: const EdgeInsets.only(bottom: 4),
@@ -319,14 +330,16 @@ class BusinessDashboardScreen extends StatelessWidget {
               style: TextStyle(
                   fontSize: 15,
                   color: isBtn
-                      ? Colors.black87
+                      ? (context != null
+                          ? Theme.of(context).textTheme.bodyLarge!.color!
+                          : Colors.black87)
                       : (isGreen ? Colors.green : Colors.red),
                   fontWeight: isBtn ? FontWeight.normal : FontWeight.bold)),
           if (isBtn)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                  color: const Color(0xFFF05A28),
+                  color: AppTheme.primaryBlue,
                   borderRadius: BorderRadius.circular(6)),
               child: Text(trailing,
                   style: const TextStyle(
@@ -343,8 +356,9 @@ class BusinessDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReceiveablesCard() {
+  Widget _buildReceiveablesCard(BuildContext context, String currency) {
     return _buildBaseCard(
+        context: context,
         icon: Icons.receipt_long,
         title: 'Receiveables & Payables',
         subtitle: 'Top payable & Receiveable amounts',
@@ -353,11 +367,11 @@ class BusinessDashboardScreen extends StatelessWidget {
               child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
-                color: const Color(0xFFF05A28),
+                color: AppTheme.primaryBlue,
                 borderRadius: BorderRadius.circular(8)),
-            child: const Column(children: [
-              Text('Rs 0',
-                  style: TextStyle(
+            child: Column(children: [
+              Text('$currency 0',
+                  style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 15)),
@@ -369,11 +383,11 @@ class BusinessDashboardScreen extends StatelessWidget {
               child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Theme.of(context).canvasColor,
                 borderRadius: BorderRadius.circular(8)),
-            child: const Column(children: [
-              Text('Rs 0',
-                  style: TextStyle(
+            child: Column(children: [
+              Text('$currency 0',
+                  style: const TextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.bold,
                       fontSize: 15)),
@@ -384,30 +398,32 @@ class BusinessDashboardScreen extends StatelessWidget {
         ]));
   }
 
-  Widget _buildCashFlowCard() {
+  Widget _buildCashFlowCard(BuildContext context, String currency) {
     return _buildBaseCard(
+        context: context,
         icon: Icons.money,
-        title: 'Cash Flow Summery',
+        title: 'Cash Flow Summary',
         subtitle: 'Track your daily cash activity',
         child: Row(children: [
           Expanded(
               child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: Theme.of(context).canvasColor,
                 borderRadius: BorderRadius.circular(8)),
-            child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Cash in Hand',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  Text('Rs 0',
-                      style: TextStyle(color: Colors.black87, fontSize: 13)),
-                ]),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Cash in Hand',
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text('$currency 0',
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontSize: 13)),
+            ]),
           )),
           const SizedBox(width: 12),
           Expanded(
@@ -432,8 +448,9 @@ class BusinessDashboardScreen extends StatelessWidget {
         ]));
   }
 
-  Widget _buildAvailableStockCard() {
+  Widget _buildAvailableStockCard(BuildContext context, String currency) {
     return _buildBaseCard(
+        context: context,
         icon: Icons.inventory_2,
         title: 'Available Stock Items',
         subtitle: 'Stock overview & ledgers',
@@ -443,19 +460,21 @@ class BusinessDashboardScreen extends StatelessWidget {
                 child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(8)),
-              child: const Column(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Available Stock',
+                    const Text('Available Stock',
                         style: TextStyle(
                             color: Colors.black87,
                             fontSize: 13,
                             fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text('0',
-                        style: TextStyle(color: Colors.black87, fontSize: 13)),
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                            fontSize: 13)),
                   ]),
             )),
             const SizedBox(width: 12),
@@ -463,19 +482,21 @@ class BusinessDashboardScreen extends StatelessWidget {
                 child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(8)),
-              child: const Column(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Stock Value',
                         style: TextStyle(
-                            color: Colors.black87,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             fontSize: 13,
                             fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
-                    Text('Rs 0',
-                        style: TextStyle(color: Colors.black87, fontSize: 13)),
+                    const SizedBox(height: 8),
+                    Text('$currency 0',
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                            fontSize: 13)),
                   ]),
             )),
           ]),
@@ -495,14 +516,15 @@ class BusinessDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildBaseCard(
-      {required IconData icon,
+      {required BuildContext context,
+      required IconData icon,
       required String title,
       required String subtitle,
       required Widget child}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -533,10 +555,10 @@ class BusinessDashboardScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: const Color(0xFFF05A28).withOpacity(0.1),
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.arrow_outward,
-                    color: Color(0xFFF05A28), size: 16),
+                    color: AppTheme.primaryBlue, size: 16),
               )
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/providers/currency_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -34,8 +35,11 @@ class ExpenseScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expensesAsync = ref.watch(expensesProvider);
 
+    final currency = ref.watch(currencyProvider);
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade50, // Dark mode background
+      backgroundColor:
+          Theme.of(context).scaffoldBackgroundColor, // Dark mode background
       appBar: AppBar(
         title: const Text('Expense Book',
             style: TextStyle(color: Colors.white, fontSize: 20)),
@@ -68,7 +72,8 @@ class ExpenseScreen extends ConsumerWidget {
             children: [
               Column(
                 children: [
-                  _buildStatsHeader(totalMonthExpense, entries.length),
+                  _buildStatsHeader(
+                      totalMonthExpense, entries.length, currency),
                   if (entries.isEmpty)
                     Expanded(child: _buildEmptyState())
                   else
@@ -98,7 +103,7 @@ class ExpenseScreen extends ConsumerWidget {
                                     color: Colors.grey, fontSize: 12)),
                             isThreeLine: true,
                             trailing: Text(
-                              '- Rs. ${e['amount']}',
+                              '- $currency ${e['amount']}',
                               style: const TextStyle(
                                   color: Colors.redAccent,
                                   fontWeight: FontWeight.bold,
@@ -116,17 +121,16 @@ class ExpenseScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddExpenseModal(context, ref),
-        backgroundColor: const Color(0xFFF05A28), // Orange
-        icon: const Icon(Icons.add, color: Colors.black87),
+        onPressed: () => _showAddExpenseModal(context, ref, currency),
+        backgroundColor: AppTheme.primaryBlue,
+        icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('ADD EXPENSE',
-            style:
-                TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
       ),
     );
   }
 
-  Widget _buildStatsHeader(double total, int count) {
+  Widget _buildStatsHeader(double total, int count, String currency) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(20),
@@ -141,7 +145,7 @@ class ExpenseScreen extends ConsumerWidget {
             children: [
               const Text('Total Expenses (This Month)',
                   style: TextStyle(color: Colors.black87, fontSize: 14)),
-              Text('Rs $total',
+              Text('$currency $total',
                   style: const TextStyle(
                       color: Colors.black87,
                       fontSize: 20,
@@ -189,7 +193,8 @@ class ExpenseScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddExpenseModal(BuildContext context, WidgetRef ref) {
+  void _showAddExpenseModal(
+      BuildContext context, WidgetRef ref, String currency) {
     final amountController = TextEditingController();
     final categoryController = TextEditingController();
     final remarkController = TextEditingController();
@@ -197,7 +202,7 @@ class ExpenseScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF252525),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(
@@ -224,9 +229,10 @@ class ExpenseScreen extends ConsumerWidget {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87),
-              decoration: const InputDecoration(
-                prefixText: 'Rs. ',
-                prefixStyle: TextStyle(color: Colors.black87, fontSize: 24),
+              decoration: InputDecoration(
+                prefixText: '$currency ',
+                prefixStyle:
+                    const TextStyle(color: Colors.black87, fontSize: 24),
                 labelText: 'Amount',
                 labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
@@ -294,14 +300,14 @@ class ExpenseScreen extends ConsumerWidget {
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 54),
-                backgroundColor: const Color(0xFFF05A28),
+                backgroundColor: AppTheme.primaryBlue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('SAVE EXPENSE',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Colors.white,
                       fontSize: 16)),
             ),
             const SizedBox(height: 24),

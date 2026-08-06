@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme_provider.dart';
 import '../../../../app/theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final currencyProvider = StateProvider<String>((ref) => 'PKR');
+import '../../../../core/providers/currency_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -32,7 +32,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           title: Text(title,
               style: const TextStyle(fontSize: 16, color: Colors.black87)),
           trailing: const Icon(Icons.chevron_right,
-              color: Color(0xFF60A5FA), size: 24),
+              color: AppTheme.secondaryBlue, size: 24),
           onTap: onTap,
         ),
         const Divider(
@@ -62,6 +62,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
+    final currency = ref.watch(currencyProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.primaryBlue, // Matches gradient start
@@ -96,7 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               decoration: const BoxDecoration(
                   color: Colors.white, shape: BoxShape.circle),
               child: const Icon(Icons.workspace_premium,
-                  color: Color(0xFFD4AF37), size: 20),
+                  color: AppTheme.goldAccent, size: 20),
             ),
           ),
           InkWell(
@@ -107,7 +108,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               decoration: const BoxDecoration(
                   color: Colors.white, shape: BoxShape.circle),
               child: const Icon(Icons.notifications,
-                  color: Color(0xFFD4AF37), size: 20),
+                  color: AppTheme.goldAccent, size: 20),
             ),
           ),
           const SizedBox(width: 8)
@@ -149,14 +150,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   tilePadding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   leading: const Icon(Icons.settings_outlined,
-                      color: Color(0xFF60A5FA), size: 28),
+                      color: AppTheme.secondaryBlue, size: 28),
                   title: const Text('Settings',
-                      style: TextStyle(fontSize: 16, color: Color(0xFF60A5FA))),
+                      style: TextStyle(
+                          fontSize: 16, color: AppTheme.secondaryBlue)),
                   initiallyExpanded: true,
                   children: [
                     _buildSubTile(
                       leading: const Icon(Icons.notifications_active_outlined,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'Quick entry from notification',
                       trailing: Switch(
                         value: _quickEntryEnabled,
@@ -167,7 +169,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.dark_mode_outlined,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'Dark Mode',
                       trailing: Switch(
                         value: isDarkMode,
@@ -181,23 +183,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.lock_outline,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'App Lock',
                       onTap: () {},
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.g_translate_outlined,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'Language',
                       onTap: () => context.push('/language'),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.monetization_on_outlined,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'Business Currency:',
                       trailing: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          value: ref.watch(currencyProvider),
+                          value: currency,
                           icon: const Icon(Icons.keyboard_arrow_down,
                               color: Colors.black26),
                           style: const TextStyle(
@@ -223,13 +225,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'Delete Business',
                       onTap: () {},
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
-                          color: Color(0xFF60A5FA), size: 20),
+                          color: AppTheme.secondaryBlue, size: 20),
                       title: 'Delete DigiKhata Account',
                       onTap: () async {
                         await Supabase.instance.client.auth.signOut();

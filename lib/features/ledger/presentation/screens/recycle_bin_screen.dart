@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -11,9 +12,9 @@ class RecycleBinScreen extends StatelessWidget {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
+              colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -43,9 +44,9 @@ class RecycleBinScreen extends StatelessWidget {
           // Orange Header Background Extension
           Container(
             height: 40,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
+                colors: [AppTheme.primaryBlue, AppTheme.secondaryBlue],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -139,7 +140,7 @@ class RecycleBinScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(Icons.menu_book,
-                                color: Color(0xFF60A5FA), size: 24),
+                                color: AppTheme.secondaryBlue, size: 24),
                           ),
                           const SizedBox(width: 12),
                           Column(

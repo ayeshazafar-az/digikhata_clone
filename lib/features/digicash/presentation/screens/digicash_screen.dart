@@ -1,13 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/providers/currency_provider.dart';
 import '../../../../app/theme.dart';
 
-class DigiCashScreen extends StatelessWidget {
+final _digicashProfileProvider =
+    FutureProvider<Map<String, String>>((ref) async {
+  final user = Supabase.instance.client.auth.currentUser;
+  if (user == null) return {'phone': '---', 'balance': '0.00'};
+  try {
+    final profile = await Supabase.instance.client
+        .from('profiles')
+        .select('phone')
+        .eq('id', user.id)
+        .single();
+    return {
+      'phone': profile['phone'] ?? user.phone ?? '---',
+      'balance': '0.00', // Real balance would come from a wallet table
+    };
+  } catch (_) {
+    return {'phone': user.phone ?? '---', 'balance': '0.00'};
+  }
+});
+
+class DigiCashScreen extends ConsumerWidget {
   const DigiCashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(_digicashProfileProvider);
+    final phone = profileAsync.when(
+      data: (d) => d['phone'] ?? '---',
+      loading: () => '...',
+      error: (_, __) => '---',
+    );
+    final balance = profileAsync.when(
+      data: (d) => d['balance'] ?? '0.00',
+      loading: () => '...',
+      error: (_, __) => '0.00',
+    );
+    final currency = ref.watch(currencyProvider);
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           // Header section
@@ -45,9 +80,9 @@ class DigiCashScreen extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        '03245423290',
-                        style: TextStyle(
+                      child: Text(
+                        phone,
+                        style: const TextStyle(
                             color: Colors.black87,
                             fontWeight: FontWeight.w600,
                             fontSize: 13),
@@ -58,7 +93,7 @@ class DigiCashScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFB300), // Yellow button
+                        color: AppTheme.goldAccent,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
@@ -107,7 +142,7 @@ class DigiCashScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Column(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
@@ -116,23 +151,23 @@ class DigiCashScreen extends StatelessWidget {
                                     textBaseline: TextBaseline.alphabetic,
                                     children: [
                                       Text(
-                                        'Rs.',
+                                        '$currency ',
                                         style: TextStyle(
                                             color: Colors.black87,
                                             fontSize: 20,
                                             fontWeight: FontWeight.w500),
                                       ),
                                       Text(
-                                        '0.00',
-                                        style: TextStyle(
+                                        balance,
+                                        style: const TextStyle(
                                             color: Colors.black87,
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 4),
-                                  Text(
+                                  const SizedBox(height: 4),
+                                  const Text(
                                     'Balance',
                                     style: TextStyle(
                                         color: Colors.grey,
@@ -142,10 +177,15 @@ class DigiCashScreen extends StatelessWidget {
                                 ],
                               ),
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Money Out feature coming soon')),
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color(0xFFC62828), // Dark Red
+                                  backgroundColor: AppTheme.dangerRed,
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 12),
                                   shape: RoundedRectangleBorder(
@@ -173,19 +213,16 @@ class DigiCashScreen extends StatelessWidget {
                         Row(
                           children: [
                             Expanded(
-                                child: _buildGridItem(
-                                    'JazzCash', 'assets/icons/jazzcash.png',
-                                    isCustomIcon: true)),
+                                child: _buildGridItem(context, 'JazzCash',
+                                    Icons.account_balance_wallet)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                                child: _buildGridItem(context, 'easypaisa',
+                                    Icons.account_balance)),
                             const SizedBox(width: 12),
                             Expanded(
                                 child: _buildGridItem(
-                                    'easypaisa', 'assets/icons/easypaisa.png',
-                                    isCustomIcon: true)),
-                            const SizedBox(width: 12),
-                            Expanded(
-                                child: _buildGridItem(
-                                    'Raast', 'assets/icons/raast.png',
-                                    isCustomIcon: true)),
+                                    context, 'Raast', Icons.swap_horiz)),
                           ],
                         ),
 
@@ -200,34 +237,35 @@ class DigiCashScreen extends StatelessWidget {
                           children: [
                             Expanded(
                                 child: _buildGridItem(
-                                    'Bills', Icons.receipt_long)),
+                                    context, 'Bills', Icons.receipt_long)),
                             const SizedBox(width: 12),
                             Expanded(
                                 child: _buildGridItem(
-                                    'Easy Load', Icons.phone_android)),
+                                    context, 'Easy Load', Icons.phone_android)),
                             const SizedBox(width: 12),
                             Expanded(
-                                child: _buildGridItem(
-                                    'Vouchers', Icons.local_activity_outlined)),
+                                child: _buildGridItem(context, 'Vouchers',
+                                    Icons.local_activity_outlined)),
                           ],
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
-                                child:
-                                    _buildGridItem('SMS', Icons.sms_outlined)),
-                            const SizedBox(width: 12),
-                            Expanded(child: _buildGridItem('NFC', Icons.nfc)),
+                                child: _buildGridItem(
+                                    context, 'SMS', Icons.sms_outlined)),
                             const SizedBox(width: 12),
                             Expanded(
-                                child: _buildGridItem('Pro', Icons.stars,
-                                    iconColor: Colors.amber)),
+                                child:
+                                    _buildGridItem(context, 'NFC', Icons.nfc)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                                child: _buildGridItem(
+                                    context, 'Pro', Icons.stars,
+                                    iconColor: AppTheme.goldAccent)),
                           ],
                         ),
-                        const SizedBox(
-                            height:
-                                100), // spacing for bottom nav if overlapping
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
@@ -240,48 +278,44 @@ class DigiCashScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGridItem(String title, dynamic iconOrPath,
-      {bool isCustomIcon = false, Color iconColor = Colors.black87}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          )
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (isCustomIcon)
-            Container(
-              height: 32,
-              width: 48,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Icon(Icons.account_balance_wallet,
-                  color: Colors.grey, size: 20), // Fallback
+  Widget _buildGridItem(BuildContext context, String title, IconData icon,
+      {Color iconColor = Colors.black87}) {
+    return InkWell(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$title — Coming soon')),
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             )
-          else
-            Icon(iconOrPath as IconData, size: 32, color: iconColor),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-                color: Colors.black87),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 32, color: iconColor),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: Colors.black87),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
