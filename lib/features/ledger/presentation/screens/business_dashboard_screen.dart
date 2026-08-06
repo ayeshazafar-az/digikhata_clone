@@ -77,7 +77,7 @@ class BusinessDashboardScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2)),
         ],
@@ -164,7 +164,7 @@ class BusinessDashboardScreen extends ConsumerWidget {
                       strokeWidth: 1,
                       dashArray: [5, 5]),
                   getDrawingVerticalLine: (value) => FlLine(
-                      color: Colors.orange.withOpacity(0.2), strokeWidth: 1),
+                      color: Colors.orange.withValues(alpha: 0.2), strokeWidth: 1),
                 ),
                 titlesData: FlTitlesData(
                     show: true,
@@ -319,8 +319,8 @@ class BusinessDashboardScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: isBtn
             ? (label.contains('Sale')
-                ? Colors.green.withOpacity(0.1)
-                : Colors.red.withOpacity(0.05))
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.red.withValues(alpha: 0.05))
             : null,
       ),
       child: Row(
@@ -528,7 +528,7 @@ class BusinessDashboardScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2)),
         ],
@@ -555,7 +555,7 @@ class BusinessDashboardScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.arrow_outward,
                     color: AppTheme.primaryBlue, size: 16),

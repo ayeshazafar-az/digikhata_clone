@@ -20,7 +20,7 @@ class AllBrandsScreen extends ConsumerWidget {
             gradient: LinearGradient(
               colors: [
                 AppTheme.primaryBlue,
-                AppTheme.primaryBlue.withOpacity(0.8)
+                AppTheme.primaryBlue.withValues(alpha: 0.8)
               ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -73,7 +73,7 @@ class AllBrandsScreen extends ConsumerWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                             spreadRadius: 2,
                           )

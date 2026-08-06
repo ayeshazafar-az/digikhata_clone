@@ -155,7 +155,7 @@ class _CashEntryScreenState extends ConsumerState<CashEntryScreen> {
             SwitchListTile(
               title: const Text('Send Free SMS to Customer'),
               subtitle: const Text('Notifies customer about this transaction'),
-              activeColor: AppTheme.primaryBlue,
+              activeThumbColor: AppTheme.primaryBlue,
               value:
                   true, // Tied to state if needed, defaulting to true in clone
               onChanged: (val) {

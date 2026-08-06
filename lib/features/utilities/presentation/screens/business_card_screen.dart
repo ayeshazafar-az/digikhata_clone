@@ -79,7 +79,7 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
               child:
                   const Icon(Icons.play_arrow, color: Colors.white, size: 16),
             ),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           )
         ],
       ),
@@ -198,7 +198,7 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryBlue,
                   minimumSize: const Size(double.infinity, 50),
@@ -292,7 +292,7 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
               left: 0,
               right: 0,
               child: Container(
-                  height: 80, color: const Color(0xFFFDECD4).withOpacity(0.5)),
+                  height: 80, color: const Color(0xFFFDECD4).withValues(alpha: 0.5)),
             ),
             // Text Content
             Center(

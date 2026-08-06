@@ -164,7 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         value: _quickEntryEnabled,
                         onChanged: (val) =>
                             setState(() => _quickEntryEnabled = val),
-                        activeColor: AppTheme.primaryBlue,
+                        activeThumbColor: AppTheme.primaryBlue,
                       ),
                     ),
                     _buildSubTile(
@@ -178,7 +178,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               .read(themeModeProvider.notifier)
                               .setTheme(val ? ThemeMode.dark : ThemeMode.light);
                         },
-                        activeColor: AppTheme.primaryBlue,
+                        activeThumbColor: AppTheme.primaryBlue,
                       ),
                     ),
                     _buildSubTile(

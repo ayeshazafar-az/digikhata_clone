@@ -68,7 +68,7 @@ class _CurrencySelectionScreenState extends State<CurrencySelectionScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           )
         ],
       ),

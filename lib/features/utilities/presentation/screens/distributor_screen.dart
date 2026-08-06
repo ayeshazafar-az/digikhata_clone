@@ -21,7 +21,7 @@ class DistributorScreen extends StatelessWidget {
             const Text('Become a distributor and earn commissions on POS hardware and premium subscriptions in your area.', textAlign: TextAlign.center, style: TextStyle(color: Colors.black54, fontSize: 16)),
             const SizedBox(height: 32),
             ElevatedButton(
-               onPressed: () {},
+               onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
                child: const Text('Contact Sales Team'),
             )

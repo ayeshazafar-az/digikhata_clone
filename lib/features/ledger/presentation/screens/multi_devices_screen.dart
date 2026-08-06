@@ -39,7 +39,7 @@ class MultiDevicesScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.phone_in_talk_outlined, color: Colors.white),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           ),
         ],
       ),
@@ -57,7 +57,7 @@ class MultiDevicesScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4)),
                 ],
@@ -97,7 +97,7 @@ class MultiDevicesScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
                       icon: const Text('👑', style: TextStyle(fontSize: 18)),
                       label: const Text('Subscribe',
                           style: TextStyle(
@@ -134,7 +134,7 @@ class MultiDevicesScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2)),
                 ],

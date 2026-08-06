@@ -23,7 +23,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       appBar: AppBar(
         title: const Text('Revenue Dashboard'),
         actions: [
-          IconButton(icon: const Icon(Icons.picture_as_pdf), onPressed: () {})
+          IconButton(icon: const Icon(Icons.picture_as_pdf), onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },)
         ],
       ),
       body: statsAsync.when(

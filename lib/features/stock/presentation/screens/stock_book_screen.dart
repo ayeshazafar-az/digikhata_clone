@@ -53,7 +53,7 @@ class StockBookScreen extends ConsumerWidget {
             padding:
                 const EdgeInsets.only(right: 16.0, top: 12.0, bottom: 12.0),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryBlue,
                 padding: const EdgeInsets.symmetric(horizontal: 16),

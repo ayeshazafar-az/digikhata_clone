@@ -38,7 +38,7 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      AppTheme.primaryBlue.withOpacity(0.9), // Match blue theme
+                      AppTheme.primaryBlue.withValues(alpha: 0.9), // Match blue theme
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                 ),

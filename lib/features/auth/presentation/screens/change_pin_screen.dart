@@ -42,7 +42,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline, color: Colors.white),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           ),
         ],
       ),
@@ -54,7 +54,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               )
@@ -95,7 +95,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
                   child: const Text(
                     'FORGOT PIN?',
                     style: TextStyle(

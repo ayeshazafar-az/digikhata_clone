@@ -191,11 +191,11 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.history, color: Colors.black54),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           ),
           IconButton(
             icon: const Icon(Icons.image, color: Colors.white70),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           ),
         ],
       ),
@@ -379,7 +379,7 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.add, color: AppTheme.primaryBlue),
-            onPressed: () {},
+            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
           ),
           Expanded(
             child: Container(

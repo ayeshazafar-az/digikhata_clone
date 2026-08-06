@@ -28,7 +28,7 @@ class _ProSubscriptionScreenState extends State<ProSubscriptionScreen> {
                   colors: [
                     AppTheme.primaryBlue.withOpacity(
                         0.2), // Light blue base matching the peach mapping
-                    AppTheme.primaryBlue.withOpacity(0.05),
+                    AppTheme.primaryBlue.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
@@ -136,11 +136,11 @@ class _ProSubscriptionScreenState extends State<ProSubscriptionScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 20),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue.withOpacity(0.02),
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.02),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                             color: AppTheme.primaryBlue
-                                .withOpacity(0.3)), // Blue-aligned border
+                                .withValues(alpha: 0.3)), // Blue-aligned border
                       ),
                       child: const Column(
                         children: [
@@ -267,7 +267,7 @@ class _ProSubscriptionScreenState extends State<ProSubscriptionScreen> {
         padding: const EdgeInsets.only(top: 16, bottom: 0),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppTheme.primaryBlue.withOpacity(0.05)
+              ? AppTheme.primaryBlue.withValues(alpha: 0.05)
               : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(

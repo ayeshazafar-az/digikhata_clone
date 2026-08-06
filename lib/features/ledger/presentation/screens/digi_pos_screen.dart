@@ -125,7 +125,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
               child: Container(
                 height: 45,
                 decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(30)),
                 child: TabBar(
                   indicator: BoxDecoration(
@@ -332,7 +332,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF05A28),
                     minimumSize: const Size(double.infinity, 50),
@@ -368,7 +368,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8)),
             child: Icon(icon, color: iconColor, size: 28),
           ),
@@ -441,7 +441,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                 Expanded(
                   flex: 2,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           AppTheme.dangerRed, // In screenshot it's Red/Orange

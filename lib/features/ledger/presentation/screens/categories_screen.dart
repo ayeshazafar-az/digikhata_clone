@@ -29,7 +29,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
             gradient: LinearGradient(
               colors: [
                 AppTheme.primaryBlue,
-                AppTheme.primaryBlue.withOpacity(0.8)
+                AppTheme.primaryBlue.withValues(alpha: 0.8)
               ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -181,7 +181,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.02),
+                                        color: Colors.black.withValues(alpha: 0.02),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       )
@@ -196,7 +196,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
                                         color: AppTheme.primaryBlue
-                                            .withOpacity(0.1),
+                                            .withValues(alpha: 0.1),
                                         shape: BoxShape.circle,
                                       ),
                                       child: const Icon(Icons.grid_view_rounded,

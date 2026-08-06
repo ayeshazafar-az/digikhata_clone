@@ -1,4 +1,3 @@
-import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   // Ensure Flutter bindings are initialized before calling native code
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
 
   try {
     // Initialize Firebase Cloud Messaging platform
@@ -58,7 +56,7 @@ void main() async {
     // Initialize Supabase Backend
     await Supabase.initialize(
       url: 'https://eezvzrepirvvfpxekjob.supabase.co',
-      anonKey: 'sb_publishable_nU7ew7U-9DfFAutkJDkavA_kzEK_RwS',
+      publishableKey: 'sb_publishable_nU7ew7U-9DfFAutkJDkavA_kzEK_RwS',
     );
   } catch (e) {
     debugPrint('Supabase init error: $e');

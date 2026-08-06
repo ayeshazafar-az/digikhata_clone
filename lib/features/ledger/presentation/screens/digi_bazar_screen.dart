@@ -31,7 +31,7 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
             gradient: LinearGradient(
               colors: [
                 AppTheme.primaryBlue,
-                AppTheme.primaryBlue.withOpacity(0.8)
+                AppTheme.primaryBlue.withValues(alpha: 0.8)
               ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -122,8 +122,8 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
                       gradient: LinearGradient(colors: [
-                        AppTheme.primaryBlue.withOpacity(0.9),
-                        AppTheme.primaryBlue.withOpacity(0.5)
+                        AppTheme.primaryBlue.withValues(alpha: 0.9),
+                        AppTheme.primaryBlue.withValues(alpha: 0.5)
                       ]),
                     ),
                     child: const Center(
@@ -374,7 +374,7 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 4))
         ],
@@ -434,7 +434,7 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(12)),
                       child: Text('$moq MOQ',
                           style: const TextStyle(
