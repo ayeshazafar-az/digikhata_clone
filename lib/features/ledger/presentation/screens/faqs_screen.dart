@@ -1,120 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class FaqsScreen extends StatelessWidget {
+final faqsProvider =
+    FutureProvider<Map<String, List<Map<String, dynamic>>>>((ref) async {
+  final supabase = Supabase.instance.client;
+  try {
+    final response = await supabase
+        .from('faqs')
+        .select()
+        .order('category')
+        .order('created_at');
+    final Map<String, List<Map<String, dynamic>>> grouped = {};
+    for (var item in response) {
+      final cat = item['category'] ?? 'General';
+      if (!grouped.containsKey(cat)) grouped[cat] = [];
+      grouped[cat]!.add(item);
+    }
+    return grouped;
+  } catch (e) {
+    if (e.toString().contains('relation "public.faqs" does not exist')) {
+      throw Exception(
+          'Please run the provided SQL policies script to create the live faqs table.');
+    }
+    rethrow;
+  }
+});
+
+class FaqsScreen extends ConsumerWidget {
   const FaqsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final faqsAsync = ref.watch(faqsProvider);
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Colors.white, size: 20),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text('FAQs', style: TextStyle(color: Colors.white)),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Frequently Asked Questions',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w400,
-                color: Colors.black87,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
             ),
-            const SizedBox(height: 24),
-            _buildCategory(context, 'Manage Customers', [
-              'How To Add A New Customer?',
-              'How To Add An Entry In Customer Ledger?',
-              'How To Share The Transaction?',
-              'How To Edit or Delete A Customer?',
-              'How To Edit or Delete A Transaction (Entry)?',
-              'How To Send A WhatsApp or SMS Collection Reminder To The Customer?',
-              'How To Schedule Free Automatic SMS Collection Reminders For The Customers?',
-              'How To Enable Free SMS Collection Reminder For The Customer?',
-              'How To Share the Customer\'s Ledger Via SMS?',
-              'How To Change The Language Of SMS Collection Reminder That Is Sent To The Customer?',
-              'How To Schedule SMS Collection Reminder For A Specific Customer?',
-              'How To Upload Customer\'s Profile Picture?',
-            ]),
-            _buildCategory(context, 'Manage Suppliers', [
-              'How To Add A New Supplier?',
-              'How To Add An Entry In Supplier Ledger?',
-              'How To Share The Transaction?',
-              'How To Edit or Delete A Supplier?',
-              'How To Edit or Delete A Transaction (Entry)?',
-              'How To Enable Free SMS Collection Reminder For The Supplier?',
-              'How To Share the Supplier\'s Ledger Via SMS?',
-              'How To Change The Language Of SMS Collection Reminder That Is Sent To The Suppliers?',
-              'How To Upload Supplier\'s Profile Picture?',
-            ]),
-            _buildCategory(context, 'My Profile', [
-              'How Can I Complete My Profile To 100%?',
-              'What is an "App Lock"?',
-              'How To Set An App Lock in DigiKhata?',
-            ]),
-            _buildCategory(context, 'Reports', [
-              'How Can I Download A Summary Of All Customer\'s Transactions?',
-              'How Can I Download A Summary Of All Transactions Of One Customer?',
-              'How To Download A Cash Report?',
-              'How To Download A Stock Report?',
-            ]),
-            _buildCategory(context, 'Data Backup', [
-              'What Is Automatic Data Backup?',
-              'Can I Transfer My Data To Another Device?',
-              'Can I Manually Backup My Data?',
-            ]),
-            _buildCategory(context, 'Manage Stock & Create Invoice', [
-              'How To Add A New Item?',
-              'How To Manage Your Inventory?',
-              'How To Create Digital Invoice With DigiKhata App?',
-            ]),
-            _buildCategory(context, 'Generate & Share Digital Bills', [
-              'How To Create Digital Bills With DigiKhata App?',
-              'How To Download A PDF Report About Bills?',
-            ]),
-            _buildCategory(context, 'Sell Easyload/Bundles & Send Payments', [
-              'How To Sign In Digi Cash?',
-              'How To Complete the Process Of Customer Verification Request In Digi Cash?',
-              'How To Add A Bank Account To Your Digi Cash Account?',
-              'How To Sell Easyload With DigiKhata?',
-              'How To Sell Packages With DigiKhata?',
-              'How To Send Payment Link To Your Customers?',
-            ]),
-          ],
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new,
+                color: Colors.white, size: 20),
+            onPressed: () => context.pop(),
+          ),
+          title: const Text('FAQs', style: TextStyle(color: Colors.white)),
         ),
-      ),
-    );
+        body: faqsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, st) => Center(
+                child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Text('Failed to load FAQs: $e',
+                        textAlign: TextAlign.center))),
+            data: (groupedFaqs) {
+              if (groupedFaqs.isEmpty) {
+                return const Center(child: Text('No FAQs published yet.'));
+              }
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Frequently Asked Questions',
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black87),
+                    ),
+                    const SizedBox(height: 24),
+                    ...groupedFaqs.entries.map((entry) =>
+                        _buildCategory(context, entry.key, entry.value)),
+                  ],
+                ),
+              );
+            }));
   }
 
   Widget _buildCategory(
-      BuildContext context, String title, List<String> questions) {
+      BuildContext context, String title, List<Map<String, dynamic>> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w400,
-            color: Colors.black87,
-          ),
+              fontSize: 18, fontWeight: FontWeight.w400, color: Colors.black87),
         ),
         const SizedBox(height: 12),
         Container(
@@ -124,8 +105,10 @@ class FaqsScreen extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade200),
           ),
           child: Column(
-            children: questions.asMap().entries.map((entry) {
-              final isLast = entry.key == questions.length - 1;
+            children: items.asMap().entries.map((entry) {
+              final isLast = entry.key == items.length - 1;
+              final question = entry.value['question'] ?? 'Unnamed Question';
+              final answer = entry.value['answer'] ?? 'No response provided.';
               return Column(
                 children: [
                   Theme(
@@ -133,12 +116,11 @@ class FaqsScreen extends StatelessWidget {
                         .copyWith(dividerColor: Colors.transparent),
                     child: ExpansionTile(
                       title: Text(
-                        entry.value,
+                        question,
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.w500,
-                        ),
+                            fontSize: 13,
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.w500),
                       ),
                       tilePadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 0),
@@ -146,11 +128,16 @@ class FaqsScreen extends StatelessWidget {
                           left: 16, right: 16, bottom: 16),
                       iconColor: const Color(0xFF1E3A8A),
                       collapsedIconColor: Colors.grey,
-                      children: const [
-                        Text(
-                          'This is a dummy response. In a production environment, this text would securely fetch from a localized CMS payload, detailing exact instructions to complete the action safely and efficiently.',
-                          style: TextStyle(
-                              fontSize: 12, color: Colors.black54, height: 1.4),
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            answer,
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                                height: 1.4),
+                          ),
                         ),
                       ],
                     ),

@@ -28,34 +28,17 @@ class AdminBusinessesNotifier
         profiles:owner_id(phone, role)
       ''').order('created_at', ascending: false);
 
-      final fallback = [
-        {
-          'id': 'b-mock-1',
-          'business_name': 'Ayesha Traders',
-          'business_type': 'Retail',
-          'created_at': DateTime.now()
-              .subtract(const Duration(days: 4))
-              .toIso8601String(),
-          'profiles': {'phone': '03001234567', 'role': 'Admin'}
-        },
-        {
-          'id': 'b-mock-2',
-          'business_name': 'Zafar Electronics',
-          'business_type': 'Wholesale',
-          'created_at': DateTime.now()
-              .subtract(const Duration(days: 2))
-              .toIso8601String(),
-          'profiles': {'phone': '03310000000', 'role': 'User'}
-        }
-      ];
-
-      if (res.isEmpty) {
-        state = AsyncValue.data(fallback);
-      } else {
-        state = AsyncValue.data(List<Map<String, dynamic>>.from(res));
-      }
+      state = AsyncValue.data(List<Map<String, dynamic>>.from(res));
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      if (e.toString().contains('RLS') ||
+          e.toString().contains('row-level security')) {
+        state = AsyncValue.error(
+            Exception(
+                'Supabase RLS Policy violation: Please run the supabase_admin_rls_policies.sql script to grant super_admin privileges.'),
+            st);
+      } else {
+        state = AsyncValue.error(e, st);
+      }
     }
   }
 

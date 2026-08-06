@@ -10,39 +10,20 @@ final adminUsersProvider =
   final supabase = Supabase.instance.client;
   // Fetch from the profiles table or standard users table
   // Sometimes querying auth.users from client is blocked, so we use public.profiles
-  final res = await supabase
-      .from('profiles')
-      .select()
-      .order('created_at', ascending: false);
-  final fallback = [
-    {
-      'id': 'mock-id-1',
-      'phone': '03001234567',
-      'role': 'Admin',
-      'created_at':
-          DateTime.now().subtract(const Duration(days: 10)).toIso8601String(),
-      'kyc_status': 'Verified'
-    },
-    {
-      'id': 'mock-id-2',
-      'phone': '03310000000',
-      'role': 'User',
-      'created_at':
-          DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
-      'kyc_status': 'Pending'
-    },
-    {
-      'id': 'mock-id-3',
-      'phone': '03429998888',
-      'role': 'User',
-      'created_at':
-          DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
-      'kyc_status': 'Failed'
+  try {
+    final res = await supabase
+        .from('profiles')
+        .select()
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(res);
+  } catch (e) {
+    if (e.toString().contains('RLS') ||
+        e.toString().contains('row-level security')) {
+      throw Exception(
+          'Supabase RLS Policy violation: Please run the supabase_admin_rls_policies.sql script to grant super_admin privileges.');
     }
-  ];
-
-  if (res.isEmpty) return fallback;
-  return List<Map<String, dynamic>>.from(res);
+    rethrow;
+  }
 });
 
 class AdminUsersScreen extends ConsumerWidget {
