@@ -490,10 +490,10 @@ class StockBookScreen extends ConsumerWidget {
                       });
                       ref.invalidate(stockProvider);
                       Navigator.pop(ctx);
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Error saving item.')));
                     }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Error saving item.')));
                   }
                 },
                 style: ElevatedButton.styleFrom(

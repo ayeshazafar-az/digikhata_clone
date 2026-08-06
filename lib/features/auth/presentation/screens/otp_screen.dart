@@ -88,6 +88,8 @@ class _OtpScreenState extends State<OtpScreen> {
         }
 
         // --- SUBSCRIPTION CHECK FOR DESKTOP / WEB BLOCKING ---
+        // (Temporarily commented out to allow testing customer side on laptop)
+        /*
         if (kIsWeb && MediaQuery.of(context).size.width > 600) {
           final isSubscribed = profile?['is_subscribed'] == true;
           if (!isSubscribed) {
@@ -106,6 +108,7 @@ class _OtpScreenState extends State<OtpScreen> {
             return;
           }
         }
+        */
 
         // --- KYC ONBOARDING INTERCEPT ---
         final kycStatus = profile?['kyc_status'];
