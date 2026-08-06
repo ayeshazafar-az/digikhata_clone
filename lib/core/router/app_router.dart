@@ -13,6 +13,7 @@ import '../../features/auth/presentation/screens/otp_screen.dart';
 import '../../features/auth/presentation/screens/pin_setup_screen.dart';
 import '../../features/auth/presentation/screens/kyc_onboarding_screen.dart';
 import '../../features/ledger/presentation/screens/dashboard_screen.dart';
+import '../../features/ledger/presentation/screens/business_dashboard_screen.dart';
 import '../../features/customers/presentation/screens/customer_ledger_screen.dart';
 import '../../features/ledger/presentation/screens/cash_entry_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
@@ -124,6 +125,11 @@ class AppRouter {
         path: '/home',
         name: 'home',
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/business_dashboard',
+        name: 'business_dashboard',
+        builder: (context, state) => const BusinessDashboardScreen(),
       ),
       GoRoute(
         path: '/qr_code',

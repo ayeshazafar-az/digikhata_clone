@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import '../widgets/app_drawer_menu.dart';
+import 'dashboard_screen.dart'; // To access dashboardIndexProvider
 
-class HomeGridScreen extends StatelessWidget {
+class HomeGridScreen extends ConsumerWidget {
   final bool isRoot;
   const HomeGridScreen({super.key, this.isRoot = false});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       drawer: const AppDrawerMenu(),
@@ -72,13 +74,15 @@ class HomeGridScreen extends StatelessWidget {
           children: [
             _buildHeroBanner(context),
             const SizedBox(height: 24),
-            _buildSectionHeader('KHATA', actionText: 'View Dashboard'),
+            _buildSectionHeader('KHATA',
+                actionText: 'View Dashboard',
+                onActionTap: () => context.push('/business_dashboard')),
             const SizedBox(height: 16),
             _buildKhataGrid(context),
             const SizedBox(height: 32),
             _buildSectionHeader('PAYMENTS'),
             const SizedBox(height: 16),
-            _buildPaymentsGrid(context),
+            _buildPaymentsGrid(context, ref),
             const SizedBox(height: 32),
             _buildSectionHeader('MORE'),
             const SizedBox(height: 16),
@@ -208,7 +212,8 @@ class HomeGridScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, {String? actionText}) {
+  Widget _buildSectionHeader(String title,
+      {String? actionText, VoidCallback? onActionTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -222,17 +227,20 @@ class HomeGridScreen extends StatelessWidget {
           ),
         ),
         if (actionText != null)
-          Row(
-            children: [
-              const Icon(Icons.bar_chart,
-                  color: AppTheme.primaryBlue, size: 18),
-              const SizedBox(width: 4),
-              Text(
-                actionText,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: AppTheme.primaryBlue),
-              ),
-            ],
+          GestureDetector(
+            onTap: onActionTap,
+            child: Row(
+              children: [
+                const Icon(Icons.bar_chart,
+                    color: AppTheme.primaryBlue, size: 18),
+                const SizedBox(width: 4),
+                Text(
+                  actionText,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: AppTheme.primaryBlue),
+                ),
+              ],
+            ),
           )
       ],
     );
@@ -264,7 +272,7 @@ class HomeGridScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentsGrid(BuildContext context) {
+  Widget _buildPaymentsGrid(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         Expanded(
@@ -274,6 +282,10 @@ class HomeGridScreen extends StatelessWidget {
             'Accept card\npayments on your\nphone.',
             Colors.indigo.shade400,
             Colors.indigo.shade700,
+            onTap: () {
+              ref.read(dashboardIndexProvider.notifier).state =
+                  2; // DigiPOS index
+            },
           ),
         ),
         const SizedBox(width: 16),

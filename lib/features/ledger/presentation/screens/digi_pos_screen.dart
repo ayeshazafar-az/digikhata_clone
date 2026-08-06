@@ -55,8 +55,15 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
-          backgroundColor: AppTheme
-              .primaryBlue, // Mapped from Orange #F15424 to enforced Blue
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF05A28), Color(0xFFE65100)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
           elevation: 0,
           toolbarHeight: 70,
           leadingWidth: double.infinity,
@@ -118,11 +125,11 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
               child: Container(
                 height: 45,
                 decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(30)),
                 child: TabBar(
                   indicator: BoxDecoration(
-                      color: AppTheme.primaryBlue.withOpacity(0.8),
+                      color: const Color(0xFFF05A28),
                       borderRadius: BorderRadius.circular(30)),
                   indicatorSize: TabBarIndicatorSize.tab,
                   labelColor: Colors.white,
@@ -168,7 +175,8 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(24),
+            padding:
+                const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 24),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -181,14 +189,21 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
             ),
             child: Column(
               children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Complete KYC To\nActivate POS',
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          height: 1.2)),
-                ),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: RichText(
+                        text: const TextSpan(
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                height: 1.2,
+                                color: Colors.black87),
+                            children: [
+                          TextSpan(text: 'Complete KYC To\n'),
+                          TextSpan(
+                              text: 'Activate POS',
+                              style: TextStyle(color: Color(0xFFF05A28))),
+                        ]))),
                 const SizedBox(height: 8),
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -196,28 +211,130 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                       style: TextStyle(color: Colors.grey, fontSize: 16)),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  height: 200,
-                  alignment: Alignment.center,
-                  child: Icon(Icons.contactless,
-                      size: 120,
-                      color: AppTheme.primaryBlue.withOpacity(
-                          0.2)), // Mobile Phone POS Mock Placeholder
-                ),
-                const SizedBox(height: 24),
+
+                // Smartphone Mockup Graphic
+                SizedBox(
+                    height: 220,
+                    child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          // The phone body
+                          Transform.rotate(
+                            angle: 0.15,
+                            child: Container(
+                                width: 130,
+                                height: 220,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        color: Colors.black87, width: 4),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 10,
+                                          offset: Offset(5, 5))
+                                    ]),
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 12),
+                                      const Text('DigiKhata',
+                                          style: TextStyle(
+                                              color: Color(0xFFF05A28),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12)),
+                                      const Spacer(),
+                                      Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: const BoxDecoration(
+                                            color: Color(0xFFF05A28),
+                                            shape: BoxShape.circle),
+                                        child: const Icon(Icons.check,
+                                            color: Colors.white, size: 24),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text('Payment Received',
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 10)),
+                                      const Text('Rs. 2,450',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold)),
+                                      const Spacer(),
+                                      const Icon(Icons.contactless,
+                                          color: Colors.grey, size: 24),
+                                      const SizedBox(height: 16),
+                                    ])),
+                          ),
+                          // Floating credit card
+                          Positioned(
+                            bottom: 10,
+                            right: -10,
+                            child: Transform.rotate(
+                              angle: -0.1,
+                              child: Container(
+                                  width: 120,
+                                  height: 70,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFFF97316),
+                                            Color(0xFFEA580C)
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black26,
+                                            blurRadius: 8,
+                                            offset: Offset(2, 4))
+                                      ]),
+                                  child: const Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.memory,
+                                            color: Colors.amber, size: 20),
+                                        Text('1234 5678 9012 3456',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontFamily: 'monospace')),
+                                        Text('12/28',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8,
+                                                fontFamily: 'monospace')),
+                                      ])),
+                            ),
+                          )
+                        ])),
+
+                const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildSubCard('Paid\nUtility Bill', Icons.receipt_long),
-                    _buildSubCard('Shop\nPhotos', Icons.storefront),
-                    _buildSubCard('Bank\nAccount', Icons.account_balance),
+                    _buildSubCard(
+                        'Paid Utility\nBill', Icons.receipt_long, Colors.green),
+                    _buildSubCard(
+                        'Shop\nPhotos', Icons.storefront, Colors.orange),
+                    _buildSubCard(
+                        'Bank\nAccount', Icons.account_balance, Colors.brown),
                   ],
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
+                    backgroundColor: const Color(0xFFF05A28),
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25)),
@@ -235,7 +352,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
     );
   }
 
-  Widget _buildSubCard(String title, IconData icon) {
+  Widget _buildSubCard(String title, IconData icon, Color iconColor) {
     return Container(
       width: 90,
       height: 110,
@@ -248,12 +365,20 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: AppTheme.primaryBlue, size: 32),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8)),
+            child: Icon(icon, color: iconColor, size: 28),
+          ),
           const Spacer(),
           Text(title,
               textAlign: TextAlign.center,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                  color: Colors.black87)),
         ],
       ),
     );

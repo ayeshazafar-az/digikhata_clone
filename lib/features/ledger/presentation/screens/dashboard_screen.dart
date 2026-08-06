@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import 'home_grid_screen.dart';
 import '../../../digicash/presentation/screens/digicash_secure_wrapper.dart';
 import 'digi_pos_screen.dart';
 import 'digi_bazar_screen.dart';
 
-class DashboardScreen extends StatefulWidget {
+final dashboardIndexProvider = StateProvider<int>((ref) => 0);
+
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _currentIndex = ref.watch(dashboardIndexProvider);
 
-class _DashboardScreenState extends State<DashboardScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    const HomeGridScreen(),
-    const DigiBazarScreen(),
-    const DigiPosScreen(),
-    const DigiCashSecureWrapper(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      const HomeGridScreen(),
+      const DigiBazarScreen(),
+      const DigiPosScreen(),
+      const DigiCashSecureWrapper(),
+    ];
     return Scaffold(
       body: _pages[_currentIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -42,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() => _currentIndex = index);
+          ref.read(dashboardIndexProvider.notifier).state = index;
         },
         selectedItemColor: AppTheme.primaryBlue,
         unselectedItemColor: Colors.grey.shade400,
