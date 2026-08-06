@@ -5,8 +5,8 @@ import '../../../../app/theme_provider.dart';
 import '../../../../app/theme.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../core/providers/currency_provider.dart';
+import '../../../../core/providers/language_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -63,6 +63,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final themeMode = ref.watch(themeModeProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
     final currency = ref.watch(currencyProvider);
+    final language = ref.watch(languageProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.primaryBlue, // Matches gradient start
@@ -193,7 +194,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       leading: const Icon(Icons.g_translate_outlined,
                           color: AppTheme.secondaryBlue, size: 20),
                       title: 'Language',
-                      onTap: () => context.push('/language'),
+                      trailing: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: language,
+                          icon: const Icon(Icons.keyboard_arrow_down,
+                              color: Colors.black26),
+                          style: const TextStyle(
+                              color: Colors.black87, fontSize: 14),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              ref.read(languageProvider.notifier).state =
+                                  newValue;
+                            }
+                          },
+                          items: <String>[
+                            'English',
+                            'Roman Urdu',
+                            'اردو',
+                            'سنڌي',
+                            'پښتو',
+                            'فارسی'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      onTap: () {},
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.monetization_on_outlined,

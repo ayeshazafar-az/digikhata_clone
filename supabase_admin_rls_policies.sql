@@ -176,3 +176,23 @@ DROP POLICY IF EXISTS "Users can update staff" ON staff;
 CREATE POLICY "Users can update staff" ON staff FOR UPDATE TO authenticated USING (true);
 DROP POLICY IF EXISTS "Users can delete staff" ON staff;
 CREATE POLICY "Users can delete staff" ON staff FOR DELETE TO authenticated USING (true);
+-- ==========================================
+-- FAQS TABLE (User Request)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.faqs (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    category TEXT DEFAULT 'General',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Enable read access for all faqs" ON public.faqs FOR SELECT USING (true);
+
+INSERT INTO public.faqs (question, answer, category) VALUES
+('How do I add a new customer?', 'Tap on the Add Customer button from the Home screen or Customers tab, enter their name and phone number, and tap Save.', 'Ledger Management'),
+('Is my data secure?', 'Yes! DigiKhata Clone uses advanced encryption and cloud backups to ensure your data is always safe and never lost.', 'Security & Backup'),
+('How do I activate the POS system?', 'Navigate to the DigiPOS module, tap on Complete KYC, follow the identity verification process, and you will be approved to collect digital payments.', 'DigiPOS Activation'),
+('Can I change the application language?', 'Yes, go to Settings and use the Language dropdown menu to switch between English, Urdu, Pashto, and more.', 'Account Settings');
+

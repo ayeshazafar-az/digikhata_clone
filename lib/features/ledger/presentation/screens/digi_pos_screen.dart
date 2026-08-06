@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/utils/pdf_service.dart';
 
@@ -202,7 +203,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                           TextSpan(text: 'Complete KYC To\n'),
                           TextSpan(
                               text: 'Activate POS',
-                              style: TextStyle(color: Color(0xFFF05A28))),
+                              style: TextStyle(color: AppTheme.primaryBlue)),
                         ]))),
                 const SizedBox(height: 8),
                 const Align(
@@ -242,14 +243,14 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                                       const SizedBox(height: 12),
                                       const Text('DigiKhata',
                                           style: TextStyle(
-                                              color: Color(0xFFF05A28),
+                                              color: AppTheme.primaryBlue,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 12)),
                                       const Spacer(),
                                       Container(
                                         padding: const EdgeInsets.all(6),
                                         decoration: const BoxDecoration(
-                                            color: Color(0xFFF05A28),
+                                            color: AppTheme.primaryBlue,
                                             shape: BoxShape.circle),
                                         child: const Icon(Icons.check,
                                             color: Colors.white, size: 24),
@@ -332,9 +333,11 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+                  onPressed: () {
+                    context.push('/kyc_onboarding');
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF05A28),
+                    backgroundColor: AppTheme.primaryBlue,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25)),
@@ -441,7 +444,12 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                 Expanded(
                   flex: 2,
                   child: ElevatedButton.icon(
-                    onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+                    onPressed: () {
+                      if (context.mounted)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Feature coming soon...')));
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           AppTheme.dangerRed, // In screenshot it's Red/Orange

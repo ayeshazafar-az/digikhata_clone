@@ -51,11 +51,17 @@ class HomeGridScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.workspace_premium,
                 color: AppTheme.primaryBlue),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              if (context.mounted)
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Feature coming soon...')));
+            },
           ),
           IconButton(
             icon: const Icon(Icons.notifications, color: AppTheme.primaryBlue),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              context.push('/notifications');
+            },
           ),
           Builder(
             builder: (ctx) => IconButton(
