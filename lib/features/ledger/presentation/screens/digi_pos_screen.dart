@@ -216,108 +216,103 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                 // Smartphone Mockup Graphic
                 SizedBox(
                     height: 220,
-                    child: Stack(
-                        clipBehavior: Clip.none,
-                        alignment: Alignment.center,
-                        children: [
-                          // The phone body
-                          Transform.rotate(
-                            angle: 0.15,
-                            child: Container(
-                                width: 130,
-                                height: 220,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                        color: Colors.black87, width: 4),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 10,
-                                          offset: Offset(5, 5))
-                                    ]),
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(height: 12),
-                                      const Text('DigiKhata',
-                                          style: TextStyle(
-                                              color: AppTheme.primaryBlue,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12)),
-                                      const Spacer(),
-                                      Container(
-                                        padding: const EdgeInsets.all(6),
-                                        decoration: const BoxDecoration(
-                                            color: AppTheme.primaryBlue,
-                                            shape: BoxShape.circle),
-                                        child: const Icon(Icons.check,
-                                            color: Colors.white, size: 24),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      const Text('Payment Received',
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 10)),
-                                      const Text('Rs. 2,450',
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold)),
-                                      const Spacer(),
-                                      const Icon(Icons.contactless,
-                                          color: Colors.grey, size: 24),
-                                      const SizedBox(height: 16),
-                                    ])),
-                          ),
-                          // Floating credit card
-                          Positioned(
-                            bottom: 10,
-                            right: -10,
-                            child: Transform.rotate(
-                              angle: -0.1,
-                              child: Container(
-                                  width: 120,
-                                  height: 70,
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      gradient: const LinearGradient(
-                                          colors: [
-                                            Color(0xFFF97316),
-                                            Color(0xFFEA580C)
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 8,
-                                            offset: Offset(2, 4))
-                                      ]),
-                                  child: const Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Icon(Icons.memory,
-                                            color: Colors.amber, size: 20),
-                                        Text('1234 5678 9012 3456',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 10,
-                                                fontFamily: 'monospace')),
-                                        Text('12/28',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 8,
-                                                fontFamily: 'monospace')),
-                                      ])),
-                            ),
-                          )
-                        ])),
+                    child: Stack(alignment: Alignment.center, children: [
+                      // The phone body
+                      Transform.rotate(
+                        angle: 0.15,
+                        child: Container(
+                            width: 130,
+                            height: 220,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border:
+                                    Border.all(color: Colors.black87, width: 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(5, 5))
+                                ]),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 12),
+                                  const Text('DigiKhata',
+                                      style: TextStyle(
+                                          color: AppTheme.primaryBlue,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12)),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: const BoxDecoration(
+                                        color: AppTheme.primaryBlue,
+                                        shape: BoxShape.circle),
+                                    child: const Icon(Icons.check,
+                                        color: Colors.white, size: 24),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text('Payment Received',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 10)),
+                                  const Text('Rs. 2,450',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold)),
+                                  const Spacer(),
+                                  const Icon(Icons.contactless,
+                                      color: Colors.grey, size: 24),
+                                  const SizedBox(height: 16),
+                                ])),
+                      ),
+                      // Floating credit card
+                      Positioned(
+                        bottom: 10,
+                        right: -10,
+                        child: Transform.rotate(
+                          angle: -0.1,
+                          child: Container(
+                              width: 120,
+                              height: 70,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFF97316),
+                                        Color(0xFFEA580C)
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 8,
+                                        offset: Offset(2, 4))
+                                  ]),
+                              child: const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(Icons.memory,
+                                        color: Colors.amber, size: 20),
+                                    Text('1234 5678 9012 3456',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontFamily: 'monospace')),
+                                    Text('12/28',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 8,
+                                            fontFamily: 'monospace')),
+                                  ])),
+                        ),
+                      )
+                    ])),
 
                 const SizedBox(height: 32),
                 Row(
