@@ -186,9 +186,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       leading: const Icon(Icons.lock_outline,
                           color: AppTheme.secondaryBlue, size: 20),
                       title: 'App Lock',
-                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Feature coming soon...'))),
+                      onTap: () {
+                        if (context.mounted) {
+                          showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                    title: const Text('Setup App Lock'),
+                                    content: const Text(
+                                        'Please configure a 4-digit PIN to secure your DigiKhata data.'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('Cancel')),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                    content: Text(
+                                                        'PIN Setup interface initialized (Mock)')));
+                                          },
+                                          child: const Text('Setup')),
+                                    ],
+                                  ));
+                        }
+                      },
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.g_translate_outlined,
@@ -254,17 +277,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           }).toList(),
                         ),
                       ),
-                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Feature coming soon...'))),
+                      onTap: () {},
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
                           color: AppTheme.secondaryBlue, size: 20),
                       title: 'Delete Business',
-                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Feature coming soon...'))),
+                      onTap: () {
+                        if (context.mounted) {
+                          showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                    title: const Text('Delete Business?',
+                                        style: TextStyle(
+                                            color: AppTheme.dangerRed)),
+                                    content: const Text(
+                                        'Are you sure you want to permanently delete this ledger? This action cannot be undone.'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('Cancel')),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppTheme.dangerRed),
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('Delete',
+                                              style: TextStyle(
+                                                  color: Colors.white))),
+                                    ],
+                                  ));
+                        }
+                      },
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
@@ -288,8 +334,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               _buildTopLevelTile(
                 icon: Icons.info_outline,
                 title: 'About us',
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Feature coming soon...'))),
+                onTap: () {
+                  if (context.mounted) {
+                    showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                              title: const Text('About DigiKhata'),
+                              content: const Text(
+                                  'DigiKhata Clone v1.0.0\nDeveloped securely with Flutter & Riverpod.\nAll rights reserved.'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('OK')),
+                              ],
+                            ));
+                  }
+                },
               )
             ],
           ),

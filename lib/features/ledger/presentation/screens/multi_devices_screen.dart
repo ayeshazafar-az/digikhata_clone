@@ -39,7 +39,21 @@ class MultiDevicesScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.phone_in_talk_outlined, color: Colors.white),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              if (context.mounted) {
+                showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                            title: const Text('Contact Support'),
+                            content: const Text(
+                                'Call 042-321-DIGIKHATA for multi-device setup assistance.'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('OK'))
+                            ]));
+              }
+            },
           ),
         ],
       ),
@@ -97,7 +111,35 @@ class MultiDevicesScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton.icon(
-                      onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+                      onPressed: () {
+                        if (context.mounted) {
+                          showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                      title: const Text('Link Web Device'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                              'Go to web.digikhata.pk and scan this mock QR code:'),
+                                          const SizedBox(height: 16),
+                                          Container(
+                                              height: 150,
+                                              width: 150,
+                                              color: Colors.black87,
+                                              child: const Icon(Icons.qr_code_2,
+                                                  color: Colors.white,
+                                                  size: 100)),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text('Close'))
+                                      ]));
+                        }
+                      },
                       icon: const Text('👑', style: TextStyle(fontSize: 18)),
                       label: const Text('Subscribe',
                           style: TextStyle(

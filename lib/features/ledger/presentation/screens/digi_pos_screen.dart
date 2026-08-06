@@ -440,10 +440,31 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                   flex: 2,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      if (context.mounted)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Feature coming soon...')));
+                      if (context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.share,
+                                    color: AppTheme.dangerRed, size: 48),
+                                const SizedBox(height: 16),
+                                const Text(
+                                    'QR Code Share Menu Prepared!\n(Share Intent Mock)',
+                                    textAlign: TextAlign.center),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text('Close'),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:

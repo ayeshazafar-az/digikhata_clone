@@ -92,10 +92,7 @@ class DigiCashScreen extends ConsumerWidget {
                     InkWell(
                       onTap: () {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Statement generation coming soon...')));
+                          _showStatementDialog(context);
                         }
                       },
                       borderRadius: BorderRadius.circular(20),
@@ -184,11 +181,7 @@ class DigiCashScreen extends ConsumerWidget {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Money Out feature coming soon')),
-                              );
+                              _showMoneyOutDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.dangerRed,
@@ -284,9 +277,7 @@ class DigiCashScreen extends ConsumerWidget {
       {Color iconColor = Colors.black87}) {
     return InkWell(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title — Coming soon')),
-        );
+        _showPaymentDialog(context, title, icon);
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -319,6 +310,216 @@ class DigiCashScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showStatementDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Generate Statement',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                    labelText: 'Select Month', border: OutlineInputBorder()),
+                items: [
+                  'Last 30 Days',
+                  'This Month',
+                  'Last Month',
+                  'Last 6 Months'
+                ]
+                    .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                    .toList(),
+                onChanged: (val) {},
+                value: 'Last 30 Days',
+              ),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                    labelText: 'Email Address', border: OutlineInputBorder()),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content:
+                            Text('Statement queued for delivery to email!')));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  child: const Text('SEND STATEMENT',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showMoneyOutDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Money Out to Bank',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                    labelText: 'Select Bank/Wallet',
+                    border: OutlineInputBorder()),
+                items: ['JazzCash', 'EasyPaisa', 'Bank Transfer (IBAN)']
+                    .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                    .toList(),
+                onChanged: (val) {},
+                value: 'JazzCash',
+              ),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                    labelText: 'Account Number',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.account_balance)),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                    labelText: 'Amount',
+                    border: OutlineInputBorder(),
+                    prefixText: 'Rs. '),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Withdrawal request submitted! Processing...')));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.dangerRed,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  child: const Text('CONFIRM TRANSFER',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showPaymentDialog(BuildContext context, String title, IconData icon) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: AppTheme.primaryBlue, size: 28),
+                  const SizedBox(width: 12),
+                  Text('$title Payment',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                    labelText: 'Receiver Number/ID',
+                    border: OutlineInputBorder()),
+                keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                    labelText: 'Amount',
+                    border: OutlineInputBorder(),
+                    prefixText: 'Rs. '),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('$title Transaction Successful!')));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  child: const Text('PAY NOW',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
@@ -69,7 +70,9 @@ class BillBookScreen extends ConsumerWidget {
             padding: const EdgeInsets.only(
                 right: 16.0, top: 12.0, bottom: 12.0, left: 16.0),
             child: ElevatedButton(
-              onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+              onPressed: () {
+                if (context.mounted) context.push('/stock_book');
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryBlue,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -316,7 +319,11 @@ class BillBookScreen extends ConsumerWidget {
           bottom: 24,
           right: 24,
           child: ElevatedButton.icon(
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              if (context.mounted)
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Bill creation interface initializing...')));
+            },
             icon: const Icon(Icons.add, color: Colors.white),
             label: const Text('CREATE NEW BILL',
                 style: TextStyle(

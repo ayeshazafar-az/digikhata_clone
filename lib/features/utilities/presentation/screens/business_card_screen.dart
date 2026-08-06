@@ -79,7 +79,12 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
               child:
                   const Icon(Icons.play_arrow, color: Colors.white, size: 16),
             ),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Tutorial Video Player Initializing...')));
+              }
+            },
           )
         ],
       ),
@@ -198,7 +203,21 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: ElevatedButton(
-                onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+                onPressed: () {
+                  if (context.mounted) {
+                    showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                                title: const Text('Business Card Ready'),
+                                content: const Text(
+                                    'Generating high-res card image to share via Social Media... (Mock)'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('OK'))
+                                ]));
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryBlue,
                   minimumSize: const Size(double.infinity, 50),
@@ -292,7 +311,8 @@ class _BusinessCardScreenState extends State<BusinessCardScreen> {
               left: 0,
               right: 0,
               child: Container(
-                  height: 80, color: const Color(0xFFFDECD4).withValues(alpha: 0.5)),
+                  height: 80,
+                  color: const Color(0xFFFDECD4).withValues(alpha: 0.5)),
             ),
             // Text Content
             Center(

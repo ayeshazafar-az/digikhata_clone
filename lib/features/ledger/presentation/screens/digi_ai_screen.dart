@@ -191,11 +191,29 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.history, color: Colors.black54),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              setState(() {
+                _messages.clear();
+                _messages.add({
+                  'text': "Chat history cleared.\nHow can I help you today?",
+                  'time': TimeOfDay.now().format(context),
+                  'sender': 'ai',
+                });
+              });
+            },
           ),
           IconButton(
-            icon: const Icon(Icons.image, color: Colors.white70),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            icon: const Icon(Icons.image, color: Colors.black54),
+            onPressed: () {
+              setState(() {
+                _messages.add({
+                  'text': "[Mock Image Attachment Selected]",
+                  'time': TimeOfDay.now().format(context),
+                  'sender': 'user',
+                });
+                _sendMessage("Can you read this invoice?");
+              });
+            },
           ),
         ],
       ),
@@ -379,7 +397,13 @@ class _DigiAiScreenState extends ConsumerState<DigiAiScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.add, color: AppTheme.primaryBlue),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content:
+                        Text('Attachment parsing is limited in Beta model.')),
+              );
+            },
           ),
           Expanded(
             child: Container(

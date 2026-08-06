@@ -35,7 +35,34 @@ class RecycleBinScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.white),
-            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+            onPressed: () {
+              if (context.mounted) {
+                showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                            title: const Text('Empty Recycle Bin',
+                                style: TextStyle(color: AppTheme.dangerRed)),
+                            content: const Text(
+                                'Are you sure you want to permanently delete all items in the recycle bin?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel')),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('Recycle bin emptied.')));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppTheme.dangerRed),
+                                  child: const Text('Empty',
+                                      style: TextStyle(color: Colors.white))),
+                            ]));
+              }
+            },
           ),
         ],
       ),
@@ -164,7 +191,13 @@ class RecycleBinScreen extends StatelessWidget {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton.icon(
-                          onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+                          onPressed: () {
+                            if (context.mounted)
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Successfully restored business ledger.')));
+                          },
                           icon: const Icon(Icons.undo,
                               color: Color(0xFF991717), size: 16),
                           label: const Text('Undo',

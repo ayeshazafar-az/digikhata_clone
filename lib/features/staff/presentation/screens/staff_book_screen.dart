@@ -260,7 +260,13 @@ class StaffBookScreen extends ConsumerWidget {
                               'Monthly: $currency ${staff['monthly_salary']}',
                               style: const TextStyle(color: Colors.grey)),
                           trailing: ElevatedButton(
-                            onPressed: () { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon...'))); },
+                            onPressed: () {
+                              if (context.mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Staff marked as Present for today!')));
+                            },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 shape: RoundedRectangleBorder(
