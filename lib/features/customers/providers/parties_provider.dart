@@ -18,6 +18,33 @@ final activeBusinessProvider = FutureProvider<String?>((ref) async {
   return data != null ? data['id'] as String? : null;
 });
 
+});
+
+final partyBalancesProvider = FutureProvider<Map<String, double>>((ref) async {
+  final supabase = Supabase.instance.client;
+  final businessId = ref.watch(activeBusinessProvider).value;
+  if (businessId == null) return {};
+
+  final response = await supabase
+      .from('ledger_entries')
+      .select('party_id, amount, entry_type, parties!inner(business_id)')
+      .eq('parties.business_id', businessId);
+
+  Map<String, double> balances = {};
+  for (var entry in response) {
+    final String pId = entry['party_id'] as String;
+    final double amount = (entry['amount'] as num).toDouble();
+    final String type = entry['entry_type'] as String;
+
+    if (type == 'credit') {
+      balances[pId] = (balances[pId] ?? 0) + amount;
+    } else {
+      balances[pId] = (balances[pId] ?? 0) - amount;
+    }
+  }
+  return balances;
+});
+
 final partiesProvider =
     StateNotifierProvider<PartiesNotifier, AsyncValue<List<PartyModel>>>((ref) {
   final businessId = ref.watch(activeBusinessProvider).value;

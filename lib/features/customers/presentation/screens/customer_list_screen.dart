@@ -345,3 +345,51 @@ class _PartyTab extends ConsumerWidget {
     );
   }
 }
+
+class _EmptyStateArrow extends StatefulWidget {
+  const _EmptyStateArrow();
+
+  @override
+  State<_EmptyStateArrow> createState() => _EmptyStateArrowState();
+}
+
+class _EmptyStateArrowState extends State<_EmptyStateArrow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 600), vsync: this)
+      ..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0, end: 15).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_animation.value, 0),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 40),
+              Icon(Icons.arrow_right_alt,
+                  color: Color(0xFFD63C1B), size: 40), // matching red accent
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

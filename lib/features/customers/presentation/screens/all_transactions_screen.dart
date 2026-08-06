@@ -119,6 +119,7 @@ class AllTransactionsScreen extends StatelessWidget {
                 ),
               ),
             ),
+          ],
         ),
       ),
     );
@@ -171,4 +172,3 @@ class _EmptyStateArrowState extends State<_EmptyStateArrow>
     );
   }
 }
-
