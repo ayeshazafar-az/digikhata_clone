@@ -51,6 +51,8 @@ import '../../features/customers/presentation/screens/all_transactions_screen.da
 
 import '../../features/ledger/presentation/screens/categories_screen.dart';
 import '../../features/ledger/presentation/screens/all_brands_screen.dart';
+import '../../features/ledger/presentation/screens/notifications_screen.dart';
+import '../../features/ledger/presentation/screens/pro_subscription_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -60,6 +62,12 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     routes: [
+      GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const NotificationsScreen()),
+      GoRoute(
+          path: '/pro_subscription',
+          builder: (context, state) => const ProSubscriptionScreen()),
       GoRoute(
           path: '/categories',
           builder: (context, state) => const CategoriesScreen()),

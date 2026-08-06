@@ -88,21 +88,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 fontWeight: FontWeight.bold,
                 fontSize: 20)),
         actions: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            padding: const EdgeInsets.all(6),
-            decoration: const BoxDecoration(
-                color: Colors.white, shape: BoxShape.circle),
-            child: const Icon(Icons.workspace_premium,
-                color: Color(0xFFD4AF37), size: 20),
+          InkWell(
+            onTap: () => context.push('/pro_subscription'),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                  color: Colors.white, shape: BoxShape.circle),
+              child: const Icon(Icons.workspace_premium,
+                  color: Color(0xFFD4AF37), size: 20),
+            ),
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            padding: const EdgeInsets.all(6),
-            decoration: const BoxDecoration(
-                color: Colors.white, shape: BoxShape.circle),
-            child: const Icon(Icons.notifications,
-                color: Color(0xFFD4AF37), size: 20),
+          InkWell(
+            onTap: () => context.push('/notifications'),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                  color: Colors.white, shape: BoxShape.circle),
+              child: const Icon(Icons.notifications,
+                  color: Color(0xFFD4AF37), size: 20),
+            ),
           ),
           const SizedBox(width: 8)
         ],
