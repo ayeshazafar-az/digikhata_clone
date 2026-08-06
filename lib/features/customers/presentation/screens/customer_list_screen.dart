@@ -3,6 +3,7 @@ import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/parties_provider.dart';
+import '../../../../core/providers/currency_provider.dart';
 
 class CustomerListScreen extends ConsumerStatefulWidget {
   final bool isRoot;
@@ -110,12 +111,13 @@ class _PartyTab extends ConsumerWidget {
     // Determine dynamic properties based on strictly scoped type
     final isSupplier = type == 'supplier';
     final isBank = type == 'bank';
+    final currency = ref.watch(currencyProvider);
 
     return Stack(
       children: [
         Column(
           children: [
-            _buildStatsHeader(isSupplier, isBank, type, context),
+            _buildStatsHeader(isSupplier, isBank, type, currency, context),
             Expanded(
               child: partiesState.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -183,8 +185,8 @@ class _PartyTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsHeader(
-      bool isSupplier, bool isBank, String type, BuildContext context) {
+  Widget _buildStatsHeader(bool isSupplier, bool isBank, String type,
+      String currency, BuildContext context) {
     String leftLabel = isSupplier
         ? 'Total purchase for Aug'
         : (isBank ? 'Total in for Aug' : 'You will give');
@@ -212,8 +214,8 @@ class _PartyTab extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    const Text('Rs 0',
-                        style: TextStyle(
+                    Text('$currency 0',
+                        style: const TextStyle(
                             color: Colors.green,
                             fontSize: 18,
                             fontWeight: FontWeight.bold)),
@@ -227,8 +229,8 @@ class _PartyTab extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    const Text('Rs 0',
-                        style: TextStyle(
+                    Text('$currency 0',
+                        style: const TextStyle(
                             color: AppTheme.dangerRed,
                             fontSize: 18,
                             fontWeight: FontWeight.bold)),

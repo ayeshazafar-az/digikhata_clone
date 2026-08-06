@@ -185,7 +185,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       leading: const Icon(Icons.lock_outline,
                           color: AppTheme.secondaryBlue, size: 20),
                       title: 'App Lock',
-                      onTap: () {},
+                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Feature coming soon...'))),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.g_translate_outlined,
@@ -221,13 +223,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           }).toList(),
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Feature coming soon...'))),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
                           color: AppTheme.secondaryBlue, size: 20),
                       title: 'Delete Business',
-                      onTap: () {},
+                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Feature coming soon...'))),
                     ),
                     _buildSubTile(
                       leading: const Icon(Icons.delete_outline,
@@ -251,7 +257,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               _buildTopLevelTile(
                 icon: Icons.info_outline,
                 title: 'About us',
-                onTap: () {},
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Feature coming soon...'))),
               )
             ],
           ),
