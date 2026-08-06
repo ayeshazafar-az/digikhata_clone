@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BazarProductModel {
   final String id;
+  final String brandName;
   final String title;
   final double price;
   final String imageUrl;
@@ -12,6 +13,7 @@ class BazarProductModel {
 
   BazarProductModel({
     required this.id,
+    required this.brandName,
     required this.title,
     required this.price,
     required this.imageUrl,
@@ -23,6 +25,7 @@ class BazarProductModel {
   factory BazarProductModel.fromMap(Map<String, dynamic> map) {
     return BazarProductModel(
       id: map['id']?.toString() ?? '',
+      brandName: map['brand_name'] ?? 'Generic',
       title: map['title'] ?? 'Unknown',
       price: (map['price'] as num?)?.toDouble() ?? 0,
       imageUrl: map['image_url'] ?? '',
@@ -33,46 +36,30 @@ class BazarProductModel {
   }
 }
 
-final digiBazarProvider = FutureProvider<List<BazarProductModel>>((ref) async {
+// Added family modifier to accept brand filtering
+final digiBazarProvider =
+    FutureProvider.family<List<BazarProductModel>, String>(
+        (ref, brandFilter) async {
   try {
-    final response =
-        await Supabase.instance.client.from('bazar_products').select();
+    var query = Supabase.instance.client.from('bazar_products').select();
+
+    // Apply server-side filtering if a specific brand is selected
+    if (brandFilter != 'All') {
+      query = query.eq('brand_name', brandFilter);
+    }
+
+    final response = await query;
     return (response as List).map((e) => BazarProductModel.fromMap(e)).toList();
   } catch (e) {
     // Fallback gracefully if table doesn't exist yet so APK doesn't crash during evaluation
     return [
       BazarProductModel(
         id: '1',
+        brandName: 'Fallback',
         title: 'Men Loose Fit Cargo Pants',
         price: 1999,
         imageUrl:
             'https://images.unsplash.com/photo-1549887552-cb1071d3e5ca?q=80&w=300&auto=format&fit=crop',
-        moq: 5,
-      ),
-      BazarProductModel(
-        id: '2',
-        title: 'Pack of 5 Printed Cotton',
-        price: 1000,
-        imageUrl:
-            'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=300&auto=format&fit=crop',
-        moq: 5,
-      ),
-      BazarProductModel(
-        id: '3',
-        title: 'Men Straight Fit Jeans - Me',
-        price: 1299,
-        imageUrl:
-            'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=300&auto=format&fit=crop',
-        moq: 5,
-      ),
-      BazarProductModel(
-        id: '4',
-        title: 'Eternity Men Black Sando',
-        price: 900,
-        oldPrice: 1200,
-        discount: '25% Discount',
-        imageUrl:
-            'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?q=80&w=300&auto=format&fit=crop',
         moq: 5,
       ),
     ];
