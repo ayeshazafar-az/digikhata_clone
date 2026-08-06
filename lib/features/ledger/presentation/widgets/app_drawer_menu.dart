@@ -97,7 +97,7 @@ class AppDrawerMenu extends StatelessWidget {
           _buildDrawerItem(context, Icons.money_off, 'Expense',
               () => context.push('/expense')),
           _buildDrawerItem(context, Icons.cloud_upload, 'Backup',
-              () => context.push('/admin_settings')),
+              () => context.push('/backup')),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Divider(color: Colors.black12, thickness: 1),

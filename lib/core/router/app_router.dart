@@ -53,6 +53,7 @@ import '../../features/ledger/presentation/screens/categories_screen.dart';
 import '../../features/ledger/presentation/screens/all_brands_screen.dart';
 import '../../features/ledger/presentation/screens/notifications_screen.dart';
 import '../../features/ledger/presentation/screens/pro_subscription_screen.dart';
+import '../../features/ledger/presentation/screens/backup_restore_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -97,6 +98,9 @@ class AppRouter {
       GoRoute(
           path: '/distributor',
           builder: (context, state) => const DistributorScreen()),
+      GoRoute(
+          path: '/backup',
+          builder: (context, state) => const BackupRestoreScreen()),
       GoRoute(
         path: '/',
         name: 'splash',

@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/providers/currency_provider.dart';
+import '../../../../core/widgets/sync_indicator.dart';
 
 class BusinessDashboardScreen extends ConsumerWidget {
   const BusinessDashboardScreen({super.key});
@@ -36,6 +37,10 @@ class BusinessDashboardScreen extends ConsumerWidget {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 20)),
+        actions: const [
+          SyncIndicator(),
+          SizedBox(width: 12),
+        ],
       ),
       body: Stack(
         children: [
@@ -164,7 +169,8 @@ class BusinessDashboardScreen extends ConsumerWidget {
                       strokeWidth: 1,
                       dashArray: [5, 5]),
                   getDrawingVerticalLine: (value) => FlLine(
-                      color: Colors.orange.withValues(alpha: 0.2), strokeWidth: 1),
+                      color: Colors.orange.withValues(alpha: 0.2),
+                      strokeWidth: 1),
                 ),
                 titlesData: FlTitlesData(
                     show: true,
