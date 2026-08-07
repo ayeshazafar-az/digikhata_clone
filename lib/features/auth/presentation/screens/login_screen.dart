@@ -16,115 +16,46 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
-  bool _useEmail = false;
 
   @override
   void initState() {
     super.initState();
-    _requestPhoneHint();
-  }
-
-  Future<void> _requestPhoneHint() async {
-    // Only works natively on Android
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      try {
-        final hint = await SmsAutoFill().hint;
-        if (hint != null && hint.isNotEmpty) {
-          // Typically returns full E164 format (+92345678901)
-          // We can populate the controller with it
-          String cleaned = hint;
-          if (cleaned.startsWith('+92')) {
-            cleaned = cleaned
-                .substring(3); // Remove prefix since UI has +92 hardcoded
-          } else if (cleaned.startsWith('0')) {
-            cleaned = cleaned.substring(1);
-          }
-          if (mounted) {
-            setState(() {
-              _phoneController.text = cleaned;
-            });
-          }
-        }
-      } catch (e) {
-        debugPrint('Phone hint error: $e');
-      }
-    }
   }
 
   Future<void> _sendOtp() async {
-    if (_useEmail) {
-      final email = _emailController.text.trim();
-      if (email.isEmpty || !email.contains('@')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid email address')),
-        );
-        return;
-      }
-      setState(() => _isLoading = true);
-      try {
-        await Supabase.instance.client.auth.signInWithOtp(
-          email: email,
-          emailRedirectTo:
-              kIsWeb ? null : 'io.supabase.digikhata://login-callback',
-        );
-        if (mounted) context.push('/otp', extra: email);
-      } catch (e) {
-        if (mounted) {
-          final errorMsg = e.toString().toLowerCase();
-          if (errorMsg.contains('rate_limit') ||
-              errorMsg.contains('limit') ||
-              errorMsg.contains('exceeded')) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text(
-                  'Email login limit reached (3/hr). Please try again later or use the "Continue with Phone" option above.'),
-              backgroundColor: AppTheme.warningOrange,
-              duration: Duration(seconds: 5),
-            ));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${e.toString()}')));
-          }
-        }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
-      }
-      return;
-    }
-
-    final phone = _phoneController.text.trim();
-    if (phone.isEmpty || phone.length < 10) {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid mobile number')),
+        const SnackBar(content: Text('Please enter a valid email address')),
       );
       return;
     }
-
-    // Request location permission first to simulate original Digikhata flow.
-    final status = await Permission.location.status;
-    if (!status.isGranted) {
-      await Permission.location.request();
-    }
-
     setState(() => _isLoading = true);
-
     try {
-      // In production you would use Twilio or a similar provider configured in Supabase
-      // to send OTP directly to the formatted +92... number.
       await Supabase.instance.client.auth.signInWithOtp(
-        phone: '+92$phone',
+        email: email,
+        emailRedirectTo:
+            kIsWeb ? null : 'io.supabase.digikhata://login-callback',
       );
-
-      if (mounted) {
-        context.push('/otp', extra: '+92$phone');
-      }
+      if (mounted) context.push('/otp', extra: email);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        final errorMsg = e.toString().toLowerCase();
+        if (errorMsg.contains('rate_limit') ||
+            errorMsg.contains('limit') ||
+            errorMsg.contains('exceeded')) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'Too many requests sent. Please check your email or try again later.'),
+            backgroundColor: AppTheme.warningOrange,
+            duration: Duration(seconds: 5),
+          ));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        }
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -170,85 +101,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                _useEmail
-                    ? 'Enter your Email Address'
-                    : ref.watch(l10nProvider).translate('enter_mobile'),
-                style: const TextStyle(
+              const Text(
+                'Enter your Email Address',
+                style: TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 24),
-              if (_useEmail)
-                Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade400),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
-                  ),
-                  child: TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(fontSize: 16, letterSpacing: 1.0),
-                    decoration: const InputDecoration(
-                      hintText: 'Enter Email Address ...',
-                      border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                    ),
-                  ),
-                )
-              else
-                Row(
-                  children: [
-                    Container(
-                      height: 56,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.white,
-                      ),
-                      child: Row(
-                        children: [
-                          const Text('🇵🇰', style: TextStyle(fontSize: 20)),
-                          const SizedBox(width: 8),
-                          const Text('+92',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500)),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Container(
-                        height: 56,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.white,
-                        ),
-                        child: TextField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          style:
-                              const TextStyle(fontSize: 16, letterSpacing: 1.0),
-                          decoration: InputDecoration(
-                            hintText: ref
-                                .watch(l10nProvider)
-                                .translate('mobile_number'),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 18),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade400),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
                 ),
+                child: TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: const TextStyle(fontSize: 16, letterSpacing: 1.0),
+                  decoration: const InputDecoration(
+                    hintText: 'user@example.com',
+                    border: InputBorder.none,
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                  ),
+                ),
+              ),
               const Spacer(),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -259,8 +139,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         foregroundColor: Colors.white,
                         minimumSize: const Size(double.infinity, 56),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              28), // Fully rounded like screenshot
+                          borderRadius: BorderRadius.circular(28),
                         ),
                         elevation: 0,
                       ),
@@ -276,27 +155,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ],
                       ),
                     ),
-              const SizedBox(height: 16),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _useEmail = !_useEmail;
-                    });
-                  },
-                  child: Text(
-                    _useEmail
-                        ? 'Use Phone Number Instead'
-                        : 'Use Email Instead (OTP Fallback)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryBlue,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pinput/pinput.dart';
 
 class PinLoginScreen extends StatefulWidget {
   const PinLoginScreen({super.key});
@@ -11,36 +12,14 @@ class PinLoginScreen extends StatefulWidget {
 }
 
 class _PinLoginScreenState extends State<PinLoginScreen> {
-  String _pin = '';
+  final TextEditingController _pinController = TextEditingController();
   bool _isError = false;
 
-  void _onKeyPress(String value) {
-    if (_pin.length < 4) {
-      setState(() {
-        _pin += value;
-        _isError = false; // reset error state
-      });
-
-      if (_pin.length == 4) {
-        _verifyPin();
-      }
-    }
-  }
-
-  void _onBackspace() {
-    if (_pin.isNotEmpty) {
-      setState(() {
-        _pin = _pin.substring(0, _pin.length - 1);
-        _isError = false;
-      });
-    }
-  }
-
-  Future<void> _verifyPin() async {
+  Future<void> _verifyPin(String enteredPin) async {
     final prefs = await SharedPreferences.getInstance();
     final storedPin = prefs.getString('app_pin');
 
-    if (storedPin == _pin) {
+    if (storedPin == enteredPin) {
       if (mounted) context.go('/home');
     } else {
       setState(() {
@@ -49,7 +28,8 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           setState(() {
-            _pin = '';
+            _isError = false;
+            _pinController.clear();
           });
         }
       });
@@ -104,32 +84,44 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (index) {
-                bool isFilled = index < _pin.length;
-                return Container(
-                  width: 48,
-                  height: 48,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: _isError ? Colors.red.shade50 : Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(12),
-                    border:
-                        _isError ? Border.all(color: AppTheme.dangerRed) : null,
-                  ),
-                  child: Center(
-                    child: isFilled
-                        ? CircleAvatar(
-                            radius: 6,
-                            backgroundColor:
-                                _isError ? AppTheme.dangerRed : Colors.black)
-                        : null,
-                  ),
-                );
-              }),
+            const SizedBox(height: 32),
+            Pinput(
+              controller: _pinController,
+              length: 4,
+              autofocus: true,
+              obscureText: true,
+              obscuringWidget:
+                  const CircleAvatar(backgroundColor: Colors.black, radius: 8),
+              defaultPinTheme: PinTheme(
+                width: 56,
+                height: 56,
+                textStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+                decoration: BoxDecoration(
+                  color: _isError ? Colors.red.shade50 : Colors.grey.shade200,
+                  border: _isError
+                      ? Border.all(color: AppTheme.dangerRed, width: 2)
+                      : null,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              focusedPinTheme: PinTheme(
+                width: 56,
+                height: 56,
+                textStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  border: Border.all(color: AppTheme.primaryBlue, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onCompleted: _verifyPin,
             ),
-            // "Forgot Pin" option if needed
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
@@ -142,65 +134,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                       fontWeight: FontWeight.bold)),
             ),
             const Spacer(),
-            _buildCustomKeypad(),
-            const SizedBox(height: 48),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCustomKeypad() {
-    return Column(
-      children: [
-        _buildKeypadRow(['1', '2', '3']),
-        const SizedBox(height: 24),
-        _buildKeypadRow(['4', '5', '6']),
-        const SizedBox(height: 24),
-        _buildKeypadRow(['7', '8', '9']),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const SizedBox(width: 64),
-            _buildKeypadButton('0'),
-            GestureDetector(
-              onTap: _onBackspace,
-              child: Container(
-                width: 64,
-                height: 64,
-                alignment: Alignment.center,
-                child: const Icon(Icons.backspace_outlined,
-                    color: Colors.black87, size: 28),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildKeypadRow(List<String> keys) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((key) => _buildKeypadButton(key)).toList(),
-    );
-  }
-
-  Widget _buildKeypadButton(String key) {
-    return GestureDetector(
-      onTap: () => _onKeyPress(key),
-      child: Container(
-        width: 64,
-        height: 64,
-        alignment: Alignment.center,
-        child: Text(
-          key,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.dangerRed,
-          ),
         ),
       ),
     );

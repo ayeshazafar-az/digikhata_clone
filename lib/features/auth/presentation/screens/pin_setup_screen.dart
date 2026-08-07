@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pinput/pinput.dart';
 
 class PinSetupScreen extends StatefulWidget {
   final bool hasBusiness;
@@ -12,34 +13,17 @@ class PinSetupScreen extends StatefulWidget {
 }
 
 class _PinSetupScreenState extends State<PinSetupScreen> {
-  String _pin = '';
+  final TextEditingController _pinController = TextEditingController();
 
-  void _onKeyPress(String value) {
-    if (_pin.length < 4) {
-      setState(() => _pin += value);
-
-      if (_pin.length == 4) {
-        // Auto-submit when 4 digits entered
-        Future.delayed(const Duration(milliseconds: 300), () async {
-          if (mounted) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('app_pin', _pin);
-            if (mounted) {
-              if (widget.hasBusiness) {
-                context.go('/home');
-              } else {
-                context.go('/create_business');
-              }
-            }
-          }
-        });
-      }
-    }
-  }
-
-  void _onBackspace() {
-    if (_pin.isNotEmpty) {
-      setState(() => _pin = _pin.substring(0, _pin.length - 1));
+  void _onCompleted(String pinStr) {
+    if (mounted) {
+      Future.delayed(const Duration(milliseconds: 300), () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('app_pin', pinStr);
+        if (mounted) {
+          context.go('/home');
+        }
+      });
     }
   }
 
@@ -95,88 +79,43 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (index) {
-                bool isFilled = index < _pin.length;
-                return Container(
-                  width: 48,
-                  height: 48,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: isFilled
-                        ? const CircleAvatar(
-                            radius: 6, backgroundColor: Colors.black)
-                        : null,
-                  ),
-                );
-              }),
+            const SizedBox(height: 32),
+            Pinput(
+              controller: _pinController,
+              length: 4,
+              autofocus: true,
+              obscureText: true,
+              obscuringWidget:
+                  const CircleAvatar(backgroundColor: Colors.black, radius: 8),
+              defaultPinTheme: PinTheme(
+                width: 56,
+                height: 56,
+                textStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              focusedPinTheme: PinTheme(
+                width: 56,
+                height: 56,
+                textStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  border: Border.all(color: AppTheme.primaryBlue, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onCompleted: _onCompleted,
             ),
             const Spacer(),
-            _buildCustomKeypad(),
-            const SizedBox(height: 48),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCustomKeypad() {
-    return Column(
-      children: [
-        _buildKeypadRow(['1', '2', '3']),
-        const SizedBox(height: 24),
-        _buildKeypadRow(['4', '5', '6']),
-        const SizedBox(height: 24),
-        _buildKeypadRow(['7', '8', '9']),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const SizedBox(width: 64), // For alignment with 0
-            _buildKeypadButton('0'),
-            GestureDetector(
-              onTap: _onBackspace,
-              child: Container(
-                width: 64,
-                height: 64,
-                alignment: Alignment.center,
-                child: const Icon(Icons.backspace_outlined,
-                    color: Colors.black87, size: 28),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildKeypadRow(List<String> keys) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((key) => _buildKeypadButton(key)).toList(),
-    );
-  }
-
-  Widget _buildKeypadButton(String key) {
-    return GestureDetector(
-      onTap: () => _onKeyPress(key),
-      child: Container(
-        width: 64,
-        height: 64,
-        alignment: Alignment.center,
-        child: Text(
-          key,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w500,
-            color: AppTheme
-                .dangerRed, // In screenshot it's Orange, let's use dangerRed for parity as brand color
-          ),
         ),
       ),
     );

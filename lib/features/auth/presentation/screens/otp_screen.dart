@@ -194,7 +194,7 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
               const SizedBox(height: 64),
               const Text(
-                'Enter OTP code',
+                'Check Your Email',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
@@ -203,11 +203,12 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                "We've sent sms to ${widget.phoneNumber}",
+                "We've sent a secure login code to ${widget.phoneNumber}.\n\nEnter the OTP below or click the magic link in your email.",
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
+                  height: 1.5,
                 ),
               ),
               const SizedBox(height: 48),

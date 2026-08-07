@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class KycOnboardingScreen extends StatefulWidget {
   const KycOnboardingScreen({super.key});
@@ -11,269 +13,554 @@ class KycOnboardingScreen extends StatefulWidget {
 }
 
 class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
-  final PageController _pageController = PageController();
-  int _currentIndex = 0;
-
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _businessController = TextEditingController();
 
-  bool _isProcessing = false;
-  bool _mockErrorThrown = false;
+  bool _isNotBusinessPerson = false;
+  bool _isLoading = false;
 
-  void _nextPage() {
-    if (_currentIndex < 3) {
-      _pageController.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-      setState(() => _currentIndex++);
-    } else {
-      _submitKyc();
+  String? _selfiePath;
+  String? _cnicFrontPath;
+  String? _cnicBackPath;
+
+  String? _businessType;
+  String? _businessCategory;
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(String type) async {
+    // Note: Can be generalized to pick from camera directly or show a dialog chooser
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        if (type == 'selfie') _selfiePath = image.path;
+        if (type == 'cnic_front') _cnicFrontPath = image.path;
+        if (type == 'cnic_back') _cnicBackPath = image.path;
+      });
     }
   }
 
-  Future<void> _captureImage() async {
-    if (_currentIndex == 1) {
-      _nextPage();
-    } else if (_currentIndex == 2) {
-      _nextPage();
-    } else if (_currentIndex == 3) {
-      if (!_mockErrorThrown) {
-        // Simulate the OCR error!
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Verification Failed: NADRA Barcode unreadable on the back. Please strictly align your CNIC within the box and retake!'),
-          backgroundColor: AppTheme.dangerRed,
-          duration: Duration(seconds: 4),
-        ));
-        setState(() => _mockErrorThrown = true);
-        return;
-      }
-      _submitKyc();
-    }
+  void _showBusinessTypeSheet() {
+    final types = [
+      {'name': 'Retailer/ Shop', 'icon': Icons.storefront},
+      {'name': 'Wholesaler', 'icon': Icons.inventory},
+      {'name': 'Distributor', 'icon': Icons.local_shipping},
+      {'name': 'Manufacturer', 'icon': Icons.precision_manufacturing},
+      {'name': 'Services', 'icon': Icons.handyman},
+      {'name': 'Others', 'icon': Icons.category},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Apke business ki type kya hai?',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: types.map((t) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _businessType = t['name'] as String;
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      width: (MediaQuery.of(context).size.width / 2) - 24,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(t['icon'] as IconData,
+                              color: AppTheme.primaryBlue),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              t['name'] as String,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 13),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  Future<void> _submitKyc() async {
-    setState(() => _isProcessing = true);
+  void _showCategorySheet() {
+    final categories = [
+      'Grocery',
+      'Fashion & Textile',
+      'Pharmacy & Medical Care',
+      'Mobile & Electronics',
+      'Vehicle Accessories',
+      'Gym & Sports',
+      'Babies & Toys',
+      'Bakery & Cake',
+      'Books & Stationery',
+      'Chicken & Meat',
+      'Gardening',
+      'Hardware Tools',
+      'Home Décor',
+      'Jewellery',
+      'Restaurants & Hotels'
+    ];
 
-    // Simulate complex ML upload processing...
-    await Future.delayed(const Duration(seconds: 3));
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Select Category',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 16),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.shade300)),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.shade300)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 16),
+                        title: Text(categories[index]),
+                        onTap: () {
+                          setState(() {
+                            _businessCategory = categories[index];
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
+  Future<void> _submitProfile() async {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a name')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
     try {
       final user = Supabase.instance.client.auth.currentUser;
       if (user != null) {
-        // Just mocking the URL response for now since we don't need real storage files to prove the UI flow
+        // Update KYC status and name
         await Supabase.instance.client.from('profiles').update({
           'full_name': _nameController.text.trim(),
           'kyc_status': 'verified',
         }).eq('id', user.id);
 
-        // Push to business creation if business name provided
-        if (_businessController.text.trim().isNotEmpty) {
+        // Map abstract business properties
+        if (!_isNotBusinessPerson) {
           await Supabase.instance.client.from('businesses').insert({
             'owner_id': user.id,
-            'name': _businessController.text.trim(),
-            'type': 'Retail',
+            'name': _nameController.text.trim(),
+            'type': _businessType ?? 'Retail',
           });
         }
       }
-      if (mounted) context.go('/home');
+
+      if (mounted) context.go('/pin_setup', extra: !_isNotBusinessPerson);
     } catch (e) {
-      debugPrint('KYC Submit Error: $e');
-      setState(() => _isProcessing = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving profile: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  Widget _buildCameraOverlay(String title, String instruction, bool isSquare) {
-    return Stack(
-      children: [
-        // Simulated Camera Viewfinder
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.black87,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(isSquare ? Icons.person_outline : Icons.credit_card,
-                    size: 80, color: Colors.white30),
-                const SizedBox(height: 16),
-                const Text('SIMULATED CAMERA',
-                    style: TextStyle(
-                        color: Colors.white30,
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-        ),
-        // Dark Overlay with Cutout mockup (rendered simply as a border for simulation)
-        Center(
-          child: Container(
-            width: isSquare ? 300 : 320,
-            height: isSquare ? 300 : 200,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(color: AppTheme.successGreen, width: 3),
-              borderRadius: BorderRadius.circular(isSquare ? 150 : 16),
-            ),
-          ),
-        ),
-        // UI Elements
-        Positioned(
-          top: 60,
-          left: 0,
-          right: 0,
-          child: Column(
-            children: [
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                instruction,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          bottom: 40,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: GestureDetector(
-              onTap: _captureImage,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 4),
-                  color: Colors.white30,
-                ),
-                child:
-                    const Icon(Icons.camera_alt, color: Colors.white, size: 40),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isProcessing) {
-      return Scaffold(
-        backgroundColor: AppTheme.primaryBlue,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.verified_user, color: Colors.white, size: 80),
-              SizedBox(height: 24),
-              Text(
-                'Running ML Liveness & NADRA Validation...',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 24),
-              CircularProgressIndicator(color: AppTheme.successGreen),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          // Basic Info
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppTheme.dangerRed),
+          onPressed: () => context.pop(),
+        ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.menu_book_rounded,
+                color: AppTheme.dangerRed, size: 28),
+            const SizedBox(width: 8),
+            const Text(
+              'DigiKhata',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Let's create your profile",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Please enter your profile & business information",
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Personal Section
+            const Text(
+              "Personal",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.badge, size: 80, color: AppTheme.primaryBlue),
-                const SizedBox(height: 24),
-                const Text('KYC Identity Check',
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                const Text(
-                    'As per local regulations, DigiKhata requires identity verification for full platform access.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey)),
-                const SizedBox(height: 32),
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name (As per CNIC)',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _businessController,
-                  decoration: InputDecoration(
-                    labelText: 'Business Name',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: 48),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_nameController.text.trim().length > 3) _nextPage();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text('Start Camera Verification',
-                      style: TextStyle(fontSize: 16)),
-                )
+                _buildImagePickerBox('Selfie', _selfiePath, 'selfie'),
+                _buildImagePickerBox(
+                    'CNIC Front', _cnicFrontPath, 'cnic_front'),
+                _buildImagePickerBox('CNIC Back', _cnicBackPath, 'cnic_back'),
               ],
             ),
+
+            const SizedBox(height: 32),
+
+            // Business Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Business",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                  ),
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: Checkbox(
+                        value: _isNotBusinessPerson,
+                        activeColor: AppTheme.dangerRed,
+                        onChanged: (val) {
+                          setState(() {
+                            _isNotBusinessPerson = val ?? false;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "I am not a business person",
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Form Elements Box
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4))
+                  ]),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      hintText: _isNotBusinessPerson
+                          ? 'Personal ledger name'
+                          : 'Apny business ka Nam dein',
+                      hintStyle: const TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.grey)),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.shade400)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                    ),
+                  ),
+
+                  if (!_isNotBusinessPerson) ...[
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: _showBusinessTypeSheet,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _businessType ?? 'Apke business ki type kya hai?',
+                              style: TextStyle(
+                                color: _businessType != null
+                                    ? Colors.black
+                                    : Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Icon(Icons.keyboard_arrow_down,
+                                color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: _showCategorySheet,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _businessCategory ??
+                                  'Apke business ki category kya hai?',
+                              style: TextStyle(
+                                color: _businessCategory != null
+                                    ? Colors.black
+                                    : Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Icon(Icons.keyboard_arrow_down,
+                                color: Colors.grey),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 16),
+
+                  // Location Simulation
+                  Stack(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.only(
+                            left: 16, top: 16, bottom: 16, right: 48),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'J47P+FFP, Phase 5 Ghauri Town, Islamabad, Pakistan, Islamabad, Pakistan',
+                          style: TextStyle(color: Colors.black87, fontSize: 14),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        left: 12,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          color: Colors.white,
+                          child: Text(
+                            _isNotBusinessPerson
+                                ? 'Address'
+                                : 'Shop / Building Number',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade600),
+                          ),
+                        ),
+                      ),
+                      const Positioned(
+                        right: 16,
+                        top: 0,
+                        bottom: 0,
+                        child:
+                            Icon(Icons.location_on, color: AppTheme.dangerRed),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _submitProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme
+                      .dangerRed, // Matching screenshot color which shifted to orange/red
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  elevation: 0,
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Start',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward, color: Colors.white),
+                        ],
+                      ),
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePickerBox(
+      String label, String? currentPath, String typeTag) {
+    bool hasImage = currentPath != null;
+    return GestureDetector(
+      onTap: () => _pickImage(typeTag),
+      child: Column(
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: hasImage
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.file(
+                      File(currentPath),
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : const Icon(Icons.camera_alt_outlined,
+                    color: Colors.grey, size: 48),
           ),
-          // Selfie
-          _buildCameraOverlay(
-            'Liveness Check',
-            'Please align your face perfectly inside the circle.',
-            true,
-          ),
-          // CNIC Front
-          _buildCameraOverlay(
-            'CNIC Front',
-            'Align the front of your ID card within the frame bounds.',
-            false,
-          ),
-          // CNIC Back
-          _buildCameraOverlay(
-            'CNIC Back',
-            'Turn the card over and explicitly capture the machine readable barcode.',
-            false,
-          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+          )
         ],
       ),
     );
