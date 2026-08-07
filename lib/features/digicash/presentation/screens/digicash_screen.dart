@@ -43,97 +43,93 @@ class DigiCashScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Stack(
-        children: [
-          // Background Color Block for Overlap Illusion
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 180,
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            // Background Color Block matching header height
+            Container(
+              height: 200,
+              width: double.infinity,
               color: AppTheme.primaryBlue,
             ),
-          ),
 
-          Column(
-            children: [
-              // Header section (Transparent, relies on Stack background)
-              Container(
-                color: Colors.transparent,
-                padding: const EdgeInsets.only(
-                    top: 48, left: 16, right: 16, bottom: 24),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Title
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'DIGI\nCASH',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w900,
-                            height: 1.1,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header section
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 48, left: 16, right: 16, bottom: 24),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Title
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'DIGI\nCASH',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              height: 1.1,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    // Phone & Statement
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            phone,
-                            style: const TextStyle(
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        InkWell(
-                          onTap: () {
-                            if (context.mounted) {
-                              _showStatementDialog(context);
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
+                        ],
+                      ),
+                      // Phone & Statement
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: AppTheme.goldAccent,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Text(
-                              'STATEMENT',
-                              style: TextStyle(
-                                  color: Colors.white,
+                            child: Text(
+                              phone,
+                              style: const TextStyle(
+                                  color: Colors.black87,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 8),
+                          InkWell(
+                            onTap: () {
+                              if (context.mounted) {
+                                _showStatementDialog(context);
+                              }
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.goldAccent,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text(
+                                'STATEMENT',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              // Body content directly in Expanded without Transform.translate
-              Expanded(
-                child: SingleChildScrollView(
+                // Body content
+                Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Column(
@@ -278,10 +274,10 @@ class DigiCashScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
