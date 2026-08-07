@@ -248,14 +248,14 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.dangerRed),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
           onPressed: () => context.pop(),
         ),
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.menu_book_rounded,
-                color: AppTheme.dangerRed, size: 28),
+                color: AppTheme.primaryBlue, size: 28),
             const SizedBox(width: 8),
             const Text(
               'DigiKhata',
@@ -333,7 +333,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                       width: 24,
                       child: Checkbox(
                         value: _isNotBusinessPerson,
-                        activeColor: AppTheme.dangerRed,
+                        activeColor: AppTheme.primaryBlue,
                         onChanged: (val) {
                           setState(() {
                             _isNotBusinessPerson = val ?? false;
@@ -491,8 +491,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                         right: 16,
                         top: 0,
                         bottom: 0,
-                        child:
-                            Icon(Icons.location_on, color: AppTheme.dangerRed),
+                        child: Icon(Icons.location_on,
+                            color: AppTheme.primaryBlue),
                       )
                     ],
                   )
@@ -506,8 +506,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submitProfile,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme
-                      .dangerRed, // Matching screenshot color which shifted to orange/red
+                  backgroundColor: AppTheme.primaryBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28),
                   ),
