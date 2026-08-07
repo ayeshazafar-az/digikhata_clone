@@ -42,24 +42,24 @@ class DigiCashScreen extends ConsumerWidget {
     final currency = ref.watch(currencyProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            // Background Color Block matching header height
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF16522), Color(0xFFD63C1B)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-
-            Column(
+      body: Container(
+        decoration: BoxDecoration(
+          // Use a linear gradient to mathematically split the background between Blue and White
+          // This perfectly creates the exact overlap illusion WITHOUT any Stack or expanded constraints!
+          gradient: LinearGradient(
+            colors: [
+              AppTheme.primaryBlue,
+              AppTheme.primaryBlue,
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+            stops: const [0.0, 0.25, 0.25, 1.0], // 25% height is Blue, rest is White
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header section
@@ -99,7 +99,7 @@ class DigiCashScreen extends ConsumerWidget {
                             child: Text(
                               phone,
                               style: const TextStyle(
-                                  color: Color(0xFFD63C1B),
+                                  color: AppTheme.primaryBlue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13),
                             ),
@@ -198,8 +198,7 @@ class DigiCashScreen extends ConsumerWidget {
                                 _showMoneyOutDialog(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(
-                                    0xFFCE2A2A), // Deep Red matching original
+                                backgroundColor: AppTheme.dangerRed,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24, vertical: 12),
                                 shape: RoundedRectangleBorder(
@@ -229,17 +228,17 @@ class DigiCashScreen extends ConsumerWidget {
                           Expanded(
                               child: _buildGridItem(context, 'JazzCash',
                                   Icons.account_balance_wallet,
-                                  iconColor: const Color(0xFFED1C24))),
+                                  iconColor: AppTheme.primaryBlue)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(
                                   context, 'easypaisa', Icons.account_balance,
-                                  iconColor: const Color(0xFF4CAF50))),
+                                  iconColor: AppTheme.primaryBlue)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(context, 'Raast',
                                   Icons.account_balance_rounded,
-                                  iconColor: const Color(0xFF388E3C))),
+                                  iconColor: AppTheme.primaryBlue)),
                         ],
                       ),
 
@@ -255,17 +254,17 @@ class DigiCashScreen extends ConsumerWidget {
                           Expanded(
                               child: _buildGridItem(
                                   context, 'Bills', Icons.receipt_long,
-                                  iconColor: Colors.black87)),
+                                  iconColor: AppTheme.primaryBlue)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(
                                   context, 'Easy Load', Icons.phone_android,
-                                  iconColor: Colors.black87)),
+                                  iconColor: AppTheme.primaryBlue)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(context, 'Vouchers',
                                   Icons.local_activity_outlined,
-                                  iconColor: Colors.black87)),
+                                  iconColor: AppTheme.primaryBlue)),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -274,11 +273,11 @@ class DigiCashScreen extends ConsumerWidget {
                           Expanded(
                               child: _buildGridItem(
                                   context, 'SMS', Icons.sms_outlined,
-                                  iconColor: Colors.black87)),
+                                  iconColor: AppTheme.primaryBlue)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(context, 'NFC', Icons.nfc,
-                                  iconColor: Colors.black87)),
+                                  iconColor: AppTheme.primaryBlue)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(context, 'Pro', Icons.stars,
@@ -291,7 +290,7 @@ class DigiCashScreen extends ConsumerWidget {
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
