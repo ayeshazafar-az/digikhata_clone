@@ -78,11 +78,7 @@ class _OtpScreenState extends State<OtpScreen> {
             .eq('id', res.user!.id)
             .maybeSingle();
 
-        if ((profile != null && profile['role'] == 'super_admin') ||
-            widget.phoneNumber == '+923245423290' ||
-            widget.phoneNumber == '3245423290' ||
-            res.user?.phone == '923245423290' ||
-            res.user?.phone == '+923245423290') {
+        if (profile != null && profile['role'] == 'super_admin') {
           if (mounted) context.go('/admin');
           return;
         }

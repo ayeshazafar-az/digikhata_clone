@@ -41,9 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
               .eq('id', session.user.id)
               .maybeSingle();
 
-          if ((profile != null && profile['role'] == 'super_admin') ||
-              session.user.phone == '923245423290' ||
-              session.user.phone == '+923245423290') {
+          if (profile != null && profile['role'] == 'super_admin') {
             if (mounted) context.go('/admin');
           } else {
             final prefs = await SharedPreferences.getInstance();

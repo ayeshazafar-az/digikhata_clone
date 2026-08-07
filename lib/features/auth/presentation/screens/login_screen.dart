@@ -235,8 +235,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                   child: Text(
                     _useEmail
-                        ? 'Admin? Login via Phone'
-                        : 'Customer? Login via Magic Link',
+                        ? 'Login via Phone Number'
+                        : 'Login via Magic Link (Email)',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
