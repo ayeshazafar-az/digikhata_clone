@@ -215,7 +215,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
 
                 // Smartphone Mockup Graphic
                 SizedBox(
-                    height: 220,
+                    height: 240,
                     child: Stack(alignment: Alignment.center, children: [
                       // The phone body
                       Transform.rotate(

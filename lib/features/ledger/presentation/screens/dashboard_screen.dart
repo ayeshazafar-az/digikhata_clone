@@ -25,16 +25,18 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       body: pages[currentIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/digi_ai');
-        },
-        backgroundColor: const Color(0xFFF16522),
-        shape: const CircleBorder(),
-        elevation: 6,
-        child: const Icon(Icons.auto_awesome,
-            color: Colors.white, size: 30), // Sparkles icon!
-      ),
+      floatingActionButton: currentIndex == 3
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                context.push('/digi_ai');
+              },
+              backgroundColor: AppTheme.primaryBlue,
+              shape: const CircleBorder(),
+              elevation: 6,
+              child: const Icon(Icons.auto_awesome,
+                  color: Colors.white, size: 30), // Sparkles icon!
+            ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
