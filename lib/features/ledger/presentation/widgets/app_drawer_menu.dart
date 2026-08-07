@@ -85,7 +85,7 @@ class AppDrawerMenu extends StatelessWidget {
 
           _buildSectionHeader('K H A T A'),
           _buildDrawerItem(
-              context, Icons.people, 'Party', () => context.go('/dashboard')),
+              context, Icons.people, 'Party', () => context.go('/party_book')),
           _buildDrawerItem(context, Icons.account_balance_wallet, 'Cash',
               () => context.push('/cashbook')),
           _buildDrawerItem(context, Icons.inventory, 'Stock',
