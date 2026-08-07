@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class KycOnboardingScreen extends StatefulWidget {
   const KycOnboardingScreen({super.key});
@@ -281,6 +282,9 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
           'business_type':
               _isNotBusinessPerson ? 'Personal' : (_businessType ?? 'Retail'),
         });
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('has_completed_onboarding', true);
       }
 
       if (mounted) context.go('/home');

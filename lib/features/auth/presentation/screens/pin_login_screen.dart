@@ -29,9 +29,24 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
               .select('kyc_status')
               .eq('id', user.id)
               .maybeSingle();
+
           if (profile?['kyc_status'] != 'verified') {
-            if (mounted) context.go('/kyc_onboarding');
-            return;
+            final prefs = await SharedPreferences.getInstance();
+            final hasOnboarded =
+                prefs.getBool('has_completed_onboarding') ?? false;
+            if (!hasOnboarded) {
+              final businesses = await Supabase.instance.client
+                  .from('businesses')
+                  .select('id')
+                  .eq('owner_id', user.id)
+                  .limit(1);
+              if (businesses.isEmpty) {
+                if (mounted) context.go('/kyc_onboarding');
+                return;
+              } else {
+                await prefs.setBool('has_completed_onboarding', true);
+              }
+            }
           }
         } catch (_) {}
       }

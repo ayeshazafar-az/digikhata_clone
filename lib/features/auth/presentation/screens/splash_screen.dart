@@ -59,8 +59,24 @@ class _SplashScreenState extends State<SplashScreen> {
             // Check KYC Status after setting up pin!
             final kycStatus = profile?['kyc_status'];
             if (kycStatus != 'verified') {
-              if (mounted) context.go('/kyc_onboarding');
-              return;
+              final prefs = await SharedPreferences.getInstance();
+              final hasOnboarded =
+                  prefs.getBool('has_completed_onboarding') ?? false;
+              if (hasOnboarded) {
+                // local override
+              } else {
+                final businesses = await Supabase.instance.client
+                    .from('businesses')
+                    .select('id')
+                    .eq('owner_id', session.user.id)
+                    .limit(1);
+                if (businesses.isEmpty) {
+                  if (mounted) context.go('/kyc_onboarding');
+                  return;
+                } else {
+                  await prefs.setBool('has_completed_onboarding', true);
+                }
+              }
             }
 
             final hasBio = await BiometricService.isBiometricAvailable();
