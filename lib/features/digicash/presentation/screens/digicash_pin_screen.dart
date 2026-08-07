@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import 'package:pinput/pinput.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DigiCashPinScreen extends StatefulWidget {
   final VoidCallback onSuccess;
@@ -11,38 +13,30 @@ class DigiCashPinScreen extends StatefulWidget {
 }
 
 class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
-  String _pin = '';
-  final String _correctPin = '1234'; // Stubbed for mockup integrity
+  final TextEditingController _pinController = TextEditingController();
+  bool _isError = false;
 
-  void _onDigitPressed(String digit) {
-    if (_pin.length < 4) {
-      setState(() {
-        _pin += digit;
-      });
-      if (_pin.length == 4) {
-        _verifyPin();
-      }
-    }
-  }
+  Future<void> _verifyPin(String enteredPin) async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedPin = prefs.getString('app_pin');
 
-  void _onBackspacePressed() {
-    if (_pin.isNotEmpty) {
-      setState(() {
-        _pin = _pin.substring(0, _pin.length - 1);
-      });
-    }
-  }
-
-  void _verifyPin() {
-    if (_pin == _correctPin) {
+    if (storedPin == enteredPin) {
       widget.onSuccess();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incorrect PIN. Try 1234.')),
-      );
       setState(() {
-        _pin = '';
+        _isError = true;
       });
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() {
+            _isError = false;
+            _pinController.clear();
+          });
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Incorrect PIN. Please try again.')),
+      );
     }
   }
 
@@ -71,40 +65,53 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 32),
-            // PIN Indicators
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  height: 50,
-                  width: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _pin.length == index
-                          ? AppTheme.primaryBlue
-                          : Colors.grey.shade200,
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Center(
-                    child: _pin.length > index
-                        ? const Icon(Icons.circle,
-                            size: 12, color: Colors.black87)
-                        : null,
-                  ),
-                );
-              }),
+            const SizedBox(height: 48),
+            Text(
+              _isError ? "Incorrect PIN" : 'Enter DigiKhata PIN',
+              style: TextStyle(
+                  fontSize: 16,
+                  color: _isError ? AppTheme.dangerRed : Colors.black87,
+                  fontWeight: _isError ? FontWeight.bold : FontWeight.normal),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Enter DigiKhata PIN',
-              style: TextStyle(fontSize: 16, color: Colors.black87),
+            const SizedBox(height: 24),
+            Pinput(
+              controller: _pinController,
+              length: 4,
+              autofocus: true,
+              obscureText: true,
+              obscuringWidget:
+                  const CircleAvatar(backgroundColor: Colors.black, radius: 8),
+              defaultPinTheme: PinTheme(
+                width: 56,
+                height: 56,
+                textStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+                decoration: BoxDecoration(
+                  color: _isError ? Colors.red.shade50 : Colors.grey.shade200,
+                  border: _isError
+                      ? Border.all(color: AppTheme.dangerRed, width: 2)
+                      : null,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              focusedPinTheme: PinTheme(
+                width: 56,
+                height: 56,
+                textStyle: const TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  border: Border.all(color: AppTheme.primaryBlue, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onCompleted: _verifyPin,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
             const Text(
               'Forgot PIN?',
               style: TextStyle(
@@ -114,83 +121,7 @@ class _DigiCashPinScreenState extends State<DigiCashPinScreen> {
               ),
             ),
             const Spacer(),
-            // Numpad
-            _buildNumpad(),
-            const SizedBox(height: 20),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNumpad() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildNumpadButton('1'),
-              _buildNumpadButton('2'),
-              _buildNumpadButton('3'),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildNumpadButton('4'),
-              _buildNumpadButton('5'),
-              _buildNumpadButton('6'),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildNumpadButton('7'),
-              _buildNumpadButton('8'),
-              _buildNumpadButton('9'),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(width: 64), // Empty space
-              _buildNumpadButton('0'),
-              GestureDetector(
-                onTap: _onBackspacePressed,
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.backspace_outlined,
-                      color: Colors.black87, size: 28),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNumpadButton(String digit) {
-    return GestureDetector(
-      onTap: () => _onDigitPressed(digit),
-      child: Container(
-        width: 64,
-        height: 64,
-        alignment: Alignment.center,
-        child: Text(
-          digit,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w400,
-            color: AppTheme.primaryBlue,
-          ),
         ),
       ),
     );
