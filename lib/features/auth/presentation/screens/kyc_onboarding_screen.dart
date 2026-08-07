@@ -14,6 +14,7 @@ class KycOnboardingScreen extends StatefulWidget {
 
 class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
   bool _isNotBusinessPerson = false;
   bool _isLoading = false;
@@ -457,9 +458,18 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
                           border: Border.all(color: Colors.grey.shade400),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'J47P+FFP, Phase 5 Ghauri Town, Islamabad, Pakistan, Islamabad, Pakistan',
-                          style: TextStyle(color: Colors.black87, fontSize: 14),
+                        child: TextField(
+                          controller: _locationController,
+                          maxLines: null,
+                          style: const TextStyle(
+                              color: Colors.black87, fontSize: 14),
+                          decoration: const InputDecoration(
+                            hintText: 'Enter your address or pin location',
+                            hintStyle: TextStyle(color: Colors.black54),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
                         ),
                       ),
                       Positioned(
