@@ -1,4 +1,4 @@
-\import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,7 +95,7 @@ class _PartyTab extends ConsumerWidget {
             Expanded(
               child: partiesState.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(child: Text('Error: \', style: const TextStyle(color: Colors.black))),
+                error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.black))),
                 data: (parties) {
                   final filtered = type == 'all' ? parties : parties.where((p) => p.type == type).toList();
                   if (filtered.isEmpty) {
@@ -143,7 +143,7 @@ class _PartyTab extends ConsumerWidget {
                 },
                 icon: Icon(isBank ? Icons.account_balance : Icons.person_add_alt_1, color: Colors.white, size: 20),
                 label: Text(
-                  isBank ? 'ADD BANK' : 'ADD \',
+                  isBank ? 'ADD BANK' : 'ADD ${type == 'all' ? 'CUSTOMER' : type.toUpperCase()}',
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -183,7 +183,7 @@ class _PartyTab extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Text('\ 0', style: const TextStyle(color: Colors.green, fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text('$currency 0', style: const TextStyle(color: Colors.green, fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text(leftLabel, style: const TextStyle(color: Colors.black54, fontSize: 12)),
                   ],
@@ -193,7 +193,7 @@ class _PartyTab extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Text('\ 0', style: const TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text('$currency 0', style: const TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text(rightLabel, style: const TextStyle(color: Colors.black54, fontSize: 12)),
                   ],
@@ -201,7 +201,7 @@ class _PartyTab extends ConsumerWidget {
               ),
               InkWell(
                 onTap: () {
-                  context.push('/all_transactions_route?type=\');
+                  context.push('/all_transactions_route?type=$type');
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -246,9 +246,9 @@ class _PartyTab extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 32),
-          _buildStepRow('1- \'),
+          _buildStepRow('1- $t1'),
           _buildStepRow('2- Add entries & maintain khata'),
-          _buildStepRow('3- \'),
+          _buildStepRow('3- $t3'),
           const SizedBox(height: 40),
         ],
       ),
@@ -278,10 +278,10 @@ class _PartyTab extends ConsumerWidget {
               child: Icon(Icons.person, color: Colors.white),
             ),
             title: Text(party.name, style: const TextStyle(color: Colors.black)),
-            subtitle: Text('Tap to view ledger • \', style: const TextStyle(color: Colors.black54)),
+            subtitle: Text('Tap to view ledger • ${party.phone ?? ''}', style: const TextStyle(color: Colors.black54)),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
             onTap: () {
-              context.push('/ledger/\', extra: party.name);
+              context.push('/ledger/${party.id}', extra: party.name);
             },
           );
         },

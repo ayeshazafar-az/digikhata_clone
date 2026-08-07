@@ -1,4 +1,4 @@
-\import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -44,7 +44,7 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
     try {
       String finalPhone = _phoneController.text.trim();
       if (finalPhone.isNotEmpty && !finalPhone.startsWith('+')) {
-        finalPhone = '\\';
+        finalPhone = '$_selectedCountryCode$finalPhone';
       }
       
       await ref.read(partiesProvider.notifier).addParty(
@@ -58,7 +58,7 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
         context.pop();
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: \')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -105,7 +105,7 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
                 controller: _nameController,
                 style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Type \ Name',
+                  hintText: 'Type ${title.split(' ').last} Name',
                   hintStyle: const TextStyle(color: Colors.black38),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -166,7 +166,7 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFBE4D8), // Faded orange when empty, deep orange when filled. Let's make it deep orange assuming they typed.
+                  backgroundColor: const Color(0xFFFBE4D8),
                   foregroundColor: dOrange,
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
