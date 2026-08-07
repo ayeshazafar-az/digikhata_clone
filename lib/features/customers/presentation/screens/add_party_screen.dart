@@ -99,101 +99,112 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
           ? const Center(child: CircularProgressIndicator(color: dOrange))
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  // Name Field
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: TextField(
-                      controller: _nameController,
-                      style: const TextStyle(color: Colors.black87),
-                      decoration: InputDecoration(
-                        hintText: 'Type ${title.split(' ').last} Name',
-                        hintStyle: const TextStyle(color: Colors.black38),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 16),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.grey),
-                          onPressed: () => _nameController.clear(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Phone Field with Country Code Picker
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Row(
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
                       children: [
-                        CountryCodePicker(
-                          onChanged: (val) {
-                            setState(() {
-                              _selectedCountryCode = val.dialCode ?? '+92';
-                            });
-                          },
-                          initialSelection: 'PK',
-                          favorite: const ['+92', 'PK'],
-                          showCountryOnly: false,
-                          showOnlyCountryWhenClosed: false,
-                          alignLeft: false,
-                          textStyle: const TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        // Name Field
                         Container(
-                            width: 1, height: 30, color: Colors.grey.shade300),
-                        const SizedBox(width: 12),
-                        Expanded(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
                           child: TextField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
+                            controller: _nameController,
                             style: const TextStyle(color: Colors.black87),
-                            decoration: const InputDecoration(
-                              hintText: 'Mobile Number',
-                              hintStyle: TextStyle(color: Colors.black38),
+                            decoration: InputDecoration(
+                              hintText: 'Type ${title.split(' ').last} Name',
+                              hintStyle: const TextStyle(color: Colors.black38),
                               border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 16),
+                              suffixIcon: IconButton(
+                                icon:
+                                    const Icon(Icons.close, color: Colors.grey),
+                                onPressed: () => _nameController.clear(),
+                              ),
                             ),
                           ),
                         ),
+                        const SizedBox(height: 16),
+
+                        // Phone Field with Country Code Picker
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Row(
+                            children: [
+                              CountryCodePicker(
+                                onChanged: (val) {
+                                  setState(() {
+                                    _selectedCountryCode =
+                                        val.dialCode ?? '+92';
+                                  });
+                                },
+                                initialSelection: 'PK',
+                                favorite: const ['+92', 'PK'],
+                                showCountryOnly: false,
+                                showOnlyCountryWhenClosed: false,
+                                alignLeft: false,
+                                textStyle: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Container(
+                                  width: 1,
+                                  height: 30,
+                                  color: Colors.grey.shade300),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextField(
+                                  controller: _phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  style: const TextStyle(color: Colors.black87),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Mobile Number',
+                                    hintStyle: TextStyle(color: Colors.black38),
+                                    border: InputBorder.none,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const Spacer(),
+
+                        // Continue Button (like SS 4)
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFBE4D8),
+                              foregroundColor: dOrange,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25)),
+                            ),
+                            onPressed: () {
+                              if (_nameController.text.isNotEmpty) _submit();
+                            },
+                            child: Text('CONTINUE',
+                                style: TextStyle(
+                                    color: dOrange.withOpacity(0.8),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16)),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
-
-                  const Spacer(),
-
-                  // Continue Button (like SS 4)
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFBE4D8),
-                        foregroundColor: dOrange,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25)),
-                      ),
-                      onPressed: () {
-                        if (_nameController.text.isNotEmpty) _submit();
-                      },
-                      child: Text('CONTINUE',
-                          style: TextStyle(
-                              color: dOrange.withOpacity(0.8),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16)),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                 ],
               ),
             ),

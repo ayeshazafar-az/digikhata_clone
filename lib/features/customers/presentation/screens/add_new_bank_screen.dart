@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/parties_provider.dart';
 
-class AddNewBankScreen extends StatefulWidget {
+class AddNewBankScreen extends ConsumerStatefulWidget {
   final String? bankName;
   const AddNewBankScreen({super.key, this.bankName});
 
   @override
-  State<AddNewBankScreen> createState() => _AddNewBankScreenState();
+  ConsumerState<AddNewBankScreen> createState() => _AddNewBankScreenState();
 }
 
-class _AddNewBankScreenState extends State<AddNewBankScreen> {
+class _AddNewBankScreenState extends ConsumerState<AddNewBankScreen> {
   late TextEditingController _bankNameController;
   final _accountNumberController = TextEditingController();
-  final _accountTitleController =
-      TextEditingController(); // Added trailing space in hint? No, strictly following screenshot
+  final _accountTitleController = TextEditingController();
 
   @override
   void initState() {
@@ -140,10 +141,33 @@ class _AddNewBankScreenState extends State<AddNewBankScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: () {
-                  // Stub out save logic
-                  context.pop();
-                  context.pop(); // Returns to Party tab
+                onPressed: () async {
+                  final bn = _bankNameController.text.trim();
+                  final num = _accountNumberController.text.trim();
+                  final title = _accountTitleController.text.trim();
+
+                  if (bn.isEmpty || num.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content:
+                            Text('Bank name and account number are required')));
+                    return;
+                  }
+
+                  final finalName = title.isNotEmpty ? '$bn - $title' : bn;
+
+                  try {
+                    await ref
+                        .read(partiesProvider.notifier)
+                        .addParty(finalName, num, 'bank');
+                    if (context.mounted) {
+                      context.pop();
+                      context.pop(); // Returns to Party tab
+                    }
+                  } catch (e) {
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('Error: $e')));
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF60A5FA),

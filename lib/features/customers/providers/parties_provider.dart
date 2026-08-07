@@ -109,7 +109,9 @@ class PartiesNotifier extends StateNotifier<AsyncValue<List<PartyModel>>> {
   }
 
   Future<void> addParty(String name, String phone, String type) async {
-    if (businessId == null) return;
+    if (businessId == null)
+      throw Exception(
+          "Business Profile loading... please wait a moment and try again");
 
     try {
       // Optimistic offline insert logic here depending on network
