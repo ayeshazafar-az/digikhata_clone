@@ -53,13 +53,19 @@ class DigiCashScreen extends ConsumerWidget {
               Theme.of(context).scaffoldBackgroundColor,
               Theme.of(context).scaffoldBackgroundColor,
             ],
-            stops: const [0.0, 0.25, 0.25, 1.0], // 25% height is Blue, rest is White
+            stops: const [
+              0.0,
+              0.25,
+              0.25,
+              1.0
+            ], // 25% height is Blue, rest is White
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header section

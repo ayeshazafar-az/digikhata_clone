@@ -329,7 +329,7 @@ class _DigiPosScreenState extends ConsumerState<DigiPosScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
-                    context.push('/kyc_onboarding');
+                    context.push('/kyc_status');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryBlue,
