@@ -3,6 +3,7 @@ import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pinput/pinput.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PinSetupScreen extends StatefulWidget {
   final bool hasBusiness;
@@ -21,6 +22,20 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('app_pin', pinStr);
         if (mounted) {
+          final user = Supabase.instance.client.auth.currentUser;
+          if (user != null) {
+            try {
+              final profile = await Supabase.instance.client
+                  .from('profiles')
+                  .select('kyc_status')
+                  .eq('id', user.id)
+                  .maybeSingle();
+              if (profile?['kyc_status'] != 'verified') {
+                context.go('/kyc_onboarding');
+                return;
+              }
+            } catch (_) {}
+          }
           context.go('/home');
         }
       });

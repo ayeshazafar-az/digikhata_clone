@@ -275,8 +275,8 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
         // All users (Personal & Business) receive a ledger in the businesses table
         await Supabase.instance.client.from('businesses').insert({
           'owner_id': user.id,
-          'name': _nameController.text.trim(),
-          'type':
+          'business_name': _nameController.text.trim(),
+          'business_type':
               _isNotBusinessPerson ? 'Personal' : (_businessType ?? 'Retail'),
         });
       }
