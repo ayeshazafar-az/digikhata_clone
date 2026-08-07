@@ -267,20 +267,18 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
     try {
       final user = Supabase.instance.client.auth.currentUser;
       if (user != null) {
-        // Update KYC status and name
+        // Update KYC status
         await Supabase.instance.client.from('profiles').update({
-          'name': _nameController.text.trim(),
           'kyc_status': 'verified',
         }).eq('id', user.id);
 
-        // Map abstract business properties
-        if (!_isNotBusinessPerson) {
-          await Supabase.instance.client.from('businesses').insert({
-            'owner_id': user.id,
-            'name': _nameController.text.trim(),
-            'type': _businessType ?? 'Retail',
-          });
-        }
+        // All users (Personal & Business) receive a ledger in the businesses table
+        await Supabase.instance.client.from('businesses').insert({
+          'owner_id': user.id,
+          'name': _nameController.text.trim(),
+          'type':
+              _isNotBusinessPerson ? 'Personal' : (_businessType ?? 'Retail'),
+        });
       }
 
       if (mounted) context.go('/pin_setup', extra: !_isNotBusinessPerson);
