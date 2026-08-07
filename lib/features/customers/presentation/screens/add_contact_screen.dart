@@ -102,6 +102,24 @@ class _AddContactScreenState extends State<AddContactScreen> {
               ),
             ),
           ),
+          ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                  color: Colors.red.shade50, shape: BoxShape.circle),
+              child: Icon(Icons.person_add_alt_1, color: dOrange, size: 20),
+            ),
+            title: Text('Add New ${widget.type}',
+                style: TextStyle(
+                    color: dOrange, fontWeight: FontWeight.w500, fontSize: 16)),
+            trailing: Icon(Icons.chevron_right, color: dOrange),
+            onTap: () {
+              context.push('/add_party?type=${widget.type}');
+            },
+          ),
+          Divider(color: Colors.grey.shade200, height: 1),
           Expanded(
             child: _buildContactsList(dOrange),
           )
@@ -150,24 +168,6 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
     return ListView(
       children: [
-        ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          leading: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: Colors.red.shade50, shape: BoxShape.circle),
-            child: Icon(Icons.person_add_alt_1, color: dOrange, size: 20),
-          ),
-          title: Text('Add New ${widget.type}',
-              style: TextStyle(
-                  color: dOrange, fontWeight: FontWeight.w500, fontSize: 16)),
-          trailing: Icon(Icons.chevron_right, color: dOrange),
-          onTap: () {
-            context.push('/add_party?type=${widget.type}');
-          },
-        ),
-        Divider(color: Colors.grey.shade200, height: 1),
         ...filteredContacts.map((contact) {
           final firstPhone =
               contact.phones.isNotEmpty ? contact.phones.first : null;
