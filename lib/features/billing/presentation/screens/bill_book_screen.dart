@@ -320,9 +320,10 @@ class BillBookScreen extends ConsumerWidget {
           right: 24,
           child: ElevatedButton.icon(
             onPressed: () {
-              if (context.mounted)
+              if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Bill creation interface initializing...')));
+              }
             },
             icon: const Icon(Icons.add, color: Colors.white),
             label: const Text('CREATE NEW BILL',

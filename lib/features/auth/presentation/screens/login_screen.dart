@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 import 'package:flutter/foundation.dart';
 import '../../../../core/localization/app_localizations.dart';
 
