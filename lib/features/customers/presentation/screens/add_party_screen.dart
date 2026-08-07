@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+\import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -22,7 +22,6 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
   @override
   void initState() {
     super.initState();
-    // Parse name and phone from GoRouter if pushing from AddContactScreen
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = GoRouterState.of(context);
       final prefillPhone = state.uri.queryParameters['phone'] ?? '';
@@ -36,83 +35,30 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
     });
   }
 
-  void _triggerMockContactPermission() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey.shade900,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.contacts, color: Colors.white70, size: 40),
-            const SizedBox(height: 16),
-            const Text(
-              'Allow DigiKhata to access your contacts?',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  // Normally would launch a contact picker here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Contacts linked.')));
-                },
-                child: const Text('Allow',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade800,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text("Don't allow",
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _saveParty() async {
+  void _submit() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
+    
     setState(() => _isLoading = true);
+    
     try {
-      final phone = '$_selectedCountryCode${_phoneController.text.trim()}';
-      await ref.read(partiesProvider.notifier).addParty(
-          name, phone.replaceAll(RegExp(r'\s+'), ''), widget.partyType);
-      if (mounted) context.pop();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+      String finalPhone = _phoneController.text.trim();
+      if (finalPhone.isNotEmpty && !finalPhone.startsWith('+')) {
+        finalPhone = '\\';
       }
+      
+      await ref.read(partiesProvider.notifier).addParty(
+        name: name,
+        type: widget.partyType,
+        phone: finalPhone,
+      );
+      
+      if (mounted) {
+        context.pop();
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: \')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -124,108 +70,114 @@ class _AddPartyScreenState extends ConsumerState<AddPartyScreen> {
     if (widget.partyType == 'supplier') title = 'Add Supplier';
     if (widget.partyType == 'bank') title = 'Add Bank';
 
+    const dOrange = Color(0xFFD63C1B); // DigiKhata Orange Theme from SS4
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: dOrange,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => context.pop(),
+        ),
       ),
-      body: Padding(
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator(color: dOrange))
+        : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Name Field
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade900,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
               child: TextField(
                 controller: _nameController,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Type $title Name',
-                  hintStyle: TextStyle(color: Colors.grey.shade600),
+                  hintText: 'Type \ Name',
+                  hintStyle: const TextStyle(color: Colors.black38),
                   border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  suffixIcon: Icon(Icons.close, color: Colors.grey.shade600),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.grey),
+                    onPressed: () => _nameController.clear(),
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            if (widget.partyType != 'bank')
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade900,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  controller: _phoneController,
-                  style: const TextStyle(color: Colors.white),
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    prefixIcon: CountryCodePicker(
-                      onChanged: (code) {
-                        setState(() {
-                          _selectedCountryCode = code.dialCode ?? '+92';
-                        });
-                      },
-                      initialSelection: 'PK',
-                      favorite: const ['+92', 'PK'],
-                      showCountryOnly: false,
-                      showOnlyCountryWhenClosed: false,
-                      alignLeft: false,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      textStyle: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                      searchDecoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        fillColor: Colors.grey.shade800,
-                        filled: true,
-                      ),
-                      dialogBackgroundColor: Colors.grey.shade900,
-                      dialogTextStyle: const TextStyle(color: Colors.white),
-                    ),
-                    hintText: 'Mobile Number',
-                    hintStyle: TextStyle(color: Colors.grey.shade600),
-                    border: InputBorder.none,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-                  ),
-                ),
+            
+            // Phone Field with Country Code Picker
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
-            const SizedBox(height: 24),
-            ListTile(
-              onTap: _triggerMockContactPermission,
-              leading: Icon(Icons.person_add_alt_1,
-                  color: AppTheme.dangerRed), // matching screenshot UI
-              title: Text('Import from Contacts',
-                  style: TextStyle(color: Colors.grey.shade400)),
-              trailing: Icon(Icons.chevron_right, color: Colors.grey.shade600),
+              child: Row(
+                children: [
+                  CountryCodePicker(
+                    onChanged: (val) {
+                      setState(() {
+                         _selectedCountryCode = val.dialCode ?? '+92';
+                      });
+                    },
+                    initialSelection: 'PK',
+                    favorite: const ['+92','PK'],
+                    showCountryOnly: false,
+                    showOnlyCountryWhenClosed: false,
+                    alignLeft: false,
+                    textStyle: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+                  ),
+                  Container(width: 1, height: 30, color: Colors.grey.shade300),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      style: const TextStyle(color: Colors.black87),
+                      decoration: const InputDecoration(
+                        hintText: 'Mobile Number',
+                        hintStyle: TextStyle(color: Colors.black38),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+            
             const Spacer(),
+            
+            // Continue Button (like SS 4)
             SizedBox(
               width: double.infinity,
+              height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      AppTheme.dangerRed, // using matching theme primary
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: const Color(0xFFFBE4D8), // Faded orange when empty, deep orange when filled. Let's make it deep orange assuming they typed.
+                  foregroundColor: dOrange,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 ),
-                onPressed: _isLoading ? null : _saveParty,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('SAVE',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
+                onPressed: () {
+                   if (_nameController.text.isNotEmpty) _submit();
+                },
+                child: Text('CONTINUE', style: TextStyle(color: dOrange.withOpacity(0.8), fontWeight: FontWeight.bold, fontSize: 16)),
               ),
-            )
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

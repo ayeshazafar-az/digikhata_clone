@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+\import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -32,7 +32,8 @@ class _AddContactScreenState extends State<AddContactScreen> {
     try {
       final status = await Permission.contacts.request();
       if (status.isGranted) {
-        final contacts = await FlutterContacts.getAll();
+        // MUST use withProperties: true to get phone numbers
+        final contacts = await FlutterContacts.getAll(withProperties: true);
         setState(() => _contacts = contacts);
       } else {
         setState(() => _permissionDenied = true);
@@ -44,30 +45,25 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // DigiKhata native orange
+    const dOrange = Color(0xFFD63C1B);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF60A5FA)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
+            color: dOrange,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: Text('Add ${widget.type}',
-            style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20)),
+        title: Text('Add \',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
       ),
       body: Column(
         children: [
@@ -80,10 +76,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey.shade300),
                 boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2)),
                 ],
               ),
               child: TextField(
@@ -102,105 +95,88 @@ class _AddContactScreenState extends State<AddContactScreen> {
             ),
           ),
           Expanded(
-            child: _buildContactsList(),
+            child: _buildContactsList(dOrange),
           )
         ],
       ),
     );
   }
 
-  Widget _buildContactsList() {
+  Widget _buildContactsList(Color dOrange) {
     if (_permissionDenied) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32.0),
-          child: Text(
-              'Contact permissions strictly required to sync your address book. Please enable them in OS settings.',
-              textAlign: TextAlign.center),
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.contacts, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              const Text('Contact sharing required to sync your address book. Please enable them in OS settings.', textAlign: TextAlign.center, style: TextStyle(color: Colors.black54)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => openAppSettings(),
+                style: ElevatedButton.styleFrom(backgroundColor: dOrange),
+                child: const Text('Open Settings', style: TextStyle(color: Colors.white)),
+              )
+            ],
+          ),
         ),
       );
     }
 
     if (_contacts == null) {
-      return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF60A5FA)));
+      return Center(child: CircularProgressIndicator(color: dOrange));
     }
 
     final filteredContacts = _searchQuery.isEmpty
         ? _contacts!
-        : _contacts!
-            .where((c) =>
-                (c.displayName ?? '').toLowerCase().contains(_searchQuery))
-            .toList();
+        : _contacts!.where((c) => (c.displayName).toLowerCase().contains(_searchQuery)).toList();
 
     return ListView(
       children: [
         ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           leading: Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.red.shade50,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.person_add_alt_1,
-                color: Color(0xFF60A5FA), size: 20),
+            decoration: BoxDecoration(color: Colors.red.shade50, shape: BoxShape.circle),
+            child: Icon(Icons.person_add_alt_1, color: dOrange, size: 20),
           ),
-          title: Text('Add New ${widget.type}',
-              style: const TextStyle(
-                  color: Color(0xFF60A5FA),
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16)),
-          trailing: const Icon(Icons.chevron_right, color: Color(0xFF60A5FA)),
+          title: Text('Add New \', style: TextStyle(color: dOrange, fontWeight: FontWeight.w500, fontSize: 16)),
+          trailing: Icon(Icons.chevron_right, color: dOrange),
           onTap: () {
-            context.push('/add_party?type=${widget.type.toLowerCase()}');
+            context.push('/add_party?type=\');
           },
         ),
         Divider(color: Colors.grey.shade200, height: 1),
         ...filteredContacts.map((contact) {
-          final phone =
-              contact.phones.isNotEmpty ? contact.phones.first.number : '';
+          final phone = contact.phones.isNotEmpty ? contact.phones.first.normalizedNumber.isNotEmpty ? contact.phones.first.normalizedNumber : contact.phones.first.number : '';
           if (phone.isEmpty) return const SizedBox.shrink();
-          return _buildContactTile(
-              (contact.displayName ?? 'Unknown Contact'), phone);
+          return _buildContactTile((contact.displayName), phone, dOrange, contact);
         }),
       ],
     );
   }
 
-  Widget _buildContactTile(String name, String phone) {
+  Widget _buildContactTile(String name, String phone, Color dOrange, Contact contact) {
     bool isPlus = phone.startsWith('+');
     return Column(
       children: [
         ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
           leading: Container(
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
-            ),
-            child: Text(isPlus ? '+' : '0',
-                style: const TextStyle(
-                    color: Color(0xFF60A5FA),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16)),
+            decoration: BoxDecoration(color: Colors.grey.shade100, shape: BoxShape.circle),
+            child: Text(isPlus ? '+' : '0', style: TextStyle(color: dOrange, fontWeight: FontWeight.bold, fontSize: 16)),
           ),
-          title: Text(name.trim().isEmpty ? 'Unknown' : name,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  color: Colors.black87)),
-          subtitle: Text(phone,
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+          title: Text(phone, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          subtitle: Text(phone, style: const TextStyle(color: Colors.black54)), // Mirroring SS3 logic
           onTap: () {
-            context.push(
-                '/add_party?type=${widget.type.toLowerCase()}&phone=${Uri.encodeComponent(phone)}&name=${Uri.encodeComponent(name)}');
+            // They chose an existing contact. Pass it to add_party auto-filled.
+            context.push('/add_party?type=\&name=\&phone=\');
           },
         ),
-        Divider(color: Colors.grey.shade100, height: 1, indent: 80),
+        Divider(color: Colors.grey.shade200, indent: 80, endIndent: 24, height: 1),
       ],
     );
   }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+\import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,39 +26,30 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
           leading: widget.isRoot
               ? null
               : IconButton(
-                  icon: const Icon(Icons.arrow_back_ios,
-                      color: Colors.white, size: 20),
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
                   onPressed: () => context.pop(),
                 ),
-          title: const Text('Party',
-              style: TextStyle(color: Colors.white, fontSize: 20)),
+          title: const Text('Party', style: TextStyle(color: Colors.white, fontSize: 20)),
           actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue
-                      .withValues(alpha: 0.9), // Match blue theme
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                  backgroundColor: AppTheme.warningOrange, // Match the orange from the SS mockup explicitly
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
                 onPressed: () {
                   context.push('/collection');
                 },
-                child: const Text('COLLECTION',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12)),
+                child: const Text('COLLECTION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
               ),
             )
           ],
           bottom: const TabBar(
-            indicatorColor: Color(0xFFFF9900),
+            indicatorColor: AppTheme.warningOrange,
             indicatorWeight: 4,
             labelColor: Colors.white,
-            unselectedLabelColor:
-                Colors.white54, // Fixed invisible contrast bug
+            unselectedLabelColor: Colors.white54, 
             isScrollable: true,
             labelPadding: EdgeInsets.symmetric(horizontal: 20),
             tabs: [
@@ -71,22 +62,10 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
         ),
         body: const TabBarView(
           children: [
-            _PartyTab(
-                type: 'customer',
-                title1: 'Add customers',
-                title3: 'Send payment reminders'),
-            _PartyTab(
-                type: 'supplier',
-                title1: 'Add suppliers',
-                title3: 'Manage your purchases'),
-            _PartyTab(
-                type: 'bank',
-                title1: 'Add banks',
-                title3: 'Manage your bank balance'),
-            _PartyTab(
-                type: 'all',
-                title1: 'Add customers',
-                title3: 'Send payment reminders'),
+            _PartyTab(type: 'customer', title1: 'Add customers', title3: 'Send payment reminders'),
+            _PartyTab(type: 'supplier', title1: 'Add suppliers', title3: 'Manage your purchases'),
+            _PartyTab(type: 'bank', title1: 'Add banks', title3: 'Manage your bank balance'),
+            _PartyTab(type: 'all', title1: 'Add customers', title3: 'Send payment reminders'),
           ],
         ),
       ),
@@ -99,14 +78,11 @@ class _PartyTab extends ConsumerWidget {
   final String title1;
   final String title3;
 
-  const _PartyTab(
-      {required this.type, required this.title1, required this.title3});
+  const _PartyTab({required this.type, required this.title1, required this.title3});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final partiesState = ref.watch(partiesProvider);
-
-    // Determine dynamic properties based on strictly scoped type
     final isSupplier = type == 'supplier';
     final isBank = type == 'bank';
     final currency = ref.watch(currencyProvider);
@@ -119,13 +95,9 @@ class _PartyTab extends ConsumerWidget {
             Expanded(
               child: partiesState.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(
-                    child: Text('Error: $err',
-                        style: const TextStyle(color: Colors.black))),
+                error: (err, stack) => Center(child: Text('Error: \', style: const TextStyle(color: Colors.black))),
                 data: (parties) {
-                  final filtered = type == 'all'
-                      ? parties
-                      : parties.where((p) => p.type == type).toList();
+                  final filtered = type == 'all' ? parties : parties.where((p) => p.type == type).toList();
                   if (filtered.isEmpty) {
                     return _buildEmptyState(title1, title3, context);
                   }
@@ -141,19 +113,23 @@ class _PartyTab extends ConsumerWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (type == 'customer')
-                const Padding(
-                  padding: EdgeInsets.only(right: 16.0),
-                  child: Icon(Icons.arrow_forward,
-                      color: Color(0xFFD63C1B), size: 28),
-                ),
+              // Arrow points ONLY if the list is empty and type is customer
+              partiesState.maybeWhen(
+                data: (parties) {
+                  final filtered = type == 'all' ? parties : parties.where((p) => p.type == type).toList();
+                  if (filtered.isEmpty && type == 'customer') {
+                    return const _EmptyStateArrow();
+                  }
+                  return const SizedBox.shrink();
+                },
+                orElse: () => const SizedBox.shrink(),
+              ),
+              const SizedBox(width: 8),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue, // Enforced Blue theme
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24)),
+                  backgroundColor: AppTheme.secondaryOrange, // Exactly like the SS button orange color
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   elevation: 4,
                 ),
                 onPressed: () {
@@ -165,16 +141,11 @@ class _PartyTab extends ConsumerWidget {
                     context.push('/add_contact?type=customer');
                   }
                 },
-                icon: Icon(
-                    isBank ? Icons.account_balance : Icons.person_add_alt_1,
-                    color: Colors.white,
-                    size: 20),
+                icon: Icon(isBank ? Icons.account_balance : Icons.person_add_alt_1, color: Colors.white, size: 20),
                 label: Text(
-                    isBank
-                        ? 'ADD BANK'
-                        : 'ADD ${type == 'all' ? 'CUSTOMER' : type.toUpperCase()}',
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
+                  isBank ? 'ADD BANK' : 'ADD \',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -183,13 +154,9 @@ class _PartyTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsHeader(bool isSupplier, bool isBank, String type,
-      String currency, BuildContext context) {
-    String leftLabel = isSupplier
-        ? 'Total purchase for Aug'
-        : (isBank ? 'Total in for Aug' : 'You will give');
-    String rightLabel =
-        isSupplier ? "You'll Give" : (isBank ? 'Bank Balance' : 'You will get');
+  Widget _buildStatsHeader(bool isSupplier, bool isBank, String type, String currency, BuildContext context) {
+    String leftLabel = isSupplier ? 'Total purchase for Aug' : (isBank ? 'Total in for Aug' : 'You will give');
+    String rightLabel = isSupplier ? "You'll Give" : (isBank ? 'Bank Balance' : 'You will get');
 
     return Container(
       margin: const EdgeInsets.all(12),
@@ -197,56 +164,48 @@ class _PartyTab extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.1),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Hide Balance',
-              style: TextStyle(
-                  color: AppTheme.primaryBlue,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold)),
+          const Text('Hide Balance', style: TextStyle(color: AppTheme.secondaryOrange, fontSize: 10, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
                 child: Column(
                   children: [
-                    Text('$currency 0',
-                        style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold)),
-                    Text(leftLabel,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text('\ 0', style: const TextStyle(color: Colors.green, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(leftLabel, style: const TextStyle(color: Colors.black54, fontSize: 12)),
                   ],
                 ),
               ),
-              Container(width: 1, height: 30, color: Colors.grey.shade800),
+              Container(width: 1, height: 40, color: Colors.grey.shade300),
               Expanded(
                 child: Column(
                   children: [
-                    Text('$currency 0',
-                        style: const TextStyle(
-                            color: AppTheme.dangerRed,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold)),
-                    Text(rightLabel,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text('\ 0', style: const TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(rightLabel, style: const TextStyle(color: Colors.black54, fontSize: 12)),
                   ],
                 ),
               ),
               InkWell(
                 onTap: () {
-                  context.push('/all_transactions_route?type=$type');
+                  context.push('/all_transactions_route?type=\');
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: const Icon(Icons.arrow_forward_ios,
-                      color: AppTheme.dangerRed, size: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: const Icon(Icons.arrow_forward_ios, color: AppTheme.secondaryOrange, size: 20),
                 ),
               ),
             ],
@@ -270,33 +229,26 @@ class _PartyTab extends ConsumerWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppTheme.successGreen,
-                  shape: BoxShape.circle,
-                ),
+                decoration: const BoxDecoration(color: AppTheme.successGreen, shape: BoxShape.circle),
                 child: const Icon(Icons.lock, color: Colors.white, size: 24),
               ),
               Container(
                 width: 140,
                 height: 140,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFFBE4D8), // Light skin UI circle blob
+                  color: Color(0xFFFBE4D8),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Icon(visualIcon,
-                      size: 80, color: const Color(0xFF1F5F99)),
+                  child: Icon(visualIcon, size: 80, color: const Color(0xFF1F5F99)),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 32),
-          _buildStepRow('1- $t1'),
+          _buildStepRow('1- \'),
           _buildStepRow('2- Add entries & maintain khata'),
-          _buildStepRow('3- $t3'),
-          const SizedBox(height: 60),
-          // Bouncing arrow mimicking screenshot 1
-          const _EmptyStateArrow(),
+          _buildStepRow('3- \'),
           const SizedBox(height: 40),
         ],
       ),
@@ -307,16 +259,15 @@ class _PartyTab extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 40),
       child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(text,
-            style: const TextStyle(color: Colors.black87, fontSize: 16)),
+        alignment: Alignment.center,
+        child: Text(text, style: const TextStyle(color: Colors.black54, fontSize: 16)),
       ),
     );
   }
 
   Widget _buildPartyList(List parties, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 80), // Fab spacing
+      padding: const EdgeInsets.only(bottom: 80),
       child: ListView.builder(
         itemCount: parties.length,
         itemBuilder: (context, index) {
@@ -326,19 +277,12 @@ class _PartyTab extends ConsumerWidget {
               backgroundColor: AppTheme.secondaryBlue,
               child: Icon(Icons.person, color: Colors.white),
             ),
-            title:
-                Text(party.name, style: const TextStyle(color: Colors.white)),
-            subtitle: Text('Tap to view ledger â€¢ ${party.phone ?? ''}',
-                style: const TextStyle(color: Colors.black54)),
-            trailing: Text(
-              party.type.toUpperCase(),
-              style: const TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10),
-            ),
-            onTap: () =>
-                context.push('/customer_ledger', extra: party.remoteId),
+            title: Text(party.name, style: const TextStyle(color: Colors.black)),
+            subtitle: Text('Tap to view ledger • \', style: const TextStyle(color: Colors.black54)),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+            onTap: () {
+              context.push('/ledger/\', extra: party.name);
+            },
           );
         },
       ),
@@ -353,17 +297,14 @@ class _EmptyStateArrow extends StatefulWidget {
   State<_EmptyStateArrow> createState() => _EmptyStateArrowState();
 }
 
-class _EmptyStateArrowState extends State<_EmptyStateArrow>
-    with SingleTickerProviderStateMixin {
+class _EmptyStateArrowState extends State<_EmptyStateArrow> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 600), vsync: this)
-      ..repeat(reverse: true);
+    _controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this)..repeat(reverse: true);
     _animation = Tween<double>(begin: 0, end: 15).animate(_controller);
   }
 
@@ -381,11 +322,9 @@ class _EmptyStateArrowState extends State<_EmptyStateArrow>
         return Transform.translate(
           offset: Offset(_animation.value, 0),
           child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(width: 40),
-              Icon(Icons.arrow_right_alt,
-                  color: Color(0xFFD63C1B), size: 40), // matching red accent
+              Icon(Icons.arrow_right_alt, color: Color(0xFFD63C1B), size: 40),
             ],
           ),
         );
