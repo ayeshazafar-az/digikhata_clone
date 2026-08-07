@@ -8,7 +8,7 @@ class TasdeeqScreen extends StatelessWidget {
 
   Future<void> _launchPlayStore() async {
     final Uri url = Uri.parse(
-        'https://play.google.com/store/apps/details?id=com.tasdeeq.consumer');
+        'https://play.google.com/store/apps/details?id=com.apl.tasdeeq');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       debugPrint('Could not launch play store');
     }

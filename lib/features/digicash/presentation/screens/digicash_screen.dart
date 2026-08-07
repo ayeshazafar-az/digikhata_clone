@@ -43,230 +43,243 @@ class DigiCashScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
+      body: Stack(
         children: [
-          // Header section
-          Container(
-            color: AppTheme.primaryBlue,
-            padding:
-                const EdgeInsets.only(top: 48, left: 16, right: 16, bottom: 64),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Title
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'DIGI\nCASH',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        height: 1.1,
-                      ),
-                    ),
-                  ],
-                ),
-                // Phone & Statement
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        phone,
-                        style: const TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    InkWell(
-                      onTap: () {
-                        if (context.mounted) {
-                          _showStatementDialog(context);
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.goldAccent,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'STATEMENT',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+          // Background Color Block for Overlap Illusion
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 180,
+              color: AppTheme.primaryBlue,
             ),
           ),
 
-          // Body content relative overlap
-          Expanded(
-            child: Transform.translate(
-              offset: const Offset(0, -40),
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
+          Column(
+            children: [
+              // Header section (Transparent, relies on Stack background)
+              Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.only(
+                    top: 48, left: 16, right: 16, bottom: 24),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Balance Card
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          )
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    '$currency ',
-                                    style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    balance,
-                                    style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                'Balance',
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
+                    // Title
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'DIGI\nCASH',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            height: 1.1,
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              _showMoneyOutDialog(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.dangerRed,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
+                        ),
+                      ],
+                    ),
+                    // Phone & Statement
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            phone,
+                            style: const TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () {
+                            if (context.mounted) {
+                              _showStatementDialog(context);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppTheme.goldAccent,
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: const Text(
-                              'MONEY OUT',
+                              'STATEMENT',
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Money In',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: _buildGridItem(context, 'JazzCash',
-                                Icons.account_balance_wallet)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _buildGridItem(
-                                context, 'easypaisa', Icons.account_balance)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _buildGridItem(
-                                context, 'Raast', Icons.swap_horiz)),
+                        ),
                       ],
                     ),
-
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Payments',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: _buildGridItem(
-                                context, 'Bills', Icons.receipt_long)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _buildGridItem(
-                                context, 'Easy Load', Icons.phone_android)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _buildGridItem(context, 'Vouchers',
-                                Icons.local_activity_outlined)),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: _buildGridItem(
-                                context, 'SMS', Icons.sms_outlined)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _buildGridItem(context, 'NFC', Icons.nfc)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _buildGridItem(context, 'Pro', Icons.stars,
-                                iconColor: AppTheme.goldAccent)),
-                      ],
-                    ),
-                    const SizedBox(height: 100),
                   ],
                 ),
               ),
-            ),
+
+              // Body content directly in Expanded without Transform.translate
+              Expanded(
+                child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Balance Card
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Text(
+                                      '$currency ',
+                                      style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      balance,
+                                      style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Balance',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _showMoneyOutDialog(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.dangerRed,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                              ),
+                              child: const Text(
+                                'MONEY OUT',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Money In',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _buildGridItem(context, 'JazzCash',
+                                  Icons.account_balance_wallet)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                              child: _buildGridItem(
+                                  context, 'easypaisa', Icons.account_balance)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                              child: _buildGridItem(
+                                  context, 'Raast', Icons.swap_horiz)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Payments',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _buildGridItem(
+                                  context, 'Bills', Icons.receipt_long)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                              child: _buildGridItem(
+                                  context, 'Easy Load', Icons.phone_android)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                              child: _buildGridItem(context, 'Vouchers',
+                                  Icons.local_activity_outlined)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _buildGridItem(
+                                  context, 'SMS', Icons.sms_outlined)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                              child: _buildGridItem(context, 'NFC', Icons.nfc)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                              child: _buildGridItem(context, 'Pro', Icons.stars,
+                                  iconColor: AppTheme.goldAccent)),
+                        ],
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
