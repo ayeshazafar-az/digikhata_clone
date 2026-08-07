@@ -21,6 +21,20 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
     final storedPin = prefs.getString('app_pin');
 
     if (storedPin == enteredPin) {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        try {
+          final profile = await Supabase.instance.client
+              .from('profiles')
+              .select('kyc_status')
+              .eq('id', user.id)
+              .maybeSingle();
+          if (profile?['kyc_status'] != 'verified') {
+            if (mounted) context.go('/kyc_onboarding');
+            return;
+          }
+        } catch (_) {}
+      }
       if (mounted) context.go('/home');
     } else {
       setState(() {

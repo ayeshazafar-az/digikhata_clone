@@ -281,7 +281,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
         });
       }
 
-      if (mounted) context.go('/pin_setup', extra: !_isNotBusinessPerson);
+      if (mounted) context.go('/home');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
