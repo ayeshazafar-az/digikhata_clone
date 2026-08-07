@@ -50,7 +50,13 @@ class DigiCashScreen extends ConsumerWidget {
             Container(
               height: 200,
               width: double.infinity,
-              color: AppTheme.primaryBlue,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF16522), Color(0xFFD63C1B)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
 
             Column(
@@ -93,8 +99,8 @@ class DigiCashScreen extends ConsumerWidget {
                             child: Text(
                               phone,
                               style: const TextStyle(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFD63C1B),
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 13),
                             ),
                           ),
@@ -192,7 +198,8 @@ class DigiCashScreen extends ConsumerWidget {
                                 _showMoneyOutDialog(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.dangerRed,
+                                backgroundColor: const Color(
+                                    0xFFCE2A2A), // Deep Red matching original
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24, vertical: 12),
                                 shape: RoundedRectangleBorder(
@@ -221,15 +228,18 @@ class DigiCashScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                               child: _buildGridItem(context, 'JazzCash',
-                                  Icons.account_balance_wallet)),
+                                  Icons.account_balance_wallet,
+                                  iconColor: const Color(0xFFED1C24))),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(
-                                  context, 'easypaisa', Icons.account_balance)),
+                                  context, 'easypaisa', Icons.account_balance,
+                                  iconColor: const Color(0xFF4CAF50))),
                           const SizedBox(width: 12),
                           Expanded(
-                              child: _buildGridItem(
-                                  context, 'Raast', Icons.swap_horiz)),
+                              child: _buildGridItem(context, 'Raast',
+                                  Icons.account_balance_rounded,
+                                  iconColor: const Color(0xFF388E3C))),
                         ],
                       ),
 
@@ -244,15 +254,18 @@ class DigiCashScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                               child: _buildGridItem(
-                                  context, 'Bills', Icons.receipt_long)),
+                                  context, 'Bills', Icons.receipt_long,
+                                  iconColor: Colors.black87)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(
-                                  context, 'Easy Load', Icons.phone_android)),
+                                  context, 'Easy Load', Icons.phone_android,
+                                  iconColor: Colors.black87)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(context, 'Vouchers',
-                                  Icons.local_activity_outlined)),
+                                  Icons.local_activity_outlined,
+                                  iconColor: Colors.black87)),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -260,10 +273,12 @@ class DigiCashScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                               child: _buildGridItem(
-                                  context, 'SMS', Icons.sms_outlined)),
+                                  context, 'SMS', Icons.sms_outlined,
+                                  iconColor: Colors.black87)),
                           const SizedBox(width: 12),
                           Expanded(
-                              child: _buildGridItem(context, 'NFC', Icons.nfc)),
+                              child: _buildGridItem(context, 'NFC', Icons.nfc,
+                                  iconColor: Colors.black87)),
                           const SizedBox(width: 12),
                           Expanded(
                               child: _buildGridItem(context, 'Pro', Icons.stars,

@@ -29,8 +29,7 @@ class DashboardScreen extends ConsumerWidget {
         onPressed: () {
           context.push('/digi_ai');
         },
-        backgroundColor: AppTheme
-            .primaryBlue, // Enforced Blue Theme constraints! (Original was Orange)
+        backgroundColor: const Color(0xFFF16522),
         shape: const CircleBorder(),
         elevation: 6,
         child: const Icon(Icons.auto_awesome,
@@ -77,7 +76,7 @@ class DashboardScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 10,
                     color: currentIndex == 3
-                        ? AppTheme.primaryBlue
+                        ? const Color(0xFFCE2A2A) // Red for Digicash
                         : Colors.grey.shade400)),
             label: '',
           ),

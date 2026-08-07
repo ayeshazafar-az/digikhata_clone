@@ -115,8 +115,7 @@ class HomeGridScreen extends ConsumerWidget {
         onPressed: () {
           context.push('/digi_ai');
         },
-        backgroundColor:
-            AppTheme.primaryBlue, // Forced Blue Theme for strict compliance
+        backgroundColor: const Color(0xFFF16522),
         shape: const CircleBorder(),
         child: const Icon(Icons.auto_awesome, color: Colors.white, size: 32),
       ),
