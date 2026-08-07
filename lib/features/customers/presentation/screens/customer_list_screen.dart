@@ -32,6 +32,8 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
                 ),
           title: const Text('Party',
               style: TextStyle(color: Colors.white, fontSize: 20)),
+          centerTitle: false,
+          titleSpacing: 0,
           actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -93,7 +95,7 @@ class _CustomerListScreenState extends ConsumerState<CustomerListScreen> {
   }
 }
 
-class _PartyTab extends ConsumerWidget {
+class _PartyTab extends ConsumerStatefulWidget {
   final String type;
   final String title1;
   final String title3;
@@ -102,17 +104,25 @@ class _PartyTab extends ConsumerWidget {
       {required this.type, required this.title1, required this.title3});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PartyTab> createState() => _PartyTabState();
+}
+
+class _PartyTabState extends ConsumerState<_PartyTab> {
+  bool _hideBalance = false;
+
+  @override
+  Widget build(BuildContext context) {
     final partiesState = ref.watch(partiesProvider);
-    final isSupplier = type == 'supplier';
-    final isBank = type == 'bank';
+    final isSupplier = widget.type == 'supplier';
+    final isBank = widget.type == 'bank';
     final currency = ref.watch(currencyProvider);
 
     return Stack(
       children: [
         Column(
           children: [
-            _buildStatsHeader(isSupplier, isBank, type, currency, context),
+            _buildStatsHeader(
+                isSupplier, isBank, widget.type, currency, context),
             Expanded(
               child: partiesState.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -120,11 +130,12 @@ class _PartyTab extends ConsumerWidget {
                     child: Text('Error: $err',
                         style: const TextStyle(color: Colors.black))),
                 data: (parties) {
-                  final filtered = type == 'all'
+                  final filtered = widget.type == 'all'
                       ? parties
-                      : parties.where((p) => p.type == type).toList();
+                      : parties.where((p) => p.type == widget.type).toList();
                   if (filtered.isEmpty) {
-                    return _buildEmptyState(title1, title3, context);
+                    return _buildEmptyState(
+                        widget.title1, widget.title3, context);
                   }
                   return _buildPartyList(filtered, context);
                 },
@@ -138,6 +149,8 @@ class _PartyTab extends ConsumerWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (widget.type == 'customer') const _EmptyStateArrow(),
+              if (widget.type == 'customer') const SizedBox(width: 8),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme
@@ -164,7 +177,7 @@ class _PartyTab extends ConsumerWidget {
                 label: Text(
                   isBank
                       ? 'ADD BANK'
-                      : 'ADD ${type == 'all' ? 'CUSTOMER' : type.toUpperCase()}',
+                      : 'ADD ${widget.type == 'all' ? 'CUSTOMER' : widget.type.toUpperCase()}',
                   style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),
@@ -204,13 +217,22 @@ class _PartyTab extends ConsumerWidget {
         children: [
           Row(
             children: [
-              if (type == 'customer') const _EmptyStateArrow(),
-              const Text('Hide Balance',
-                  style: TextStyle(
-                      color: AppTheme.secondaryOrange,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic)),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _hideBalance = !_hideBalance;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(_hideBalance ? 'Show Balance' : 'Hide Balance',
+                      style: const TextStyle(
+                          color: AppTheme.secondaryOrange,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic)),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -219,7 +241,7 @@ class _PartyTab extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Text('PKR 0',
+                    Text(_hideBalance ? '***' : '$currency 0',
                         style: const TextStyle(
                             color: Colors.green,
                             fontSize: 16,
@@ -238,7 +260,7 @@ class _PartyTab extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Text('PKR 0',
+                    Text(_hideBalance ? '***' : '$currency 0',
                         style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -273,8 +295,8 @@ class _PartyTab extends ConsumerWidget {
 
   Widget _buildEmptyState(String t1, String t3, BuildContext context) {
     IconData visualIcon = Icons.supervised_user_circle;
-    if (type == 'supplier') visualIcon = Icons.local_shipping;
-    if (type == 'bank') visualIcon = Icons.account_balance;
+    if (widget.type == 'supplier') visualIcon = Icons.local_shipping;
+    if (widget.type == 'bank') visualIcon = Icons.account_balance;
 
     return Center(
       child: Column(
