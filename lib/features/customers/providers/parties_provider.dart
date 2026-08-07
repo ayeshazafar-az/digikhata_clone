@@ -18,8 +18,6 @@ final activeBusinessProvider = FutureProvider<String?>((ref) async {
   return data != null ? data['id'] as String? : null;
 });
 
-});
-
 final partyBalancesProvider = FutureProvider<Map<String, double>>((ref) async {
   final supabase = Supabase.instance.client;
   final businessId = ref.watch(activeBusinessProvider).value;

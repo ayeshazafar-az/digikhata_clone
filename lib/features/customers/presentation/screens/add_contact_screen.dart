@@ -162,7 +162,8 @@ class _AddContactScreenState extends State<AddContactScreen> {
           final phone =
               contact.phones.isNotEmpty ? contact.phones.first.number : '';
           if (phone.isEmpty) return const SizedBox.shrink();
-          return _buildContactTile((contact.displayName), phone);
+          return _buildContactTile(
+              (contact.displayName ?? 'Unknown Contact'), phone);
         }),
       ],
     );
