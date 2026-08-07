@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   firebase_core
   flutter_tts
+  geolocator_windows
   isar_flutter_libs
   local_auth_windows
   permission_handler_windows

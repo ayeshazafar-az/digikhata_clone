@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class KycOnboardingScreen extends StatefulWidget {
   const KycOnboardingScreen({super.key});
@@ -18,10 +20,63 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
 
   bool _isNotBusinessPerson = false;
   bool _isLoading = false;
+  bool _isLoadingLocation = false;
 
   String? _selfiePath;
   String? _cnicFrontPath;
   String? _cnicBackPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _autoFetchLocation();
+  }
+
+  Future<void> _autoFetchLocation() async {
+    setState(() => _isLoadingLocation = true);
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) return;
+      }
+
+      final Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium);
+
+      final List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        final address =
+            '${place.street ?? ''}, ${place.subLocality ?? ''}, ${place.locality ?? ''}, ${place.country ?? ''}';
+
+        if (mounted) {
+          setState(() {
+            _locationController.text = address
+                .replaceAll(RegExp(r'^,\s*'), '')
+                .replaceAll(RegExp(r',\s*,'), ',')
+                .trim();
+            if (_locationController.text.endsWith(',')) {
+              _locationController.text = _locationController.text
+                  .substring(0, _locationController.text.length - 1);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Location fetch error: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingLocation = false);
+    }
+  }
 
   String? _businessType;
   String? _businessCategory;
@@ -214,7 +269,7 @@ class _KycOnboardingScreenState extends State<KycOnboardingScreen> {
       if (user != null) {
         // Update KYC status and name
         await Supabase.instance.client.from('profiles').update({
-          'full_name': _nameController.text.trim(),
+          'name': _nameController.text.trim(),
           'kyc_status': 'verified',
         }).eq('id', user.id);
 
