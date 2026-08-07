@@ -17,6 +17,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  bool _useEmail = true; // Default to email as requested, but allow toggle
   bool _isLoading = false;
 
   @override
@@ -26,20 +28,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _sendOtp() async {
     final email = _emailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email address')),
-      );
-      return;
+    final phone = _phoneController.text.trim();
+
+    if (_useEmail) {
+      if (email.isEmpty || !email.contains('@')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid email address')),
+        );
+        return;
+      }
+    } else {
+      if (phone.isEmpty || phone.length < 10) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid phone number')),
+        );
+        return;
+      }
     }
+
     setState(() => _isLoading = true);
     try {
-      await Supabase.instance.client.auth.signInWithOtp(
-        email: email,
-        emailRedirectTo:
-            kIsWeb ? null : 'io.supabase.digikhata://login-callback',
-      );
-      if (mounted) context.push('/otp', extra: email);
+      if (_useEmail) {
+        await Supabase.instance.client.auth.signInWithOtp(
+          email: email,
+          emailRedirectTo:
+              kIsWeb ? null : 'io.supabase.digikhata://login-callback',
+        );
+        if (mounted) context.push('/otp', extra: email);
+      } else {
+        await Supabase.instance.client.auth.signInWithOtp(
+          phone: '+92$phone',
+        );
+        if (mounted) context.push('/otp', extra: '+92$phone');
+      }
     } catch (e) {
       if (mounted) {
         final errorMsg = e.toString().toLowerCase();
@@ -101,34 +122,83 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Enter your Email Address',
-                style: TextStyle(
+              Text(
+                _useEmail
+                    ? 'Enter your Email Address'
+                    : 'Enter your Mobile Number',
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 24),
-              Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                ),
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(fontSize: 16, letterSpacing: 1.0),
-                  decoration: const InputDecoration(
-                    hintText: 'user@example.com',
-                    border: InputBorder.none,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              if (_useEmail)
+                Container(
+                  height: 56,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                  ),
+                  child: TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(fontSize: 16, letterSpacing: 1.0),
+                    decoration: const InputDecoration(
+                      hintText: 'user@example.com',
+                      border: InputBorder.none,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  height: 56,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(color: Colors.grey.shade300)),
+                        ),
+                        child: const Row(
+                          children: [
+                            Text('🇵🇰', style: TextStyle(fontSize: 20)),
+                            SizedBox(width: 8),
+                            Text('+92',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          style:
+                              const TextStyle(fontSize: 16, letterSpacing: 1.0),
+                          decoration: InputDecoration(
+                            hintText: ref
+                                .watch(l10nProvider)
+                                .translate('mobile_number'),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 18),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
               const Spacer(),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -155,6 +225,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ],
                       ),
                     ),
+              const SizedBox(height: 16),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _useEmail = !_useEmail;
+                    });
+                  },
+                  child: Text(
+                    _useEmail
+                        ? 'Admin? Login via Phone'
+                        : 'Customer? Login via Magic Link',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryBlue,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               Center(
                 child: Padding(

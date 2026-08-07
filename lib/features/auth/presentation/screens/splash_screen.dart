@@ -46,6 +46,13 @@ class _SplashScreenState extends State<SplashScreen> {
               session.user.phone == '+923245423290') {
             if (mounted) context.go('/admin');
           } else {
+            // Check KYC Status first!
+            final kycStatus = profile?['kyc_status'];
+            if (kycStatus != 'verified') {
+              if (mounted) context.go('/kyc_onboarding');
+              return;
+            }
+
             final prefs = await SharedPreferences.getInstance();
             final savedPin = prefs.getString('app_pin');
 
