@@ -1,4 +1,4 @@
-\import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -32,8 +32,9 @@ class _AddContactScreenState extends State<AddContactScreen> {
     try {
       final status = await Permission.contacts.request();
       if (status.isGranted) {
-        // MUST use withProperties: true to get phone numbers
-        final contacts = await FlutterContacts.getAll(withProperties: true);
+        // Fetch phones properly in the newer flutter_contacts version
+        final contacts = await FlutterContacts.getAll(
+            properties: {ContactProperty.name, ContactProperty.phone});
         setState(() => _contacts = contacts);
       } else {
         setState(() => _permissionDenied = true);
@@ -59,11 +60,15 @@ class _AddContactScreenState extends State<AddContactScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              color: Colors.white, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: Text('Add \',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text('Add ${widget.type}',
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20)),
       ),
       body: Column(
         children: [
@@ -76,7 +81,10 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey.shade300),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2)),
+                  BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2)),
                 ],
               ),
               child: TextField(
@@ -112,12 +120,16 @@ class _AddContactScreenState extends State<AddContactScreen> {
             children: [
               const Icon(Icons.contacts, size: 64, color: Colors.grey),
               const SizedBox(height: 16),
-              const Text('Contact sharing required to sync your address book. Please enable them in OS settings.', textAlign: TextAlign.center, style: TextStyle(color: Colors.black54)),
+              const Text(
+                  'Contact sharing required to sync your address book. Please enable them in OS settings.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => openAppSettings(),
                 style: ElevatedButton.styleFrom(backgroundColor: dOrange),
-                child: const Text('Open Settings', style: TextStyle(color: Colors.white)),
+                child: const Text('Open Settings',
+                    style: TextStyle(color: Colors.white)),
               )
             ],
           ),
@@ -131,52 +143,75 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
     final filteredContacts = _searchQuery.isEmpty
         ? _contacts!
-        : _contacts!.where((c) => (c.displayName).toLowerCase().contains(_searchQuery)).toList();
+        : _contacts!
+            .where((c) =>
+                (c.displayName ?? '').toLowerCase().contains(_searchQuery))
+            .toList();
 
     return ListView(
       children: [
         ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           leading: Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.red.shade50, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+                color: Colors.red.shade50, shape: BoxShape.circle),
             child: Icon(Icons.person_add_alt_1, color: dOrange, size: 20),
           ),
-          title: Text('Add New \', style: TextStyle(color: dOrange, fontWeight: FontWeight.w500, fontSize: 16)),
+          title: Text('Add New ${widget.type}',
+              style: TextStyle(
+                  color: dOrange, fontWeight: FontWeight.w500, fontSize: 16)),
           trailing: Icon(Icons.chevron_right, color: dOrange),
           onTap: () {
-            context.push('/add_party?type=\');
+            context.push('/add_party?type=${widget.type}');
           },
         ),
         Divider(color: Colors.grey.shade200, height: 1),
         ...filteredContacts.map((contact) {
-          final phone = contact.phones.isNotEmpty ? contact.phones.first.normalizedNumber.isNotEmpty ? contact.phones.first.normalizedNumber : contact.phones.first.number : '';
+          final firstPhone =
+              contact.phones.isNotEmpty ? contact.phones.first : null;
+          final normNum = firstPhone?.normalizedNumber ?? '';
+          final rawNum = firstPhone?.number ?? '';
+          final phone = normNum.isNotEmpty ? normNum : rawNum;
           if (phone.isEmpty) return const SizedBox.shrink();
-          return _buildContactTile((contact.displayName), phone, dOrange, contact);
+          return _buildContactTile(
+              contact.displayName ?? '', phone, dOrange, contact);
         }),
       ],
     );
   }
 
-  Widget _buildContactTile(String name, String phone, Color dOrange, Contact contact) {
+  Widget _buildContactTile(
+      String name, String phone, Color dOrange, Contact contact) {
     bool isPlus = phone.startsWith('+');
     return Column(
       children: [
         ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
           leading: Container(
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(color: Colors.grey.shade100, shape: BoxShape.circle),
-            child: Text(isPlus ? '+' : '0', style: TextStyle(color: dOrange, fontWeight: FontWeight.bold, fontSize: 16)),
+            decoration: BoxDecoration(
+                color: Colors.grey.shade100, shape: BoxShape.circle),
+            child: Text(isPlus ? '+' : '0',
+                style: TextStyle(
+                    color: dOrange, fontWeight: FontWeight.bold, fontSize: 16)),
           ),
-          title: Text(phone, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-          subtitle: Text(phone, style: const TextStyle(color: Colors.black54)), // Mirroring SS3 logic
+          title: Text(phone,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black)),
+          subtitle: Text(phone,
+              style: const TextStyle(
+                  color: Colors.black54)), // Mirroring SS3 logic
           onTap: () {
             // They chose an existing contact. Pass it to add_party auto-filled.
-            context.push('/add_party?type=\&name=\&phone=\');
+            context
+                .push('/add_party?type=${widget.type}&name=$name&phone=$phone');
           },
         ),
-        Divider(color: Colors.grey.shade200, indent: 80, endIndent: 24, height: 1),
+        Divider(
+            color: Colors.grey.shade200, indent: 80, endIndent: 24, height: 1),
       ],
     );
   }

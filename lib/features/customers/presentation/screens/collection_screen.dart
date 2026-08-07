@@ -1,4 +1,4 @@
-\import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
@@ -26,9 +26,14 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
       appBar: AppBar(
         backgroundColor: dOrange,
         elevation: 0,
-        title: const Text('Collection', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+        title: const Text('Collection',
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              color: Colors.white, size: 20),
           onPressed: () => context.pop(),
         ),
         actions: const [
@@ -50,30 +55,47 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                    BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4)),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Send Bulk Reminder to Customers', style: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w600)),
+                    const Text('Send Bulk Reminder to Customers',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     balancesState.maybeWhen(
                       data: (balances) {
-                         // Fallbacks
+                        // Fallbacks
                         return Row(
                           children: [
-                            const Text('Rs 0', style: TextStyle(color: AppTheme.dangerRed, fontWeight: FontWeight.bold, fontSize: 16)),
-                            Text(' is with 0 Customer', style: TextStyle(color: Colors.grey.shade600)),
+                            const Text('Rs 0',
+                                style: TextStyle(
+                                    color: AppTheme.dangerRed,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16)),
+                            Text(' is with 0 Customer',
+                                style: TextStyle(color: Colors.grey.shade600)),
                           ],
                         );
                       },
                       orElse: () => Row(
-                         children: [
-                           const Text('Rs 0', style: TextStyle(color: AppTheme.dangerRed, fontWeight: FontWeight.bold, fontSize: 16)),
-                           Text(' is with 0 Customer', style: TextStyle(color: Colors.grey.shade600)),
-                         ],
-                       ), // Emulate the SS literally
+                        children: [
+                          const Text('Rs 0',
+                              style: TextStyle(
+                                  color: AppTheme.dangerRed,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16)),
+                          Text(' is with 0 Customer',
+                              style: TextStyle(color: Colors.grey.shade600)),
+                        ],
+                      ), // Emulate the SS literally
                     ),
                   ],
                 ),
@@ -83,7 +105,8 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
                 top: 16,
                 right: 16,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: const BoxDecoration(
                     color: AppTheme.successGreen,
                     borderRadius: BorderRadius.only(
@@ -91,7 +114,11 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
                       bottomLeft: Radius.circular(12),
                     ),
                   ),
-                  child: const Text('NEW', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                  child: const Text('NEW',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -111,7 +138,8 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
                       border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: TextField(
-                      onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+                      onChanged: (val) =>
+                          setState(() => _searchQuery = val.toLowerCase()),
                       decoration: const InputDecoration(
                         hintText: '  0 Customer',
                         hintStyle: TextStyle(color: Colors.black38),
@@ -125,7 +153,8 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
                 const SizedBox(width: 12),
                 const Icon(Icons.filter_alt_outlined, color: dOrange, size: 28),
                 const SizedBox(width: 12),
-                const Icon(Icons.picture_as_pdf_outlined, color: dOrange, size: 28),
+                const Icon(Icons.picture_as_pdf_outlined,
+                    color: dOrange, size: 28),
               ],
             ),
           ),
@@ -152,12 +181,17 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.calendar_today_rounded, size: 100, color: Colors.grey.shade300),
+              Icon(Icons.calendar_today_rounded,
+                  size: 100, color: Colors.grey.shade300),
               const SizedBox(height: 16),
-              const Text('No data found!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+              const Text('No data found!',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87)),
             ],
           ),
-          
+
           const Spacer(),
         ],
       ),
