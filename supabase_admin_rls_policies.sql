@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS public.faqs (
 );
 
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable read access for all faqs" ON public.faqs;
 CREATE POLICY "Enable read access for all faqs" ON public.faqs FOR SELECT USING (true);
 
 INSERT INTO public.faqs (question, answer, category) VALUES
