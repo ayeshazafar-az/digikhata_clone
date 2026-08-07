@@ -132,7 +132,7 @@ class SelectBankScreen extends StatelessWidget {
                                 .push('/add_new_bank?bankName=${bank['name']}');
                           },
                         ))
-                    .toList(),
+                    ,
                 const SizedBox(height: 24),
               ],
             ),

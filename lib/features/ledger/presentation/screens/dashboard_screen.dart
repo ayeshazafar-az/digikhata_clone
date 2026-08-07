@@ -14,16 +14,16 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _currentIndex = ref.watch(dashboardIndexProvider);
+    final currentIndex = ref.watch(dashboardIndexProvider);
 
-    final List<Widget> _pages = [
+    final List<Widget> pages = [
       const HomeGridScreen(),
       const DigiBazarScreen(),
       const DigiPosScreen(),
       const DigiCashSecureWrapper(),
     ];
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: pages[currentIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -37,7 +37,7 @@ class DashboardScreen extends ConsumerWidget {
             color: Colors.white, size: 30), // Sparkles icon!
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         onTap: (index) {
           ref.read(dashboardIndexProvider.notifier).state = index;
         },
@@ -65,7 +65,7 @@ class DashboardScreen extends ConsumerWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 10,
-                    color: _currentIndex == 2
+                    color: currentIndex == 2
                         ? AppTheme.primaryBlue
                         : Colors.grey.shade400)),
             label: '',
@@ -76,7 +76,7 @@ class DashboardScreen extends ConsumerWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 10,
-                    color: _currentIndex == 3
+                    color: currentIndex == 3
                         ? AppTheme.primaryBlue
                         : Colors.grey.shade400)),
             label: '',

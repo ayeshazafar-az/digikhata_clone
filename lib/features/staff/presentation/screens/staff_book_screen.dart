@@ -261,11 +261,12 @@ class StaffBookScreen extends ConsumerWidget {
                               style: const TextStyle(color: Colors.grey)),
                           trailing: ElevatedButton(
                             onPressed: () {
-                              if (context.mounted)
+                              if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                         content: Text(
                                             'Staff marked as Present for today!')));
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,

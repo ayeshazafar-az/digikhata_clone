@@ -26,8 +26,8 @@ class _ProSubscriptionScreenState extends State<ProSubscriptionScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppTheme.primaryBlue.withOpacity(
-                        0.2), // Light blue base matching the peach mapping
+                    AppTheme.primaryBlue.withValues(
+                        alpha: 0.2), // Light blue base matching the peach mapping
                     AppTheme.primaryBlue.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topRight,

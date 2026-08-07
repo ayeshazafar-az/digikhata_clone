@@ -206,8 +206,9 @@ class _DigiBazarScreenState extends ConsumerState<DigiBazarScreen> {
                                     : Colors.grey.shade300),
                           ),
                           onSelected: (selected) {
-                            if (selected)
+                            if (selected) {
                               setState(() => _selectedBrand = brand);
+                            }
                           },
                         ),
                       );

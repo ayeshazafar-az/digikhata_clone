@@ -10,7 +10,7 @@ class MultiDevicesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String deviceName = kIsWeb
         ? 'Web Browser'
-        : defaultTargetPlatform.name.toUpperCase() + ' Device';
+        : '${defaultTargetPlatform.name.toUpperCase()} Device';
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,

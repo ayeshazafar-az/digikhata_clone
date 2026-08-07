@@ -345,7 +345,7 @@ class DigiCashScreen extends ConsumerWidget {
                     .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                     .toList(),
                 onChanged: (val) {},
-                value: 'Last 30 Days',
+                initialValue: 'Last 30 Days',
               ),
               const SizedBox(height: 16),
               const TextField(
@@ -409,7 +409,7 @@ class DigiCashScreen extends ConsumerWidget {
                     .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                     .toList(),
                 onChanged: (val) {},
-                value: 'JazzCash',
+                initialValue: 'JazzCash',
               ),
               const SizedBox(height: 16),
               const TextField(

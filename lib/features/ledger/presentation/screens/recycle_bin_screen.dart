@@ -192,11 +192,12 @@ class RecycleBinScreen extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: TextButton.icon(
                           onPressed: () {
-                            if (context.mounted)
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text(
                                           'Successfully restored business ledger.')));
+                            }
                           },
                           icon: const Icon(Icons.undo,
                               color: Color(0xFF991717), size: 16),
