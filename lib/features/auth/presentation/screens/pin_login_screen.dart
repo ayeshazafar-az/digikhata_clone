@@ -3,6 +3,7 @@ import '../../../../../app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pinput/pinput.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PinLoginScreen extends StatefulWidget {
   const PinLoginScreen({super.key});
@@ -124,9 +125,11 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
             ),
             const SizedBox(height: 16),
             TextButton(
-              onPressed: () {
-                // To reset PIN, user can clear storage by logging out
-                context.go('/language');
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('app_pin');
+                await Supabase.instance.client.auth.signOut();
+                if (context.mounted) context.go('/language');
               },
               child: const Text('Forgot PIN / Switch Account',
                   style: TextStyle(
