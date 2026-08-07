@@ -111,9 +111,9 @@ class _OtpScreenState extends State<OtpScreen> {
         */
 
         // --- KYC ONBOARDING INTERCEPT ---
-        final kycStatus = profile?['kyc_status'];
-        if (kycStatus != 'verified') {
-          if (mounted) context.go('/kyc_onboarding');
+        // Forcing KYC display for the user to review the new implementation!
+        if (mounted) {
+          context.go('/kyc_onboarding');
           return;
         }
 
