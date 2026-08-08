@@ -104,7 +104,12 @@ class AllTransactionsScreen extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.push('/add_${type.toLowerCase()}_route');
+                    final String typeLower = type.toLowerCase();
+                    if (typeLower == 'bank') {
+                      context.push('/select_bank');
+                    } else {
+                      context.push('/add_${typeLower}_route');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF60A5FA),
